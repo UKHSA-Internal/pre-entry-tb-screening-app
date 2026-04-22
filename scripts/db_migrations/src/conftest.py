@@ -26,6 +26,9 @@ from migrations import statistics
 
 APPLICANT_TABLE = "applicant-table"
 APPLICATION_TABLE = "application-table"
+CLINICS_TABLE = "clinics-table"
+MIGRATIONS = getenv("MIGRATIONS", "rewrite_clinic_records")
+AWS_REGION = getenv("AWS_REGION", "eu-west-2")
 DYNAMO_LOCAL_URL = "http://localhost:8000"
 REGION = getenv("AWS_REGION", "eu-west-2")
 
@@ -41,6 +44,9 @@ def _stub_awsglue(dry_run: bool = False):
         return_value={
             "APPLICANT_TABLE": APPLICANT_TABLE,
             "APPLICATION_TABLE": APPLICATION_TABLE,
+            "CLINICS_TABLE": CLINICS_TABLE,
+            "MIGRATIONS": MIGRATIONS,
+            "AWS_REGION": AWS_REGION,
             "DRY_RUN": str(dry_run),
         }
     )
@@ -114,11 +120,13 @@ def tables(dynamodb_local):
     """
     _drop_table_if_exists(dynamodb_local, APPLICANT_TABLE)
     _drop_table_if_exists(dynamodb_local, APPLICATION_TABLE)
+    _drop_table_if_exists(dynamodb_local, CLINICS_TABLE)
 
     applicant_table = _create_table(dynamodb_local, APPLICANT_TABLE)
     application_table = _create_table(dynamodb_local, APPLICATION_TABLE)
+    clinics_table = _create_table(dynamodb_local, CLINICS_TABLE)
 
-    yield applicant_table, application_table
+    yield applicant_table, application_table, clinics_table
 
 
 def _drop_table_if_exists(dynamodb, table_name: str):
@@ -154,4 +162,7 @@ def _create_table(dynamodb, table_name: str):
 
 
 def make_statistics():
-    return statistics.copy()
+    s = statistics.copy()
+    s["applicants_to_remove"] = []
+
+    return s

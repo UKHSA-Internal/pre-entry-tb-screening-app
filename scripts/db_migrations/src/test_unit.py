@@ -29,8 +29,10 @@ def mock_tables():
     at.name = "applicant-table"
     apt = MagicMock()
     apt.name = "application-table"
+    ct = MagicMock()
+    ct.name = "clinics-table"
 
-    return at, apt
+    return at, apt, ct
 
 
 def _client_error(code: str) -> ClientError:
@@ -42,14 +44,14 @@ class TestMigrateApplicantSkips:
 
     def test_skip_when_already_migrated_pk_equals_passport_id(self):
         """pk == passportId → skipped_migrated incremented, nothing written."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         row = {
             "pk": "COUNTRY#GB#PASSPORT#1",
             "sk": "APPLICANT#DETAILS",
             "passportId": "COUNTRY#GB#PASSPORT#1",
         }
-        migrate_applicants(row, at, apt, False, stats)
+        migrate_applicants(row, at, apt, ct, False, stats)
         assert stats["skipped_migrated"] == 1
         assert stats["all_applicants"] == 0
         assert stats["migrated_applicants"] == 0
@@ -58,32 +60,32 @@ class TestMigrateApplicantSkips:
 
     def test_skip_when_passport_id_missing(self):
         """No passportId key → skipped_missing incremented."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         row = {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"}
-        migrate_applicants(row, at, apt, False, stats)
+        migrate_applicants(row, at, apt, ct, False, stats)
         assert stats["skipped_missing"] == 1
         assert stats["migrated_applicants"] == 0
 
     def test_skip_when_passport_id_is_none(self):
         """passportId=None → skipped_missing incremented."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         row = {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS", "passportId": None}
-        migrate_applicants(row, at, apt, False, stats)
+        migrate_applicants(row, at, apt, ct, False, stats)
         assert stats["skipped_missing"] == 1
 
     def test_skip_when_passport_id_empty_string(self):
         """passportId='' (falsy) → treated as missing."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         row = {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS", "passportId": ""}
-        migrate_applicants(row, at, apt, False, stats)
+        migrate_applicants(row, at, apt, ct, False, stats)
         assert stats["skipped_missing"] == 1
 
     def test_early_return_when_no_application_root_row(self):
         """Missing APPLICATION#ROOT row → returns early, nothing written."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         apt.get_item.return_value = {}
         row = {
@@ -91,7 +93,7 @@ class TestMigrateApplicantSkips:
             "sk": "APPLICANT#DETAILS",
             "passportId": "COUNTRY#GB#PASSPORT#1",
         }
-        migrate_applicants(row, at, apt, False, stats)
+        migrate_applicants(row, at, apt, ct, False, stats)
         assert stats["migrated_applicants"] == 0
         at.put_item.assert_not_called()
         apt.update_item.assert_not_called()
@@ -107,13 +109,13 @@ class TestMigrateApplicantStatusDerivation:
     }
 
     def _run(self, tb_row_item):
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         apt.get_item.side_effect = [
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
             ({"Item": tb_row_item} if tb_row_item is not None else {}),
         ]
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
 
         return apt
 
@@ -152,32 +154,32 @@ class TestMigrateApplicantDryRun:
     }
 
     def _setup(self):
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         apt.get_item.side_effect = [
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
             {},
         ]
         stats = make_statistics()
-        return at, apt, stats
+        return at, apt, ct, stats
 
     def test_dry_run_increments_migrated_applicants(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, True, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, True, stats)
         assert stats["migrated_applicants"] == 1
 
     def test_dry_run_appends_to_applicants_to_remove(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, True, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, True, stats)
         assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
 
     def test_dry_run_does_not_call_put_item(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, True, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, True, stats)
         at.put_item.assert_not_called()
 
     def test_dry_run_does_not_call_update_item(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, True, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, True, stats)
         apt.update_item.assert_not_called()
 
 
@@ -192,64 +194,64 @@ class TestMigrateApplicantLive:
     }
 
     def _setup(self):
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         apt.get_item.side_effect = [
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
             {},
         ]
         stats = make_statistics()
-        return at, apt, stats
+        return at, apt, ct, stats
 
     def test_put_item_called_with_new_pk(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         item = at.put_item.call_args[1]["Item"]
         assert item["pk"] == "COUNTRY#GB#PASSPORT#1"
 
     def test_put_item_preserves_all_attributes(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         item = at.put_item.call_args[1]["Item"]
         assert item["name"] == "Alice"
         assert item["sk"] == "APPLICANT#DETAILS"
 
     def test_update_item_targets_application_root(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         kwargs = apt.update_item.call_args[1]
         assert kwargs["Key"] == {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}
 
     def test_update_item_sets_applicant_id(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_applicant_pk"] == "COUNTRY#GB#PASSPORT#1"
 
     def test_migrated_applicants_incremented(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         assert stats["migrated_applicants"] == 1
 
     def test_applicants_to_remove_appended(self):
-        at, apt, stats = self._setup()
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+        at, apt, ct, stats = self._setup()
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
         assert {"pk": "APPLICATION#abc", "sk": "APPLICANT#DETAILS"} in stats["applicants_to_remove"]
 
     def test_conditional_check_failed_is_swallowed(self):
         """ConditionalCheckFailedException on update_item must not propagate."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         apt.get_item.side_effect = [
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
             {},
         ]
         apt.update_item.side_effect = _client_error("ConditionalCheckFailedException")
-        migrate_applicants(self.BASE_ROW, at, apt, False, stats)  # must not raise
+        migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)  # must not raise
         assert stats["migrated_applicants"] == 1
 
     def test_other_client_error_is_re_raised(self):
         """Non-ConditionalCheck ClientError must propagate."""
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         stats = make_statistics()
         apt.get_item.side_effect = [
             {"Item": {"pk": "APPLICATION#abc", "sk": "APPLICATION#ROOT"}},
@@ -257,7 +259,7 @@ class TestMigrateApplicantLive:
         ]
         apt.update_item.side_effect = _client_error("ProvisionedThroughputExceededException")
         with pytest.raises(ClientError):
-            migrate_applicants(self.BASE_ROW, at, apt, False, stats)
+            migrate_applicants(self.BASE_ROW, at, apt, ct, False, stats)
 
 
 class TestRemoveOriginalApplicants:
@@ -270,28 +272,28 @@ class TestRemoveOriginalApplicants:
         return at.batch_writer.return_value.__enter__.return_value.delete_item.call_count
 
     def test_empty_list_does_not_enter_batch_writer(self):
-        at, _ = mock_tables()
+        at, _, _ = mock_tables()
         remove_original_applicants(at, [])
         at.batch_writer.assert_not_called()
 
     def test_exactly_25_items_one_batch_25_deletes(self):
-        at, _ = mock_tables()
+        at, _, _ = mock_tables()
         remove_original_applicants(at, self._ids(25))
         assert self._delete_count(at) == 25
 
     def test_26_items_two_batches_26_deletes(self):
-        at, _ = mock_tables()
+        at, _, _ = mock_tables()
         remove_original_applicants(at, self._ids(26))
         assert self._delete_count(at) == 26
 
     def test_50_items_two_batches_of_25(self):
-        at, _ = mock_tables()
+        at, _, _ = mock_tables()
         remove_original_applicants(at, self._ids(50))
         assert self._delete_count(at) == 50
         assert at.batch_writer.call_count == 2
 
     def test_1_item_one_delete(self):
-        at, _ = mock_tables()
+        at, _, _ = mock_tables()
         remove_original_applicants(at, self._ids(1))
         assert self._delete_count(at) == 1
 
@@ -307,10 +309,10 @@ class TestSetApplicationStatusgroup:
 
     def test_non_root_sk_increments_skipped_rows_not_root(self):
         """sk != APPLICATION#ROOT → skipped and no write."""
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
-            self._row(sk="APPLICATION#TB#CERTIFICATE"), _, apt, False, stats
+            self._row(sk="APPLICATION#TB#CERTIFICATE"), _, apt, _ct, False, stats
         )
         assert stats["skipped_rows_not_root"] == 1
         apt.update_item.assert_not_called()
@@ -325,20 +327,21 @@ class TestSetApplicationStatusgroup:
     )
     def test_complete_statuses_map_to_complete_group(self, status):
         """certificateAvailable / certificateNotIssued / cancelled → Complete."""
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
-        set_application_statusgroup(self._row(application_status=status), _, apt, False, stats)
+        set_application_statusgroup(self._row(application_status=status), _, apt, _ct, False, stats)
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_status_group"] == ApplicationStatusGroup.complete.value
 
     def test_in_progress_maps_to_incomplete(self):
         """applicationStatus=inProgress → Incomplete."""
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             False,
             stats,
         )
@@ -347,43 +350,46 @@ class TestSetApplicationStatusgroup:
 
     def test_no_application_status_defaults_to_incomplete(self):
         """No applicationStatus → defaults to Incomplete."""
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
-        set_application_statusgroup(self._row(), _, apt, False, stats)
+        set_application_statusgroup(self._row(), _, apt, _ct, False, stats)
         ev = apt.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":new_status_group"] == ApplicationStatusGroup.incomplete.value
 
     def test_dry_run_does_not_call_update_item(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             True,
             stats,
         )
         apt.update_item.assert_not_called()
 
     def test_dry_run_increments_migrated_applications(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             True,
             stats,
         )
         assert stats["migrated_applications"] == 1
 
     def test_live_calls_update_item_with_correct_key(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             False,
             stats,
         )
@@ -394,31 +400,33 @@ class TestSetApplicationStatusgroup:
         }
 
     def test_live_update_expression_contains_applicationstatusgroup(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             False,
             stats,
         )
         assert "applicationStatusGroup" in apt.update_item.call_args[1]["UpdateExpression"]
 
     def test_conditional_check_failed_is_swallowed(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         apt.update_item.side_effect = _client_error("ConditionalCheckFailedException")
         set_application_statusgroup(
             self._row(application_status=ApplicationStatus.inProgress.value),
             _,
             apt,
+            _ct,
             False,
             stats,
         )  # must not raise
 
     def test_other_client_error_is_re_raised(self):
-        _, apt = mock_tables()
+        _, apt, _ct = mock_tables()
         stats = make_statistics()
         apt.update_item.side_effect = _client_error("ServiceUnavailable")
         with pytest.raises(ClientError):
@@ -426,6 +434,7 @@ class TestSetApplicationStatusgroup:
                 self._row(application_status=ApplicationStatus.inProgress.value),
                 _,
                 apt,
+                _ct,
                 False,
                 stats,
             )
@@ -495,9 +504,12 @@ class TestScanTable:
 class TestDataMigration:
     """Top-level data_migration orchestrator."""
 
-    def _make_dynamodb(self, at, apt):
+    def _make_dynamodb(self, at, apt, ct=None):
+        if ct is None:
+            ct = MagicMock()
+            ct.name = "clinics-table"
         dynamodb = MagicMock()
-        dynamodb.Table.side_effect = lambda name: at if name == "applicant-table" else apt
+        dynamodb.Table.side_effect = lambda name: at if name == "applicant-table" else (apt if name == "application-table" else ct)
         return dynamodb
 
     def _reset_stats(self):
@@ -511,16 +523,18 @@ class TestDataMigration:
     def test_calls_migrate_applicants_per_row(self, mock_time, mock_migrate, mock_scan):
         """migrate_applicants called for each row."""
         mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
         rows = [{"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS"}]
         mock_scan.return_value = (rows, None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             False,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "migrate_applicants",
         )
         assert mock_migrate.call_count == 1
@@ -534,15 +548,17 @@ class TestDataMigration:
     ):
         """dry_run=False → remove_original_applicants called."""
         mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
         mock_scan.return_value = ([], None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             False,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "migrate_applicants",
         )
         mock_remove.assert_called_once()
@@ -556,15 +572,17 @@ class TestDataMigration:
     ):
         """dry_run=True → remove_original_applicants not called."""
         mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
         mock_scan.return_value = ([], None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             True,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "migrate_applicants",
         )
         mock_remove.assert_not_called()
@@ -578,16 +596,18 @@ class TestDataMigration:
     ):
         """set_application_statusgroup is called per row."""
         mock_time.time.return_value = 0
+        mock_set.__name__ = "set_application_statusgroup"
         rows = [{"pk": "APPLICATION#1", "sk": "APPLICATION#ROOT"}]
         mock_scan.return_value = (rows, None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             False,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "set_application_statusgroup",
         )
         assert mock_set.call_count == 1
@@ -601,15 +621,17 @@ class TestDataMigration:
     ):
         """set_application_statusgroup → remove_original_applicants never called."""
         mock_time.time.return_value = 0
+        mock_set.__name__ = "set_application_statusgroup"
         mock_scan.return_value = ([], None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             False,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "set_application_statusgroup",
         )
         mock_remove.assert_not_called()
@@ -622,15 +644,17 @@ class TestDataMigration:
     ):
         """set_application_statusgroup → FilterExpression passed to scan_table."""
         mock_time.time.return_value = 0
+        mock_set.__name__ = "set_application_statusgroup"
         mock_scan.return_value = ([], None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             False,
-            self._make_dynamodb(at, apt),
+            self._make_dynamodb(at, apt, ct),
             "set_application_statusgroup",
         )
         scan_filter = mock_scan.call_args[1].get("scan_filter", {})
@@ -642,16 +666,18 @@ class TestDataMigration:
     def test_provided_dynamodb_used_directly(self, mock_time, mock_migrate, mock_scan):
         """When dynamodb is provided, boto3.resource is not called."""
         mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
         mock_scan.return_value = ([], None)
-        at, apt = mock_tables()
+        at, apt, ct = mock_tables()
         self._reset_stats()
         with patch("migrations.boto3") as mock_boto3:
             data_migration(
                 "applicant-table",
                 "application-table",
+                "clinics-table",
                 "eu-west-2",
                 True,
-                self._make_dynamodb(at, apt),
+                self._make_dynamodb(at, apt, ct),
                 "migrate_applicants",
             )
             mock_boto3.resource.assert_not_called()
@@ -665,6 +691,7 @@ class TestDataMigration:
     ):
         """When dynamodb=None, boto3.resource is invoked."""
         mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
         mock_scan.return_value = ([], None)
         mock_resource = MagicMock()
         mock_boto3.resource.return_value = mock_resource
@@ -673,6 +700,7 @@ class TestDataMigration:
         data_migration(
             "applicant-table",
             "application-table",
+            "clinics-table",
             "eu-west-2",
             True,
             None,

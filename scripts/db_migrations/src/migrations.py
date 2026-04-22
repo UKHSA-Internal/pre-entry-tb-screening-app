@@ -201,8 +201,8 @@ def set_application_statusgroup(
     # these 2 tables are not used in this migration function, included in the parameters
     # to keep the same function signature for any migration functions and for future flexibility
     _applicant_table,
-    _clinics_table,
     application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
@@ -456,6 +456,7 @@ def data_migration(
                 row,
                 applicant_table,
                 application_table,
+                clinics_table,
                 dry_run,
                 statistics,
             )
@@ -490,7 +491,14 @@ if __name__ == "__main__":
 
     args = getResolvedOptions(
         sys.argv,
-        ["APPLICANT_TABLE", "APPLICATION_TABLE", "CLINICS_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"],
+        [
+            "APPLICANT_TABLE",
+            "APPLICATION_TABLE",
+            "CLINICS_TABLE",
+            "MIGRATIONS",
+            "AWS_REGION",
+            "DRY_RUN",
+        ],
     )
     logger.info(f"Received arguments: {args}")
 
