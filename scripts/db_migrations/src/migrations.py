@@ -40,8 +40,12 @@ statistics = {
     "migrated_applications": 0,
     # 'rewrite_application_root_records' related:
     "rewritten_applications_root_rows": 0,
+    # 'rewrite_application_nonroot_records' related:
+    "rewritten_applications_nonroot_rows": 0,
     # 'rewrite_applicant_records' related:
     "rewritten_applicant_rows": 0,
+    # 'rewrite_clinic_records' related:
+    "rewritten_clinics_rows": 0,
 }
 
 
@@ -67,6 +71,7 @@ def migrate_applicants(
     applicant_row,
     applicant_table,
     application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
@@ -193,9 +198,10 @@ def remove_original_applicants(applicant_table, id_list):
 def set_application_statusgroup(
     # application_row should always be the APPLICATION#ROOT row
     application_row,
-    # applicant_table is not used in this migration function, but it's included in the parameters
+    # these 2 tables are not used in this migration function, included in the parameters
     # to keep the same function signature for any migration functions and for future flexibility
     _applicant_table,
+    _clinics_table,
     application_table,
     dry_run,
     statistics,
@@ -251,9 +257,10 @@ def set_application_statusgroup(
 def rewrite_applicant_records(
     record,
     applicant_table,
-    # application_table is not used in this migration function, but it's included in the parameters
+    # these 2 tables are not used in this migration function, included in the parameters
     # to keep the same function signature for any migration functions and for future flexibility
     _application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
@@ -271,7 +278,9 @@ def rewrite_applicant_records(
             ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
         )
 
-    except ClientError:
+    except ClientError as e:
+        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+
         raise
 
     logger.debug(f"Updated the application with pk: {record['pk']}")
@@ -283,17 +292,22 @@ def rewrite_application_root_records(
     # to keep the same function signature for any migration functions and for future flexibility
     _applicant_table,
     application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
     statistics["all_applications"] += 1
-    statistics["rewritten_applications_root_rows"] += 1
+
+    if record["sk"] != "APPLICATION#ROOT":
+        statistics["rewritten_applications_root_rows"] += 1
+    else:
+        statistics["rewritten_applications_nonroot_rows"] += 1
 
     if dry_run:
         # Don't modify the record in DB, return instead
         return
 
-    # Re-writing the same data (applicationId) to trigger DynamoDB Streams
+    # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
         application_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
@@ -301,7 +315,39 @@ def rewrite_application_root_records(
             ExpressionAttributeValues={":date": record["dateCreated"]},
         )
 
-    except ClientError:
+    except ClientError as e:
+        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+
+        raise
+
+    logger.debug(f"Updated the application with pk: {record['pk']}")
+
+
+def rewrite_clinic_records(
+    record,
+    _applicant_table,
+    _application_table,
+    clinics_table,
+    dry_run,
+    statistics,
+):
+    statistics["rewritten_clinics_rows"] += 1
+
+    if dry_run:
+        # Don't modify the record in DB, return instead
+        return
+
+    # Re-writing the same data (clinicId) to trigger DynamoDB Streams
+    try:
+        clinics_table.update_item(
+            Key={"pk": record["pk"], "sk": record["sk"]},
+            UpdateExpression=("SET clinicId = :id"),
+            ExpressionAttributeValues={":id": record["clinicId"]},
+        )
+
+    except ClientError as e:
+        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+
         raise
 
     logger.debug(f"Updated the application with pk: {record['pk']}")
@@ -328,6 +374,7 @@ def scan_table(table, last_evaluated_key=None, scan_filter={}):  # noqa: B006
 def data_migration(
     applicant_table_name,
     application_table_name,
+    clinics_table_name,
     aws_region,
     dry_run,
     dynamodb=None,
@@ -340,18 +387,23 @@ def data_migration(
 
     applicant_table = dynamodb.Table(applicant_table_name)
     application_table = dynamodb.Table(application_table_name)
+    clinics_table = dynamodb.Table(clinics_table_name)
 
     start_time = time.time()
-    table = (
-        application_table
-        if migration
-        in (
-            "set_application_statusgroup",
-            "rewrite_application_root_records",
-            "rewrite_application_nonroot_records",
-        )
-        else applicant_table
-    )
+
+    if migration in ("migrate_applicants", "rewrite_applicant_records"):
+        table = applicant_table
+    elif migration in (
+        "set_application_statusgroup",
+        "rewrite_application_root_records",
+        "rewrite_application_nonroot_records",
+    ):
+        table = application_table
+    elif migration == "rewrite_clinic_records":
+        table = clinics_table
+    else:
+        raise ValueError(f"Invalid migration type: {migration}")
+
     last_evaluated_key = None
     first_scan = True
     scan_filter = {}
@@ -438,29 +490,32 @@ if __name__ == "__main__":
 
     args = getResolvedOptions(
         sys.argv,
-        ["APPLICANT_TABLE", "APPLICATION_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"],
+        ["APPLICANT_TABLE", "APPLICATION_TABLE", "CLINICS_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"],
     )
     logger.info(f"Received arguments: {args}")
 
     APPLICANT_TABLE_NAME = args.get("APPLICANT_TABLE")
-    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
+    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"].strip()
+    CLINICS_TABLE_NAME = args.get("CLINICS_TABLE")
     MIGRATIONS = args["MIGRATIONS"]
     AWS_REGION = args["AWS_REGION"]
     DRY_RUN = args["DRY_RUN"]
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
     VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
-    DB_ITEM_REFRESH_SUBMIGRATIONS = [
+    REWRITE_DB_ITEMS_SUBMIGRATIONS = [
         "rewrite_applicant_records",
         "rewrite_application_root_records",
         "rewrite_application_nonroot_records",
+        "rewrite_clinic_records",
     ]
 
     # Stripping the table names to avoid issues with extra spaces in the input parameters
     if APPLICANT_TABLE_NAME:
         APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
 
-    APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
+    if CLINICS_TABLE_NAME:
+        CLINICS_TABLE_NAME = CLINICS_TABLE_NAME.strip()
 
     # Converting MIGRATIONS to a list of migration names,
     # in case there are multiple migrations to run
@@ -474,7 +529,8 @@ if __name__ == "__main__":
 
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
-        if migration not in VALID_MIGRATIONS:
+        # For testing purposes, we can run the script with a single sub-migration
+        if migration not in VALID_MIGRATIONS or migration not in REWRITE_DB_ITEMS_SUBMIGRATIONS:
             logger.info(f"Invalid migration name '{migration}' provided in MIGRATIONS parameter.")
             logger.info(f"Valid migration names are: {VALID_MIGRATIONS}")
             sys.exit(1)
@@ -485,11 +541,16 @@ if __name__ == "__main__":
                 logger.error("APPLICANT_TABLE parameter is required for applicant migration.")
                 sys.exit(1)
 
+        if migration == "rewrite_db_items":
+            if not CLINICS_TABLE_NAME:
+                logger.error("CLINICS_TABLE parameter is required for rewrite_db_items migration.")
+                sys.exit(1)
+
     # In case of "rewrite_db_items" migration, it will be replaced with the list of sub-migrations
     # for refreshing different types of items (it's better to do it after validation)
     if "rewrite_db_items" in MIGRATIONS:
         MIGRATIONS.pop(MIGRATIONS.index(migration))
-        MIGRATIONS.extend(DB_ITEM_REFRESH_SUBMIGRATIONS)
+        MIGRATIONS.extend(REWRITE_DB_ITEMS_SUBMIGRATIONS)
 
     logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={dry_run})")
     # This will be used only for logging
@@ -503,6 +564,7 @@ if __name__ == "__main__":
         data_migration(
             APPLICANT_TABLE_NAME,
             APPLICATION_TABLE_NAME,
+            CLINICS_TABLE_NAME,
             AWS_REGION,
             dry_run,
             dynamodb=None,

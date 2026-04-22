@@ -3,7 +3,7 @@
 
 import re
 import sys
-from typing import Dict, Set
+from typing import Dict
 
 
 def extract_ts_enums(filepath: str) -> Dict[str, Dict[str, str]]:

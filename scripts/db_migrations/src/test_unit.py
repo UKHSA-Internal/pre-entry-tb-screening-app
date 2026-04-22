@@ -4,8 +4,6 @@ Unit tests for migrations.py.
 All DynamoDB calls are mocked via unittest.mock — no Docker / network required.
 """
 
-import sys
-import types
 from unittest.mock import MagicMock, patch
 
 import pytest
