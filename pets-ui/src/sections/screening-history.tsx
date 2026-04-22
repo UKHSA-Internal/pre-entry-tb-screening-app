@@ -193,40 +193,56 @@ const ScreeningHistory = () => {
     (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
   );
 
-  const applicationTableInfo = applicationsListData.map((application) => {
-    let textOverride = undefined;
-    let classOverride = undefined;
-    if (
-      application.applicationStatus !== ApplicationStatus.CANCELLED &&
-      application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
-      application.expiryDate &&
-      application.expiryDate.day.length > 0 &&
-      application.expiryDate.month.length > 0 &&
-      application.expiryDate.year.length > 0 &&
-      isDateInThePast(
-        application.expiryDate.day,
-        application.expiryDate.month,
-        application.expiryDate.year,
-      )
-    ) {
-      textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
-      classOverride = "govuk-tag govuk-tag--grey";
-    }
+  const applicationTableInfo = applicationsListData
+    .sort((a, b) => {
+      if (
+        a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        b.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return -1;
+      } else if (
+        b.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        a.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+    .map((application) => {
+      let textOverride = undefined;
+      let classOverride = undefined;
+      if (
+        application.applicationStatus !== ApplicationStatus.CANCELLED &&
+        application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
+        application.expiryDate &&
+        application.expiryDate.day.length > 0 &&
+        application.expiryDate.month.length > 0 &&
+        application.expiryDate.year.length > 0 &&
+        isDateInThePast(
+          application.expiryDate.day,
+          application.expiryDate.month,
+          application.expiryDate.year,
+        )
+      ) {
+        textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
+        classOverride = "govuk-tag govuk-tag--grey";
+      }
 
-    return {
-      rowTitle: formatDateForDisplay(application.dateCreated),
-      cells: [
-        getApplicationExpiryDate(application),
-        <StatusTag
-          key={`application-${application.applicationId.slice(0, 8)}-state`}
-          status={application.applicationStatus}
-          textOverride={textOverride}
-          classOverride={classOverride}
-        />,
-        getApplicationAction(application),
-      ],
-    };
-  });
+      return {
+        rowTitle: formatDateForDisplay(application.dateCreated),
+        cells: [
+          getApplicationExpiryDate(application),
+          <StatusTag
+            key={`application-${application.applicationId.slice(0, 8)}-state`}
+            status={application.applicationStatus}
+            textOverride={textOverride}
+            classOverride={classOverride}
+          />,
+          getApplicationAction(application),
+        ],
+      };
+    });
 
   return (
     <div>
