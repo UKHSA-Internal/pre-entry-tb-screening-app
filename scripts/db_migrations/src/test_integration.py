@@ -424,3 +424,112 @@ class TestPagination:
         for i in [0, 14, 29]:
             root = _get(application_table, f"APPLICATION#{i}", "APPLICATION#ROOT")
             assert root.get("applicationStatusGroup") == "Incomplete"
+
+
+class TestRewriteClinicRecordsLive:
+    """rewrite_clinic_records migration rewrites clinicId in place (dry_run=False)."""
+
+    def test_clinic_record_still_exists_after_rewrite(self, mod, tables, dynamodb_local):
+        """Record is still present after the rewrite."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc")
+
+        _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record is not None
+
+    def test_clinic_id_value_unchanged_after_rewrite(self, mod, tables, dynamodb_local):
+        """clinicId attribute value is preserved (same value written back)."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic")
+
+        _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record["clinicId"] == "abc"
+
+    def test_extra_attributes_preserved_after_rewrite(self, mod, tables, dynamodb_local):
+        """Attributes other than clinicId are untouched after the rewrite."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic", city="London")
+
+        _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record["clinicName"] == "Test Clinic"
+        assert record["city"] == "London"
+
+    def test_statistics_rewritten_clinics_rows_incremented(self, mod, tables, dynamodb_local):
+        """rewritten_clinics_rows counter is incremented for each record."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc")
+        _seed_clinics(clinics_table, "CLINIC#xyz")
+
+        stats = _run(
+            mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["rewritten_clinics_rows"] == 2
+
+    def test_multiple_clinic_records_all_rewritten(self, mod, tables, dynamodb_local):
+        """All seeded clinic records survive the rewrite with correct clinicId."""
+        _, _, clinics_table = tables
+        clinic_ids = ["abc", "def", "ghi"]
+        for cid in clinic_ids:
+            _seed_clinics(clinics_table, f"CLINIC#{cid}")
+
+        _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        for cid in clinic_ids:
+            record = _get(clinics_table, f"CLINIC#{cid}", "CLINIC#ROOT")
+            assert record is not None
+            assert record["clinicId"] == cid
+
+
+class TestRewriteClinicRecordsDryRun:
+    """rewrite_clinic_records with dry_run=True: records unchanged, counter still incremented."""
+
+    def test_dry_run_record_still_exists(self, mod, tables, dynamodb_local):
+        """Record is not deleted during dry run."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc")
+
+        _run(mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record is not None
+
+    def test_dry_run_counter_incremented(self, mod, tables, dynamodb_local):
+        """dry_run=True → rewritten_clinics_rows is still counted."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc")
+
+        stats = _run(
+            mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["rewritten_clinics_rows"] == 1
+
+
+class TestRewriteClinicRecordsPagination:
+    """verify all clinic records are processed across multiple scan pages."""
+
+    def test_all_clinic_records_rewritten_across_pages(self, mod, tables, dynamodb_local):
+        """With >1 page of clinic records, every record's clinicId is rewritten."""
+        _, _, clinics_table = tables
+        n = 30
+
+        for i in range(n):
+            _seed_clinics(clinics_table, f"CLINIC#{i}")
+
+        stats = _run(
+            mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["rewritten_clinics_rows"] == n
+
+        for i in [0, 14, 29]:
+            record = _get(clinics_table, f"CLINIC#{i}", "CLINIC#ROOT")
+            assert record is not None, f"Clinic record {i} missing after rewrite"
+            assert record["clinicId"] == str(i)

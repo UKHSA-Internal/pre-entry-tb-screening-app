@@ -18,6 +18,7 @@ from migrations import (  # noqa: E402
     ApplicationStatusGroup,
     migrate_applicants,
     remove_original_applicants,
+    rewrite_clinic_records,
     set_application_statusgroup,
     scan_table,
     data_migration,
@@ -440,6 +441,67 @@ class TestSetApplicationStatusgroup:
             )
 
 
+class TestRewriteClinicRecords:
+    """Tests for rewrite_clinic_records."""
+
+    BASE_RECORD = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc"}
+
+    def test_dry_run_does_not_call_update_item(self):
+        """dry_run=True → update_item must not be called."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, True, stats)
+        ct.update_item.assert_not_called()
+
+    def test_dry_run_increments_rewritten_clinics_rows(self):
+        """dry_run=True → rewritten_clinics_rows still incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, True, stats)
+        assert stats["rewritten_clinics_rows"] == 1
+
+    def test_live_calls_update_item_with_correct_key(self):
+        """dry_run=False → update_item called with pk/sk key."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        ct.update_item.assert_called_once()
+        assert ct.update_item.call_args[1]["Key"] == {
+            "pk": "CLINIC#abc",
+            "sk": "CLINIC#ROOT",
+        }
+
+    def test_live_update_expression_sets_clinic_id(self):
+        """UpdateExpression rewrites clinicId field."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert "clinicId" in ct.update_item.call_args[1]["UpdateExpression"]
+
+    def test_live_expression_attribute_values_contain_clinic_id(self):
+        """ExpressionAttributeValues carries the original clinicId value."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":id"] == "abc"
+
+    def test_live_increments_rewritten_clinics_rows(self):
+        """dry_run=False → rewritten_clinics_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["rewritten_clinics_rows"] == 1
+
+    def test_client_error_is_re_raised(self):
+        """Any ClientError from update_item must propagate."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = _client_error("ProvisionedThroughputExceededException")
+        with pytest.raises(ClientError):
+            rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+
+
 class TestScanTable:
     """Paginated scan_table helper."""
 
@@ -683,6 +745,52 @@ class TestDataMigration:
                 "migrate_applicants",
             )
             mock_boto3.resource.assert_not_called()
+
+    @patch("migrations.scan_table")
+    @patch("migrations.rewrite_clinic_records")
+    @patch("migrations.time", create=True)
+    def test_rewrite_clinic_records_is_called(self, mock_time, mock_rewrite, mock_scan):
+        """rewrite_clinic_records called per row when migration='rewrite_clinic_records'."""
+        mock_time.time.return_value = 0
+        mock_rewrite.__name__ = "rewrite_clinic_records"
+        rows = [{"pk": "CLINIC#1", "sk": "CLINIC#ROOT", "clinicId": "1"}]
+        mock_scan.return_value = (rows, None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        data_migration(
+            "applicant-table",
+            "application-table",
+            "clinics-table",
+            "eu-west-2",
+            False,
+            self._make_dynamodb(at, apt, ct),
+            "rewrite_clinic_records",
+        )
+        assert mock_rewrite.call_count == 1
+
+    @patch("migrations.scan_table")
+    @patch("migrations.rewrite_clinic_records")
+    @patch("migrations.remove_original_applicants")
+    @patch("migrations.time", create=True)
+    def test_rewrite_clinic_records_never_calls_remove(
+        self, mock_time, mock_remove, mock_rewrite, mock_scan
+    ):
+        """rewrite_clinic_records migration → remove_original_applicants never called."""
+        mock_time.time.return_value = 0
+        mock_rewrite.__name__ = "rewrite_clinic_records"
+        mock_scan.return_value = ([], None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        data_migration(
+            "applicant-table",
+            "application-table",
+            "clinics-table",
+            "eu-west-2",
+            False,
+            self._make_dynamodb(at, apt, ct),
+            "rewrite_clinic_records",
+        )
+        mock_remove.assert_not_called()
 
     @patch("migrations.scan_table")
     @patch("migrations.migrate_applicants")
