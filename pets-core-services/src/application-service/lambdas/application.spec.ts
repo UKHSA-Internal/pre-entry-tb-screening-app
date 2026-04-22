@@ -747,8 +747,8 @@ describe("Test for Application Lambda", () => {
       // Arrange
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
-        resource: "/dashboard-applications/",
-        path: `/dashboard-applications/`,
+        resource: "/application/dashboard",
+        path: `/application/dashboard`,
         httpMethod: "GET",
       };
       // Act
@@ -766,8 +766,8 @@ describe("Test for Application Lambda", () => {
           ...mockAPIGwEvent.requestContext,
           authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
         },
-        resource: "/dashboard-applications/",
-        path: `/dashboard-applications/`,
+        resource: "/application/dashboard",
+        path: `/application/dashboard`,
         httpMethod: "GET",
       };
       // Act

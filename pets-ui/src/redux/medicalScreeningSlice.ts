@@ -155,7 +155,7 @@ export const medicalScreeningSlice = createSlice({
       state.reasonXrayNotRequired = action.payload.reasonXrayNotRequired ?? "";
       state.reasonXrayNotRequiredFurtherDetails =
         action.payload.reasonXrayNotRequiredFurtherDetails ?? "";
-      state.completionDate = convertDateStrToObj(action.payload.dateCreated);
+      state.completionDate = convertDateStrToObj(action.payload.dateOfMedicalScreening);
     },
   },
 });
