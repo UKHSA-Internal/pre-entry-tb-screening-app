@@ -161,6 +161,12 @@ describe("ApplicantSearchForm", () => {
       dateCreated: "2025-01-01",
     });
 
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+      applicationStatus: "In progress",
+      clinicId: "UK/LHR/00/",
+    });
+
     await user.type(screen.getByTestId("passport-number"), "12345");
     const countryDropdown = screen.getByRole("combobox");
     await user.selectOptions(countryDropdown, "AUS");
@@ -170,7 +176,8 @@ describe("ApplicantSearchForm", () => {
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history).toHaveLength(1);
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
+    expect(mock.history).toHaveLength(2);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
 
     expect(store.getState().applicationsList).toMatchObject([

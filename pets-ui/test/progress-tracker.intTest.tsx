@@ -1,8 +1,10 @@
-import { screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
 import React from "react";
 import { Mock } from "vitest";
 
+import { petsApi } from "@/api/api";
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
 import ProgressTrackerPage from "@/pages/progress-tracker";
 import { ApplicationStatus, PositiveOrNegative, TaskStatus, YesOrNo } from "@/utils/enums";
@@ -37,6 +39,16 @@ vi.mock("react-helmet-async", () => ({
   Helmet: () => <>{}</>,
   HelmetProvider: () => <>{}</>,
 }));
+
+let mock: MockAdapter;
+
+beforeEach(() => {
+  mock = new MockAdapter(petsApi);
+  useNavigateMock.mockClear();
+});
+afterEach(() => {
+  cleanup();
+});
 
 const user = userEvent.setup();
 
@@ -193,7 +205,7 @@ const tbCertSlice = {
 const incompleteState = {
   application: {
     applicationStatus: ApplicationStatus.IN_PROGRESS,
-    applicationId: "abc-123",
+    applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
     dateCreated: { year: "2020", month: "12", day: "31" },
     clinicId: "clinic-001",
   },
@@ -243,7 +255,7 @@ const incompleteState = {
 const completeState = {
   application: {
     applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
-    applicationId: "abc-123",
+    applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
     dateCreated: { year: "2020", month: "12", day: "31" },
     clinicId: "clinic-001",
     expiryDate: {
@@ -304,7 +316,7 @@ const completeState = {
 const cancelledImmediatelyState = {
   application: {
     applicationStatus: ApplicationStatus.CANCELLED,
-    applicationId: "abc-123",
+    applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
     clinicId: "clinic-001",
@@ -354,7 +366,7 @@ const cancelledImmediatelyState = {
 const cancelledAfterSputumState = {
   application: {
     applicationStatus: ApplicationStatus.CANCELLED,
-    applicationId: "abc-123",
+    applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
     dateCreated: { year: "2020", month: "12", day: "31" },
     cancellationReason: "the visa applicant ran away",
     cancellationFurtherInfo: "They ran really fast.",
@@ -884,6 +896,13 @@ describe("ProgressTrackerPage", () => {
   });
 
   it("correctly updates state and navigates user to screening history when link at bottom of page is clicked", async () => {
+    mock.onGet("application/d3a51776-c1f5-4548-b317-bcc5152229dc").reply(200, {
+      applicationStatus: ApplicationStatus.IN_PROGRESS,
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
+      dateCreated: { year: "2020", month: "12", day: "31" },
+      clinicId: "clinic-001",
+    });
+
     const { store } = renderWithProviders(
       <ApplicantPhotoProvider>
         <ProgressTrackerPage />
@@ -899,7 +918,7 @@ describe("ProgressTrackerPage", () => {
     expect(store.getState().applicationsList).toStrictEqual([
       {
         applicationStatus: ApplicationStatus.IN_PROGRESS,
-        applicationId: "abc-123",
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
         dateCreated: { year: "2020", month: "12", day: "31" },
         clinicId: "clinic-001",
       },
@@ -908,6 +927,14 @@ describe("ProgressTrackerPage", () => {
   });
 
   it("correctly updates state and navigates user to screening history when link in cancellation info box is clicked", async () => {
+    mock.onGet("application/d3a51776-c1f5-4548-b317-bcc5152229dc").reply(200, {
+      applicationStatus: ApplicationStatus.CANCELLED,
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
+      dateCreated: { year: "2020", month: "12", day: "31" },
+      clinicId: "clinic-001",
+      cancellationReason: "the visa applicant ran away",
+    });
+
     const { store } = renderWithProviders(
       <ApplicantPhotoProvider>
         <ProgressTrackerPage />
@@ -923,7 +950,7 @@ describe("ProgressTrackerPage", () => {
     expect(store.getState().applicationsList).toStrictEqual([
       {
         applicationStatus: ApplicationStatus.CANCELLED,
-        applicationId: "abc-123",
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
         dateCreated: { year: "2020", month: "12", day: "31" },
         clinicId: "clinic-001",
         cancellationReason: "the visa applicant ran away",
