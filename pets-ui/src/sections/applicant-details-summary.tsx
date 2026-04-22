@@ -73,17 +73,17 @@ const ApplicantReview = () => {
             country: applicantData.country,
             postcode: applicantData.postcode,
           });
+        }
 
-          // Upload applicant photo if it exists
-          if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
-            const fileType = applicantPhotoFile.name.split(".").pop();
-            await uploadFile(
-              applicantPhotoFile,
-              `applicant-photo.${fileType}`,
-              applicationRes.data.applicationId,
-              ImageType.Photo,
-            );
-          }
+        // Upload applicant photo if it exists
+        if (applicantData.applicantPhotoFileName && applicantPhotoFile) {
+          const fileType = applicantPhotoFile.name.split(".").pop();
+          await uploadFile(
+            applicantPhotoFile,
+            `applicant-photo.${fileType}`,
+            applicationRes.data.applicationId,
+            ImageType.Photo,
+          );
         }
 
         dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
