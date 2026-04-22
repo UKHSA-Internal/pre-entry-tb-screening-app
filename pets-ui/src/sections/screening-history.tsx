@@ -72,6 +72,8 @@ const ScreeningHistory = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
+
   useEffect(() => {
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
