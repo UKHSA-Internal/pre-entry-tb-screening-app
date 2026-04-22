@@ -509,7 +509,9 @@ class TestDataMigration:
             ct = MagicMock()
             ct.name = "clinics-table"
         dynamodb = MagicMock()
-        dynamodb.Table.side_effect = lambda name: at if name == "applicant-table" else (apt if name == "application-table" else ct)
+        dynamodb.Table.side_effect = lambda name: (
+            at if name == "applicant-table" else (apt if name == "application-table" else ct)
+        )
         return dynamodb
 
     def _reset_stats(self):
