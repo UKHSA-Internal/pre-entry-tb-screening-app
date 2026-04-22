@@ -33,14 +33,14 @@ statistics = {
     "skipped_migrated": 0,
     "migrated_applicants": 0,
     "applicants_to_remove": [],
-    # 'add_application_statusgroup':
+    # 'set_application_statusgroup':
     "skipped_updating_statusgroup": 0,
-    # Used in 'add_application_statusgroup', 'touch_application_root_records':
+    # Used in 'set_application_statusgroup', 'rewrite_application_root_records':
     "skipped_rows_not_root": 0,
     "migrated_applications": 0,
-    # 'touch_application_root_records' related:
+    # 'rewrite_application_root_records' related:
     "rewritten_applications_root_rows": 0,
-    # 'touch_applicant_records' related:
+    # 'rewrite_applicant_records' related:
     "rewritten_applicant_rows": 0,
 }
 
@@ -63,7 +63,7 @@ class ApplicationStatusGroup(Enum):
     incomplete = "Incomplete"
 
 
-def migrate_applicant(
+def migrate_applicants(
     applicant_row,
     applicant_table,
     application_table,
@@ -190,7 +190,7 @@ def remove_original_applicants(applicant_table, id_list):
                 ddb_batch.delete_item(Key=key)
 
 
-def add_application_statusgroup(
+def set_application_statusgroup(
     # application_row should always be the APPLICATION#ROOT row
     application_row,
     # applicant_table is not used in this migration function, but it's included in the parameters
@@ -248,7 +248,7 @@ def add_application_statusgroup(
     )
 
 
-def touch_applicant_records(
+def rewrite_applicant_records(
     record,
     applicant_table,
     # application_table is not used in this migration function, but it's included in the parameters
@@ -266,7 +266,7 @@ def touch_applicant_records(
     # Re-writing the same data (countryOfIssue) to trigger DynamoDB Streams
     try:
         applicant_table.update_item(
-            Key={"pk": record.pk, "sk": record.sk},
+            Key={"pk": record["pk"], "sk": record["sk"]},
             UpdateExpression=("SET countryOfIssue = :countryOfIssue"),
             ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
         )
@@ -274,10 +274,10 @@ def touch_applicant_records(
     except ClientError:
         raise
 
-    logger.debug(f"Updated the application with pk: {record.pk}")
+    logger.debug(f"Updated the application with pk: {record['pk']}")
 
 
-def touch_application_root_records(
+def rewrite_application_root_records(
     record,
     # applicant_table is not used in this migration function, but it's included in the parameters
     # to keep the same function signature for any migration functions and for future flexibility
@@ -286,6 +286,7 @@ def touch_application_root_records(
     dry_run,
     statistics,
 ):
+    statistics["all_applications"] += 1
     statistics["rewritten_applications_root_rows"] += 1
 
     if dry_run:
@@ -295,15 +296,15 @@ def touch_application_root_records(
     # Re-writing the same data (applicationId) to trigger DynamoDB Streams
     try:
         application_table.update_item(
-            Key={"pk": record.pk, "sk": record.sk},
-            UpdateExpression=("SET applicationId = :applicationID"),
-            ExpressionAttributeValues={":applicationID": record["applicationId"]},
+            Key={"pk": record["pk"], "sk": record["sk"]},
+            UpdateExpression=("SET dateCreated = :date"),
+            ExpressionAttributeValues={":date": record["dateCreated"]},
         )
 
     except ClientError:
         raise
 
-    logger.debug(f"Updated the application with pk: {record.pk}")
+    logger.debug(f"Updated the application with pk: {record['pk']}")
 
 
 def scan_table(table, last_evaluated_key=None, scan_filter={}):  # noqa: B006
@@ -345,9 +346,9 @@ def data_migration(
         application_table
         if migration
         in (
-            "application_statusgroup",
-            "touch_application_root_records",
-            "touch_application_other_records",
+            "set_application_statusgroup",
+            "rewrite_application_root_records",
+            "rewrite_application_nonroot_records",
         )
         else applicant_table
     )
@@ -357,27 +358,23 @@ def data_migration(
 
     # Setting up the scan filter based on the migration type,
     # to optimize the scanning process and only get relevant records.
-    # For application_statusgroup migration we only want to scan the APPLICATION#ROOT rows
-    if migration in ("application_statusgroup", "touch_application_root_records"):
+    # For set_application_statusgroup migration we only want to scan the APPLICATION#ROOT rows
+    if migration in ("set_application_statusgroup", "rewrite_application_root_records"):
         scan_filter = {
             "FilterExpression": "sk = :sk",
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
-    elif migration == "touch_application_other_records":
+    elif migration == "rewrite_application_nonroot_records":
         scan_filter = {
             "FilterExpression": "sk <> :sk",
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
 
     # Selecting the migration function based on the migration type
-    if migration == "applicant_migration":
-        func = migrate_applicant
-    elif migration == "application_statusgroup":
-        func = add_application_statusgroup
-    elif migration == "touch_application_other_records":
+    if migration == "rewrite_application_nonroot_records":
         # Reusing the ohter function as the logic is the same,
         # just different filter for scanning
-        func = touch_application_root_records
+        func = rewrite_application_root_records
     else:
         # For functions with the exact same name as migration,
         # we can directly get the function by its name using getattr
@@ -412,15 +409,15 @@ def data_migration(
             )
 
     # Post-migration cleanup actions, e.g. removing old applicant records after migration
-    if migration == "applicant_migration" and not dry_run:
+    if migration == "migrate_applicants" and not dry_run:
         logger.info("Now removing the original applicant records...")
         remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
         logger.info(f"Removed {len(statistics['applicants_to_remove'])} original applicant records")
 
-    # If it's not applicant_migration, then remove applicants_to_remove
+    # If it's not migrate_applicants, then remove applicants_to_remove
     # (in case that migration was run before) from statistics
     # as it's not relevant in the logs for this migration
-    if migration != "applicant_migration":
+    if migration != "migrate_applicants":
         statistics["applicants_to_remove"] = []
 
     # Printing the final statistics after the migration is completed
@@ -452,11 +449,11 @@ if __name__ == "__main__":
     DRY_RUN = args["DRY_RUN"]
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
-    VALID_MIGRATIONS = ["applicant_migration", "application_statusgroup", "db_items_refresh"]
+    VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "refresh_db_items"]
     DB_ITEM_REFRESH_SUBMIGRATIONS = [
-        "touch_applicant_records",
-        "touch_application_root_records",
-        "touch_application_other_records",
+        "rewrite_applicant_records",
+        "rewrite_application_root_records",
+        "rewrite_application_nonroot_records",
     ]
 
     # Stripping the table names to avoid issues with extra spaces in the input parameters
@@ -483,15 +480,16 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # Do some extra things for different migration types if needed
-        if migration in ("applicant_migration", "db_items_refresh"):
+        if migration in ("migrate_applicants", "refresh_db_items"):
             if not APPLICANT_TABLE_NAME:
                 logger.error("APPLICANT_TABLE parameter is required for applicant migration.")
                 sys.exit(1)
 
-    # In case of "db_items_refresh" migration, it will be replaced with the list of sub-migrations
+    # In case of "refresh_db_items" migration, it will be replaced with the list of sub-migrations
     # for refreshing different types of items (it's better to do it after validation)
-    if "db_items_refresh" in MIGRATIONS:
-        MIGRATIONS.pop(migration).extend(DB_ITEM_REFRESH_SUBMIGRATIONS)
+    if "refresh_db_items" in MIGRATIONS:
+        MIGRATIONS.pop(MIGRATIONS.index(migration))
+        MIGRATIONS.extend(DB_ITEM_REFRESH_SUBMIGRATIONS)
 
     logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={dry_run})")
     # This will be used only for logging
