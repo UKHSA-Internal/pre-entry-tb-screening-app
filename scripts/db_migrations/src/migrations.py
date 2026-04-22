@@ -449,7 +449,7 @@ if __name__ == "__main__":
     DRY_RUN = args["DRY_RUN"]
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
-    VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "refresh_db_items"]
+    VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
     DB_ITEM_REFRESH_SUBMIGRATIONS = [
         "rewrite_applicant_records",
         "rewrite_application_root_records",
@@ -480,14 +480,14 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # Do some extra things for different migration types if needed
-        if migration in ("migrate_applicants", "refresh_db_items"):
+        if migration in ("migrate_applicants", "rewrite_db_items"):
             if not APPLICANT_TABLE_NAME:
                 logger.error("APPLICANT_TABLE parameter is required for applicant migration.")
                 sys.exit(1)
 
-    # In case of "refresh_db_items" migration, it will be replaced with the list of sub-migrations
+    # In case of "rewrite_db_items" migration, it will be replaced with the list of sub-migrations
     # for refreshing different types of items (it's better to do it after validation)
-    if "refresh_db_items" in MIGRATIONS:
+    if "rewrite_db_items" in MIGRATIONS:
         MIGRATIONS.pop(MIGRATIONS.index(migration))
         MIGRATIONS.extend(DB_ITEM_REFRESH_SUBMIGRATIONS)
 

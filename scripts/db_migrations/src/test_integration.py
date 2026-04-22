@@ -1,5 +1,5 @@
 """
-Integration tests for migration_script.py against DynamoDB Local.
+Integration tests for migrations.py against DynamoDB Local.
 """
 
 import importlib
@@ -7,29 +7,15 @@ import sys
 
 import pytest
 
-from conftest import _stub_awsglue, APPLICANT_TABLE, APPLICATION_TABLE
-
-
-def make_statistics():
-    return {
-        "all_applicants": 0,
-        "all_applications": 0,
-        "skipped_missing": 0,
-        "skipped_migrated": 0,
-        "skipped_rows_not_root": 0,
-        "skipped_updating_statusgroup": 0,
-        "migrated_applicants": 0,
-        "migrated_applications": 0,
-        "applicants_to_remove": [],
-    }
+from conftest import APPLICANT_TABLE, APPLICATION_TABLE, _stub_awsglue, make_statistics
 
 
 @pytest.fixture()
 def migration_module():
-    """Fresh import of migration_script for every test."""
+    """Fresh import of migrations for every test."""
     _stub_awsglue(dry_run=False)
-    sys.modules.pop("migration_script", None)
-    mod = importlib.import_module("migration_script")
+    sys.modules.pop("migrations", None)
+    mod = importlib.import_module("migrations")
     mod.statistics = make_statistics()
     return mod
 
@@ -70,7 +56,7 @@ def _get(table, pk, sk):
     return table.get_item(Key={"pk": pk, "sk": sk}).get("Item")
 
 
-def _run(mod, dry_run, dynamodb_local, migration="applicant_migration"):
+def _run(mod, dry_run, dynamodb_local, migration="migrate_applicants"):
     """Call data_migration and return the module-level statistics dict."""
     mod.statistics = make_statistics()
     mod.data_migration(
@@ -184,7 +170,7 @@ class TestApplicantMigrationLive:
 
 
 class TestApplicantMigrationDryRun:
-    """applicant_migration with dry_run=True: no writes, counts correct."""
+    """migrate_applicants with dry_run=True: no writes, counts correct."""
 
     def test_no_new_record_written(self, mod, tables, dynamodb_local):
         """dry_run=True → passport-PK record must not be created."""
@@ -274,7 +260,7 @@ class TestApplicantMigrationSkips:
 
 
 class TestApplicationStatusgroupLive:
-    """application_statusgroup migration writes applicationStatusGroup correctly."""
+    """set_application_statusgroup migration writes applicationStatusGroup correctly."""
 
     @pytest.mark.parametrize(
         "app_status,expected_group",
@@ -296,7 +282,7 @@ class TestApplicationStatusgroupLive:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
@@ -320,7 +306,7 @@ class TestApplicationStatusgroupLive:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         # Only the root row should have been processed
@@ -335,7 +321,7 @@ class TestApplicationStatusgroupLive:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         assert stats["migrated_applications"] == 1
@@ -343,7 +329,7 @@ class TestApplicationStatusgroupLive:
 
 
 class TestApplicationStatusgroupDryRun:
-    """application_statusgroup with dry_run=True."""
+    """set_application_statusgroup with dry_run=True."""
 
     def test_statusgroup_not_written(self, mod, tables, dynamodb_local):
         """dry_run=True → applicationStatusGroup must NOT be written."""
@@ -354,7 +340,7 @@ class TestApplicationStatusgroupDryRun:
             mod,
             dry_run=True,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         root = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
@@ -369,7 +355,7 @@ class TestApplicationStatusgroupDryRun:
             mod,
             dry_run=True,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         assert stats["migrated_applications"] == 1
@@ -415,7 +401,7 @@ class TestPagination:
             mod,
             dry_run=False,
             dynamodb_local=dynamodb_local,
-            migration="application_statusgroup",
+            migration="set_application_statusgroup",
         )
 
         assert stats["migrated_applications"] == n

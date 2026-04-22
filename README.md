@@ -272,7 +272,7 @@ Kindly check `pets-core-services/src/applicant-service/fixtures/applicants.ts` f
 
 ## Workflows to trigger DB migrations
 
-There are some migrations that can be applied to Applicant or/and Application tables. More details about them [in this file](scripts/applicant_migration/README.md)
+There are some migrations that can be applied to Applicant or/and Application tables. More details about them [in this file](scripts/db_migrations/README.md)
 
 ## Automated dependency updates
 

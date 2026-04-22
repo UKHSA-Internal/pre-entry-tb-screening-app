@@ -5,7 +5,7 @@ Requires:
   pip install pytest pytest-docker boto3
 
 DynamoDB Local is started automatically via pytest-docker using
-docker-compose.yml in this directory. Tables are recreated before
+docker-compose-test.yml in this directory. Tables are recreated before
 each test so every test starts with a clean, predictable state.
 """
 
@@ -17,6 +17,8 @@ import boto3
 import pytest
 from os import getenv, path
 from botocore.exceptions import ClientError
+
+from migrations import statistics
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -54,7 +56,7 @@ def _stub_awsglue(dry_run: bool = False):
 
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
-    return str(path.join(pytestconfig.rootdir, "docker-compose.yml"))
+    return str(path.join(pytestconfig.rootdir, "docker-compose-test.yml"))
 
 
 # ---------------------------------------------------------------------------
@@ -152,10 +154,4 @@ def _create_table(dynamodb, table_name: str):
 
 
 def make_statistics():
-    return {
-        "all_applicants": 0,
-        "skipped_missing": 0,
-        "skipped_migrated": 0,
-        "migrated_applicants": 0,
-        "applicants_to_remove": [],
-    }
+    return statistics.copy()

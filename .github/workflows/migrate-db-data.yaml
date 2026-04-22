@@ -20,16 +20,11 @@ on:
         type: choice
         options: ["false", "true"]
       migrations:
-        description: "Select which data migration to run (Applicant migration or adding 'applicantStatusGroup' to Applications or both)"
+        description: "Select which data migration to run (check README.md for details)"
         required: true
-        default: "application_statusgroup"
+        default: "rewrite_db_items"
         type: choice
-        options:
-          [
-            "applicant_migration",
-            "application_statusgroup",
-            "applicant_migration,application_statusgroup",
-          ]
+        options: ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
 
 jobs:
   migrate_applicant_data:

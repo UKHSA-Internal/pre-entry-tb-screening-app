@@ -409,7 +409,7 @@ jobs:
 
     env:
       MIGRATION_SCRIPT_S3_BUCKET: ${{ vars.MIGRATION_SCRIPT_S3_BUCKET }}
-      MIGRATION_FILE: "migration_script.py"
+      MIGRATION_FILE: "migrations.py"
 
     steps:
       - name: Configure AWS credentials
@@ -423,7 +423,7 @@ jobs:
 
       - name: Upload Spec to s3
         run: aws s3 cp ${{ env.MIGRATION_FILE }} s3://${{ env.MIGRATION_SCRIPT_S3_BUCKET }}/ --sse aws:kms --sse-kms-key-id ${{ vars.SSE_KEY_ID }}
-        working-directory: "./scripts/applicant_migration/src/"
+        working-directory: "./scripts/db_migrations/src/"
 
   upload-onboarding-script:
     name: Copy clinics onboarding script to S3 bucket

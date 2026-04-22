@@ -1,5 +1,5 @@
 [project]
-name = "applicant_migration"
+name = "db_migrations"
 version = "0.1.0"
 description = "Applicant table migration, application table update"
 authors = ["UKHSA"]
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-p no:warnings -p no:cacheprovider --cov=migration_script --cov-report=term-missing"
+addopts = "-p no:warnings -p no:cacheprovider --cov=migrations --cov-report=term-missing"
 testpaths = ["src"]
 pythonpath = ["src"]
 filterwarnings = [
