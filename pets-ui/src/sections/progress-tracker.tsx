@@ -208,7 +208,7 @@ const ProgressTracker = () => {
     setIsLoading(true);
     const updatedApplicationsList = upsertAppIntoAppList(currentApplication, applicationsList);
     dispatch(setApplicationsListDetails(updatedApplicationsList));
-    const applicationsOrderedByDate = updatedApplicationsList.sort((a, b) => {
+    updatedApplicationsList.sort((a, b) => {
       if (
         a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
         b.applicationStatus !== ApplicationStatus.IN_PROGRESS
@@ -233,7 +233,7 @@ const ProgressTracker = () => {
       return dateB - dateA;
     });
 
-    for (const application of applicationsOrderedByDate) {
+    for (const application of updatedApplicationsList) {
       const applicationRes = await getApplication(application.applicationId);
       if (applicationRes.data.applicantPhotoUrl) {
         await handleApplicantPhoto(

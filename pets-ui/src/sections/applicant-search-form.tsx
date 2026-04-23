@@ -102,7 +102,7 @@ const ApplicantSearchForm = () => {
     }
 
     try {
-      const applicationsOrderedByDate = applicantRes.data.applications.sort((a, b) => {
+      applicantRes.data.applications.sort((a, b) => {
         if (
           a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
           b.applicationStatus !== ApplicationStatus.IN_PROGRESS
@@ -119,7 +119,7 @@ const ApplicantSearchForm = () => {
         return dateB - dateA;
       });
 
-      for (const application of applicationsOrderedByDate) {
+      for (const application of applicantRes.data.applications) {
         const applicationRes = await getApplication(application.applicationId);
         if (applicationRes.data.applicantPhotoUrl) {
           await handleApplicantPhoto(
