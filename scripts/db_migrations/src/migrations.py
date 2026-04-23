@@ -537,8 +537,7 @@ if __name__ == "__main__":
 
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
-        # For testing purposes, we can run the script with a single sub-migration
-        if migration not in VALID_MIGRATIONS or migration not in REWRITE_DB_ITEMS_SUBMIGRATIONS:
+        if migration not in VALID_MIGRATIONS:
             logger.info(f"Invalid migration name '{migration}' provided in MIGRATIONS parameter.")
             logger.info(f"Valid migration names are: {VALID_MIGRATIONS}")
             sys.exit(1)
