@@ -34,15 +34,16 @@ import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { handleApplicantPhoto } from "@/utils/photo-helpers";
 import { formRegex } from "@/utils/records";
 
-import { getApplicants } from "../api/api";
+import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
-  const { setApplicantPhotoUrl } = useApplicantPhoto();
+  const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,7 +89,6 @@ const ApplicantSearchForm = () => {
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
       dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
-      navigate("/screening-history");
     } catch (error) {
       if (axios.isAxiosError(error) && error.status == 404) {
         await fetchClinic(dispatch);
@@ -99,6 +99,43 @@ const ApplicantSearchForm = () => {
         navigate("/sorry-there-is-problem-with-service");
         return;
       }
+    }
+
+    try {
+      applicantRes.data.applications.sort((a, b) => {
+        if (
+          a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+          b.applicationStatus !== ApplicationStatus.IN_PROGRESS
+        ) {
+          return -1;
+        } else if (
+          b.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+          a.applicationStatus !== ApplicationStatus.IN_PROGRESS
+        ) {
+          return 1;
+        }
+        const dateA = new Date(a.dateCreated).getTime();
+        const dateB = new Date(b.dateCreated).getTime();
+        return dateB - dateA;
+      });
+
+      for (const application of applicantRes.data.applications) {
+        const applicationRes = await getApplication(application.applicationId);
+        if (applicationRes.data.applicantPhotoUrl) {
+          await handleApplicantPhoto(
+            applicationRes.data.applicantPhotoUrl,
+            dispatch,
+            setApplicantPhotoFile,
+            setApplicantPhotoUrl,
+          );
+          break;
+        }
+      }
+      navigate("/screening-history");
+    } catch (error) {
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
     }
   };
 

@@ -153,12 +153,59 @@ describe("ApplicantSearchForm", () => {
       country: "Australia",
       applications: [
         {
-          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
-          applicationStatus: "In progress",
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a63",
+          applicationStatus: "Certificate Available",
           clinicId: "UK/LHR/00/",
+          dateCreated: "2026-01-01",
+        },
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicationStatus: "In Progress",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "2026-01-01",
+        },
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a64",
+          applicationStatus: "Cancelled",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "2020-01-01",
+        },
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a61",
+          applicationStatus: "In Progress",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "2021-01-01",
         },
       ],
       dateCreated: "2025-01-01",
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a61").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a61",
+      applicationStatus: "In Progress",
+      clinicId: "UK/LHR/00/",
+      dateCreated: "2021-01-01",
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+      applicationStatus: "In Progress",
+      clinicId: "UK/LHR/00/",
+      dateCreated: "2026-01-01",
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a63").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a63",
+      applicationStatus: "Certificate Available",
+      clinicId: "UK/LHR/00/",
+      dateCreated: "2026-01-01",
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a64").reply(200, {
+      applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a64",
+      applicationStatus: "Cancelled",
+      clinicId: "UK/LHR/00/",
+      dateCreated: "2020-01-01",
     });
 
     await user.type(screen.getByTestId("passport-number"), "12345");
@@ -170,14 +217,93 @@ describe("ApplicantSearchForm", () => {
 
     await user.click(screen.getByRole("button"));
     expect(mock.history.get[0].url).toEqual("/applicant/search");
-    expect(mock.history).toHaveLength(1);
+    expect(mock.history.get[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
+    expect(mock.history.get[2].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a61");
+    expect(mock.history.get[3].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a63");
+    expect(mock.history.get[4].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a64");
+    expect(mock.history).toHaveLength(5);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
 
     expect(store.getState().applicationsList).toMatchObject([
       {
-        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
-        applicationStatus: "In progress",
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a63",
+        applicationStatus: "Certificate Available",
         clinicId: "UK/LHR/00/",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2026",
+        },
+        dateUpdated: {
+          day: "",
+          month: "",
+          year: "",
+        },
+        expiryDate: {
+          day: "",
+          month: "",
+          year: "",
+        },
+      },
+      {
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+        applicationStatus: "In Progress",
+        clinicId: "UK/LHR/00/",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2026",
+        },
+        dateUpdated: {
+          day: "",
+          month: "",
+          year: "",
+        },
+        expiryDate: {
+          day: "",
+          month: "",
+          year: "",
+        },
+      },
+      {
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a64",
+        applicationStatus: "Cancelled",
+        clinicId: "UK/LHR/00/",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2020",
+        },
+        dateUpdated: {
+          day: "",
+          month: "",
+          year: "",
+        },
+        expiryDate: {
+          day: "",
+          month: "",
+          year: "",
+        },
+      },
+      {
+        applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a61",
+        applicationStatus: "In Progress",
+        clinicId: "UK/LHR/00/",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2021",
+        },
+        dateUpdated: {
+          day: "",
+          month: "",
+          year: "",
+        },
+        expiryDate: {
+          day: "",
+          month: "",
+          year: "",
+        },
       },
     ]);
   });
