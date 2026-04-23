@@ -209,7 +209,32 @@ const incompleteState = {
     dateCreated: { year: "2020", month: "12", day: "31" },
     clinicId: "clinic-001",
   },
-  applicationsList: [],
+  applicationsList: [
+    {
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d3",
+      applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+      clinicId: "clinic-001",
+      dateCreated: { year: "2026", month: "01", day: "01" },
+    },
+    {
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
+      applicationStatus: ApplicationStatus.IN_PROGRESS,
+      clinicId: "clinic-001",
+      dateCreated: { year: "2020", month: "12", day: "31" },
+    },
+    {
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d2",
+      applicationStatus: ApplicationStatus.CANCELLED,
+      clinicId: "clinic-001",
+      dateCreated: { year: "2020", month: "01", day: "01" },
+    },
+    {
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d1",
+      applicationStatus: ApplicationStatus.IN_PROGRESS,
+      clinicId: "clinic-001",
+      dateCreated: { year: "2021", month: "01", day: "01" },
+    },
+  ],
   applicant: {
     status: TaskStatus.NOT_YET_STARTED,
     fullName: "Reginald Backwaters",
@@ -903,6 +928,27 @@ describe("ProgressTrackerPage", () => {
       clinicId: "clinic-001",
     });
 
+    mock.onGet("application/d3a51776-c1f5-4548-b317-bcc5152229d1").reply(200, {
+      applicationStatus: ApplicationStatus.IN_PROGRESS,
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d1",
+      dateCreated: { year: "2021", month: "01", day: "01" },
+      clinicId: "clinic-001",
+    });
+
+    mock.onGet("application/d3a51776-c1f5-4548-b317-bcc5152229d2").reply(200, {
+      applicationStatus: ApplicationStatus.CANCELLED,
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d2",
+      dateCreated: { year: "2020", month: "01", day: "01" },
+      clinicId: "clinic-001",
+    });
+
+    mock.onGet("application/d3a51776-c1f5-4548-b317-bcc5152229d3").reply(200, {
+      applicationStatus: ApplicationStatus.CERTIFICATE_AVAILABLE,
+      applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d3",
+      dateCreated: { year: "2026", month: "01", day: "01" },
+      clinicId: "clinic-001",
+    });
+
     const { store } = renderWithProviders(
       <ApplicantPhotoProvider>
         <ProgressTrackerPage />
@@ -917,10 +963,44 @@ describe("ProgressTrackerPage", () => {
 
     expect(store.getState().applicationsList).toStrictEqual([
       {
-        applicationStatus: ApplicationStatus.IN_PROGRESS,
-        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
-        dateCreated: { year: "2020", month: "12", day: "31" },
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d3",
+        applicationStatus: "Certificate Available",
         clinicId: "clinic-001",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2026",
+        },
+      },
+      {
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229dc",
+        applicationStatus: "In Progress",
+        clinicId: "clinic-001",
+        dateCreated: {
+          day: "31",
+          month: "12",
+          year: "2020",
+        },
+      },
+      {
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d2",
+        applicationStatus: "Cancelled",
+        clinicId: "clinic-001",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2020",
+        },
+      },
+      {
+        applicationId: "d3a51776-c1f5-4548-b317-bcc5152229d1",
+        applicationStatus: "In Progress",
+        clinicId: "clinic-001",
+        dateCreated: {
+          day: "01",
+          month: "01",
+          year: "2021",
+        },
       },
     ]);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
