@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
-import { ApplicationStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { DynamoBatchLoader } from "../helpers/dynamo-batch-util";
 import { DashboardApplication } from "./dashboard-applications";
 
@@ -37,60 +37,54 @@ describe("Tests for Applications Model", () => {
       Items: [
         {
           applicationId: applicationId,
-          passportNumber: passportNumber,
-          countryOfIssue: countryOfIssue,
           applicantId: applicantId,
           clinicId: clinicId,
           dateCreated: new Date("2025-02-07"),
           applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
         },
       ],
     } as unknown as QueryCommandOutput);
 
     //  Mock batch loader
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
-      new Map([[applicantId, { applicantId: "COUNTRY#IND#PASSPORT#Test", fullName: "John Doe" }]]),
+      new Map([
+        [
+          applicantId,
+          {
+            applicantId: "COUNTRY#IND#PASSPORT#Test",
+            fullName: "John Doe",
+            passportNumber: passportNumber,
+            countryOfIssue: countryOfIssue,
+          },
+        ],
+      ]),
     );
 
     const result = await DashboardApplication.getByClinicId(clinicId, 100);
 
-    expect(result.applications).toHaveLength(1);
+    expect(result).toHaveLength(1);
 
-    expect(result.applications[0].applicantName).toBe("John Doe");
-
-    expect(result.cursor).toBeNull();
+    expect(result[0].applicantName).toBe("John Doe");
 
     // Act
     const applications = await DashboardApplication.getByClinicId(clinicId, 100);
 
     // Assert
-    expect(applications.applications[0]).toMatchObject({
-      applicantId: "COUNTRY#IND#PASSPORT#Test",
-      applicantName: "John Doe",
-      applicationId: "test=app-id",
-      applicationStatus: "In Progress",
-      clinicId: "test-clinic-id",
-      countryOfIssue: "IND",
-      dateCreated: new Date("2025-02-07"),
-      passportNumber: "Test",
-    });
+    expect(applications).toMatchObject([
+      {
+        applicantId: "COUNTRY#IND#PASSPORT#Test",
+        applicantName: "John Doe",
+        applicationId: "test=app-id",
+        applicationStatus: "In Progress",
+        applicationStatusGroup: "Incomplete",
+        clinicId: "test-clinic-id",
+        countryOfIssue: "IND",
+        dateCreated: new Date("2025-02-07"),
+        passportNumber: "Test",
+      },
+    ]);
   });
-  // test("should handle pagination cursor", async () => {
-  //   const lastEvaluatedKey = { applicationId: "app-last" };
-
-  //   ddbMock.on(QueryCommand).resolves({
-  //     Items: [],
-  //     LastEvaluatedKey: lastEvaluatedKey,
-  //   });
-
-  //   vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValueOnce(new Map());
-
-  //   const result = await ApplicationRoot.getByClinicId(clinicId, 100);
-
-  //   const expectedCursor = Buffer.from(JSON.stringify(lastEvaluatedKey)).toString("base64");
-
-  //   expect(result.cursor).toBe(expectedCursor);
-  // });
 
   test("should pass correct params to DynamoDB", async () => {
     ddbMock.on(QueryCommand).resolves({ Items: [] });

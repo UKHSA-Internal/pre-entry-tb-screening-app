@@ -57,11 +57,6 @@ type ReceivedApplicationInProgressType = {
   applicationStatus: ApplicationStatus;
 };
 
-type ReceivedApplicationsInProgressType = {
-  applications: ReceivedApplicationInProgressType[];
-  cursor: null;
-};
-
 type ReceivedApplicationListType = {
   applicationStatus: ApplicationStatus;
   applicationId: string;
