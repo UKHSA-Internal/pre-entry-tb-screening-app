@@ -10,19 +10,12 @@ on:
       plan_name:
         description: "Plan name"
         required: false
-      environment_id:
-        description: "Virtuoso Environment ID"
-        default: "98"
-        required: false
   workflow_call:
     inputs:
       plan_id:
         required: true
         type: string
       plan_name:
-        required: false
-        type: string
-      environment_id:
         required: false
         type: string
 
@@ -34,7 +27,6 @@ jobs:
       VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
       PLAN_ID: ${{ inputs.plan_id }}
       PLAN_NAME: ${{ inputs.plan_name }}
-      ENVIRONMENT_ID: ${{ inputs.environment_id || '98' }}
 
     steps:
       - name: Checkout repository
@@ -63,3 +55,156 @@ jobs:
         with:
           name: execution-report-${{ inputs.plan_id }}-${{ github.run_attempt }}
           path: reports/plan_execution_report.json
+
+      - name: Move report to reports folder
+        if: always()
+        run: |
+          mkdir -p reports
+          if [ -f plan_execution_report.json ]; then
+            mv plan_execution_report.json reports/plan_execution_report.json
+          else
+            echo '{"outcome":"ERROR","jobs":[]}' > reports/plan_execution_report.json
+          fi
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}
+          path: reports/plan_execution_report.json
+
+      # ── Transform report → test-results.json for the dashboard ──────────
+      # Only runs on schedule/workflow_dispatch — skipped when called from
+      # ci.yml or deploy.yml via workflow_call.
+      #
+      # The dashboard HTML expects this shape in test-results.json:
+      #   results.qat.chrome / .firefox / .edge  (per-browser counts)
+      #
+      # Virtuoso returns one job per browser in the plan execution report.
+      # Expected fields on each job object:
+      #   .outcome        "PASS" | "FAIL" | "ERROR"
+      #   .browser        "CHROME" | "FIREFOX" | "EDGE"  (case-insensitive)
+      #   .totalTests     integer
+      #   .passedTests    integer
+      #   .failedTests    integer
+      #   .pendingTests   integer  (optional)
+      #
+      # After the first successful run, open the execution-report artifact
+      # and check the actual field names. Update the jq paths below if they
+      # differ from what's listed above.
+      - name: Transform results to dashboard format
+        if: always() && github.event_name != 'workflow_call'
+        run: |
+          REPORT="reports/plan_execution_report.json"
+          ENVIRONMENT="qat"
+          BROWSERS=("chrome" "firefox" "edge")
+
+          TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
+          OVERALL_OUTCOME=$(jq -r '.outcome // "ERROR"' "$REPORT")
+
+          mkdir -p dashboard
+
+          echo "{"               > dashboard/test-results.json
+          echo '  "results": {' >> dashboard/test-results.json
+          echo "    \"$ENVIRONMENT\": {" >> dashboard/test-results.json
+
+          FIRST_BROWSER=true
+          for BROWSER in "${BROWSERS[@]}"; do
+            BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
+
+            JOB=$(jq -c \
+              --arg b "$BROWSER_UPPER" \
+              '.jobs[]? | select((.browser // "" | ascii_upcase) == $b)' \
+              "$REPORT" 2>/dev/null | head -1 || true)
+
+            # Fallback: if no job has a .browser field, use first job for chrome
+            if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
+              HAS_BROWSER=$(jq '[.jobs[]?.browser] | map(select(. != null)) | length' \
+                "$REPORT" 2>/dev/null || echo "0")
+              if [[ "$HAS_BROWSER" == "0" ]]; then
+                JOB=$(jq -c '.jobs[0]? // empty' "$REPORT" 2>/dev/null || true)
+              fi
+            fi
+
+            if [[ -n "$JOB" ]]; then
+              OUTCOME=$(echo "$JOB" | jq -r '.outcome // "UNKNOWN"')
+              TOTAL=$(echo   "$JOB" | jq -r '.totalTests   // .stats.tests    // 0')
+              PASSED=$(echo  "$JOB" | jq -r '.passedTests  // .stats.passes   // 0')
+              FAILED=$(echo  "$JOB" | jq -r '.failedTests  // .stats.failures // 0')
+              PENDING=$(echo "$JOB" | jq -r '.pendingTests // .stats.pending  // 0')
+              STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
+            else
+              STATUS="FAIL"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
+            fi
+
+            TOTAL_TESTS=$((TOTAL_TESTS   + TOTAL))
+            TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
+            TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
+            TOTAL_PENDING=$((TOTAL_PENDING + PENDING))
+
+            [[ "$FIRST_BROWSER" == "false" ]] && echo "," >> dashboard/test-results.json
+            cat >> dashboard/test-results.json <<EOF
+          "$BROWSER": {
+            "status": "$STATUS",
+            "testCounts": {
+              "total":   $TOTAL,
+              "passed":  $PASSED,
+              "failed":  $FAILED,
+              "pending": $PENDING
+            }
+          }
+          EOF
+            FIRST_BROWSER=false
+            echo "  $BROWSER: status=$STATUS total=$TOTAL passed=$PASSED failed=$FAILED"
+          done
+
+          OVERALL_STATUS=$([[ "$OVERALL_OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
+          SUCCESS_RATE=$([[ "$OVERALL_STATUS" == "PASS" ]] && echo "100.0" || echo "0.0")
+
+          cat >> dashboard/test-results.json <<EOF
+            }
+          },
+          "overallStatus":      "$OVERALL_STATUS",
+          "totalCombinations":  1,
+          "failedCombinations": $([[ "$OVERALL_STATUS" == "PASS" ]] && echo "0" || echo "1"),
+          "totalTests":         $TOTAL_TESTS,
+          "totalPassed":        $TOTAL_PASSED,
+          "totalFailed":        $TOTAL_FAILED,
+          "totalPending":       $TOTAL_PENDING,
+          "successRate":        $SUCCESS_RATE,
+          "runUrl":             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+          "branch":             "${{ github.ref_name }}",
+          "timestamp":          "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          echo "=== test-results.json ==="
+          cat dashboard/test-results.json
+
+      - name: Copy dashboard HTML
+        if: always() && github.event_name != 'workflow_call'
+        run: cp .github/workflows/PETSNightlyDashboard.html dashboard/index.html
+
+      - name: Setup Pages
+        if: always() && github.event_name != 'workflow_call'
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        if: always() && github.event_name != 'workflow_call'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dashboard"
+
+      - name: Deploy to GitHub Pages
+        if: always() && github.event_name != 'workflow_call'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Dashboard URL
+        if: always() && github.event_name != 'workflow_call'
+        run: |
+          if [[ "${{ steps.virtuoso_run.outcome }}" == "success" ]]; then
+            echo "::notice::✅ Virtuoso tests passed! Dashboard: ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "::warning::⚠️ Some tests failed. Dashboard: ${{ steps.deployment.outputs.page_url }}"
+          fi
