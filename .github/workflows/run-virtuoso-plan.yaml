@@ -1,0 +1,60 @@
+name: Run Virtuoso Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_id:
+        description: "Plan ID"
+        default: "5"
+        required: true
+      plan_name:
+        description: "Plan name"
+        required: false
+  workflow_call:
+    inputs:
+      plan_id:
+        required: true
+        type: string
+      plan_name:
+        required: false
+        type: string
+
+jobs:
+  run-virtuoso-plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    env:
+      VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
+      PLAN_ID: ${{ inputs.plan_id }}
+      PLAN_NAME: ${{ inputs.plan_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make script executable
+        run: chmod +x scripts/execute.sh
+
+      - name: Run Virtuoso plan
+        run: scripts/execute.sh
+
+      - name: Move report to reports folder
+        if: always()
+        run: |
+          mkdir -p reports
+          if [ -f plan_execution_report.json ]; then
+            mv plan_execution_report.json reports/
+          fi
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-report-${{ inputs.plan_id }}-${{ github.run_attempt }}
+          path: reports/plan_execution_report.json
