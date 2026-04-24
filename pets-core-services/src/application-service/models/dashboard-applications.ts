@@ -14,8 +14,8 @@ export interface IDashboardApplicationProps {
   applicationId: string;
   applicantId: string;
   applicantName?: string;
-  passportNumber: string;
-  countryOfIssue: CountryCode;
+  passportNumber?: string;
+  countryOfIssue?: CountryCode;
   clinicId: string;
   dateCreated: Date | string;
   applicationStatus: ApplicationStatus;
@@ -25,8 +25,8 @@ export interface IDashboardApplicationProps {
 export abstract class IDashboardApplication {
   readonly applicationId: string;
   applicantId: string;
-  passportNumber: string;
-  countryOfIssue: CountryCode;
+  passportNumber?: string;
+  countryOfIssue?: CountryCode;
   applicantName?: string;
   clinicId: string;
   dateCreated: Date;
@@ -58,8 +58,6 @@ export class DashboardApplication extends IDashboardApplication {
     return new DashboardApplication({
       applicationId: item.applicationId,
       applicantId: item.applicantId,
-      passportNumber: item.passportNumber,
-      countryOfIssue: item.countryOfIssue,
       clinicId: item.clinicId,
       dateCreated: item.dateCreated,
       applicationStatus: item.applicationStatus,
@@ -117,11 +115,12 @@ export class DashboardApplication extends IDashboardApplication {
 
       // Add applicantName
       const enriched = applications.map((app) => {
-        logger.info(app);
         const applicant = applicantMap.get(app.applicantId) as Applicant;
         return new DashboardApplication({
           ...app,
           applicantName: applicant.fullName,
+          passportNumber: applicant.passportNumber,
+          countryOfIssue: applicant.countryOfIssue,
         });
       });
 

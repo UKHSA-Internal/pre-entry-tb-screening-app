@@ -37,8 +37,6 @@ describe("Tests for Applications Model", () => {
       Items: [
         {
           applicationId: applicationId,
-          passportNumber: passportNumber,
-          countryOfIssue: countryOfIssue,
           applicantId: applicantId,
           clinicId: clinicId,
           dateCreated: new Date("2025-02-07"),
@@ -49,7 +47,17 @@ describe("Tests for Applications Model", () => {
 
     //  Mock batch loader
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
-      new Map([[applicantId, { applicantId: "COUNTRY#IND#PASSPORT#Test", fullName: "John Doe" }]]),
+      new Map([
+        [
+          applicantId,
+          {
+            applicantId: "COUNTRY#IND#PASSPORT#Test",
+            fullName: "John Doe",
+            passportNumber: passportNumber,
+            countryOfIssue: countryOfIssue,
+          },
+        ],
+      ]),
     );
 
     const result = await DashboardApplication.getByClinicId(clinicId, 100);
