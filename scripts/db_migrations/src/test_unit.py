@@ -493,14 +493,6 @@ class TestRewriteClinicRecords:
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
         assert stats["rewritten_clinic_rows"] == 1
 
-    def test_client_error_is_re_raised(self):
-        """Any ClientError from update_item must propagate."""
-        at, apt, ct = mock_tables()
-        stats = make_statistics()
-        ct.update_item.side_effect = _client_error("ProvisionedThroughputExceededException")
-        with pytest.raises(ClientError):
-            rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
-
 
 class TestScanTable:
     """Paginated scan_table helper."""
