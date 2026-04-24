@@ -6,8 +6,9 @@ import { selectApplicant, selectApplicationsInProgress } from "@/redux/store";
 
 export const RedirectedRouteIfReduxEmpty = ({ children }: { children: ReactNode }) => {
   const applicantData = useAppSelector(selectApplicant);
-  if (applicantData.passportNumber == "" || applicantData.countryOfIssue == "") {
-    return <Navigate to="/what-do-you-need-to-do" />;
+  const isInvalid = !applicantData.passportNumber || !applicantData.countryOfIssue;
+  if (isInvalid) {
+    return <Navigate to="/what-do-you-need-to-do" replace />;
   }
   return <>{children}</>;
 };
