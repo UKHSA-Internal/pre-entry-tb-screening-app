@@ -134,16 +134,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check migrations.py changed
-        working-directory: "scripts/"
+      - name: Check src/ files changed
         id: check_file_changed
-        env:
-          BEFORE_SHA: ${{ github.event.before }}
-          FILE: "scripts/db_migrations/src/migrations.py"
         run: |
-          run_tests=$(./file_changed.sh ${{ env.FILE }})
-          echo "run tests?: $run_tests"
-          echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
+          before="${{ github.event.before }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            echo "run_tests=true" >> $GITHUB_OUTPUT
+          else
+            changed=$(git diff --name-only "$before" HEAD -- scripts/db_migrations/src/ | grep -c .) || true
+            if [ "$changed" -gt "0" ]; then
+              echo "run_tests=true" >> $GITHUB_OUTPUT
+            else
+              echo "run_tests=false" >> $GITHUB_OUTPUT
+            fi
+          fi
 
       - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
@@ -178,27 +182,49 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check src/ files changed
+        id: check_file_changed
+        run: |
+          before="${{ github.event.before }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            echo "run_checks=true" >> $GITHUB_OUTPUT
+          else
+            changed=$(git diff --name-only "$before" HEAD -- scripts/db_migrations/src/ | grep -c .) || true
+            if [ "$changed" -gt "0" ]; then
+              echo "run_checks=true" >> $GITHUB_OUTPUT
+            else
+              echo "run_checks=false" >> $GITHUB_OUTPUT
+            fi
+          fi
 
       - name: Set up Python
+        if: steps.check_file_changed.outputs.run_checks == 'true'
         uses: actions/setup-python@v6
         with:
           python-version-file: "scripts/db_migrations/.python-version"
 
       - name: Install uv
+        if: steps.check_file_changed.outputs.run_checks == 'true'
         uses: astral-sh/setup-uv@v7
         with:
           # Install a specific version of uv.
           version: "0.9.18"
 
       - name: Install the project
+        if: steps.check_file_changed.outputs.run_checks == 'true'
         working-directory: "scripts/db_migrations/"
         run: uv sync --locked
 
       - name: Ruff code check
+        if: steps.check_file_changed.outputs.run_checks == 'true'
         working-directory: "scripts/db_migrations"
         run: uv run ruff check ./src --config pyproject.toml
 
       - name: Ruff format check
+        if: steps.check_file_changed.outputs.run_checks == 'true'
         working-directory: "scripts/db_migrations"
         run: uv run ruff format --check ./src --config ./pyproject.toml
 

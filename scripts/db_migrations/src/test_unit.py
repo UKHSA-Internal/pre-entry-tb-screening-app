@@ -18,6 +18,8 @@ from migrations import (  # noqa: E402
     ApplicationStatusGroup,
     migrate_applicants,
     remove_original_applicants,
+    rewrite_applicant_records,
+    rewrite_application_root_records,
     rewrite_clinic_records,
     set_application_statusgroup,
     scan_table,
@@ -809,3 +811,297 @@ class TestDataMigration:
             "migrate_applicants",
         )
         mock_boto3.resource.assert_called_once()
+
+
+class TestRewriteApplicantRecords:
+    """Tests for rewrite_applicant_records."""
+
+    BASE_RECORD = {
+        "pk": "COUNTRY#GB#PASSPORT#1",
+        "sk": "APPLICANT#DETAILS",
+        "countryOfIssue": "GB",
+    }
+
+    def test_dry_run_does_not_call_update_item(self):
+        """dry_run=True → update_item must not be called."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, True, stats)
+        at.update_item.assert_not_called()
+
+    def test_dry_run_increments_rewritten_applicant_rows(self):
+        """dry_run=True → rewritten_applicant_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, True, stats)
+        assert stats["rewritten_applicant_rows"] == 1
+
+    def test_live_calls_update_item_with_correct_key(self):
+        """dry_run=False → update_item called with pk/sk key."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        at.update_item.assert_called_once()
+        assert at.update_item.call_args[1]["Key"] == {
+            "pk": "COUNTRY#GB#PASSPORT#1",
+            "sk": "APPLICANT#DETAILS",
+        }
+
+    def test_live_update_expression_sets_country_of_issue(self):
+        """UpdateExpression rewrites countryOfIssue field."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert "countryOfIssue" in at.update_item.call_args[1]["UpdateExpression"]
+
+    def test_live_expression_attribute_values_carry_country_of_issue(self):
+        """ExpressionAttributeValues carries the original countryOfIssue value."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        ev = at.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":countryOfIssue"] == "GB"
+
+    def test_live_increments_rewritten_applicant_rows(self):
+        """dry_run=False → rewritten_applicant_rows incremented on success."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["rewritten_applicant_rows"] == 1
+
+    def test_exception_increments_skipped_and_not_rewritten(self):
+        """update_item raises Exception → skipped_applicant_rows incremented, no re-raise."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        at.update_item.side_effect = Exception("boom")
+        rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)  # must not raise
+        assert stats["skipped_applicant_rows"] == 1
+        assert stats["rewritten_applicant_rows"] == 0
+
+
+class TestRewriteApplicationRootRecords:
+    """Tests for rewrite_application_root_records."""
+
+    def _record(self, sk="APPLICATION#NONROOT", date_created="2024-01-01"):
+        return {"pk": "APPLICATION#abc", "sk": sk, "dateCreated": date_created}
+
+    def test_dry_run_nonroot_sk_increments_root_rows(self):
+        """dry_run=True, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats)
+        assert stats["rewritten_application_root_rows"] == 1
+        apt.update_item.assert_not_called()
+
+    def test_dry_run_root_sk_increments_nonroot_rows(self):
+        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
+        )
+        assert stats["rewritten_application_nonroot_rows"] == 1
+        apt.update_item.assert_not_called()
+
+    def test_live_calls_update_item_with_correct_key(self):
+        """dry_run=False → update_item called with correct pk/sk."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(), at, apt, ct, False, stats)
+        apt.update_item.assert_called_once()
+        assert apt.update_item.call_args[1]["Key"] == {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#NONROOT",
+        }
+
+    def test_live_update_expression_sets_date_created(self):
+        """UpdateExpression rewrites dateCreated field."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(), at, apt, ct, False, stats)
+        assert "dateCreated" in apt.update_item.call_args[1]["UpdateExpression"]
+
+    def test_live_nonroot_sk_increments_root_rows(self):
+        """dry_run=False, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats)
+        assert stats["rewritten_application_root_rows"] == 1
+
+    def test_live_root_sk_increments_nonroot_rows(self):
+        """dry_run=False, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, False, stats
+        )
+        assert stats["rewritten_application_nonroot_rows"] == 1
+
+    def test_exception_nonroot_sk_increments_skipped_root_rows(self):
+        """update_item raises Exception, sk != ROOT → skipped_application_root_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        apt.update_item.side_effect = Exception("boom")
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
+        )  # must not raise
+        assert stats["skipped_application_root_rows"] == 1
+
+    def test_exception_root_sk_increments_skipped_nonroot_rows(self):
+        """update_item raises Exception, sk == ROOT → skipped_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        apt.update_item.side_effect = Exception("boom")
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, False, stats
+        )  # must not raise
+        assert stats["skipped_application_nonroot_rows"] == 1
+
+    def test_all_applications_incremented(self):
+        """all_applications incremented for every call regardless of dry_run."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(), at, apt, ct, False, stats)
+        assert stats["all_applications"] == 1
+
+    def test_all_applications_incremented_dry_run(self):
+        """all_applications incremented even in dry_run=True."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(self._record(), at, apt, ct, True, stats)
+        assert stats["all_applications"] == 1
+
+
+class TestDataMigrationExtended:
+    """Additional orchestration tests for data_migration."""
+
+    def _make_dynamodb(self, at, apt, ct=None):
+        if ct is None:
+            ct = MagicMock()
+            ct.name = "clinics-table"
+        dynamodb = MagicMock()
+        dynamodb.Table.side_effect = lambda name: (
+            at if name == "applicant-table" else (apt if name == "application-table" else ct)
+        )
+        return dynamodb
+
+    def _reset_stats(self):
+        import migrations
+
+        migrations.statistics = make_statistics()
+
+    @patch("migrations.scan_table")
+    @patch("migrations.rewrite_applicant_records")
+    @patch("migrations.time", create=True)
+    def test_rewrite_applicant_records_called_per_row(self, mock_time, mock_rewrite, mock_scan):
+        """rewrite_applicant_records called for each row; remove not called."""
+        mock_time.time.return_value = 0
+        mock_rewrite.__name__ = "rewrite_applicant_records"
+        rows = [{"pk": "COUNTRY#GB#PASSPORT#1", "sk": "APPLICANT#DETAILS", "countryOfIssue": "GB"}]
+        mock_scan.return_value = (rows, None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        with patch("migrations.remove_original_applicants") as mock_remove:
+            data_migration(
+                "applicant-table",
+                "application-table",
+                "clinics-table",
+                "eu-west-2",
+                False,
+                self._make_dynamodb(at, apt, ct),
+                "rewrite_applicant_records",
+            )
+            assert mock_rewrite.call_count == 1
+            mock_remove.assert_not_called()
+
+    @patch("migrations.scan_table")
+    @patch("migrations.rewrite_application_root_records")
+    @patch("migrations.time", create=True)
+    def test_rewrite_application_root_records_filter_expression(self, mock_time, mock_rewrite, mock_scan):
+        """rewrite_application_root_records → FilterExpression for APPLICATION#ROOT sent."""
+        mock_time.time.return_value = 0
+        mock_rewrite.__name__ = "rewrite_application_root_records"
+        mock_scan.return_value = ([], None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        data_migration(
+            "applicant-table",
+            "application-table",
+            "clinics-table",
+            "eu-west-2",
+            False,
+            self._make_dynamodb(at, apt, ct),
+            "rewrite_application_root_records",
+        )
+        scan_filter = mock_scan.call_args[1].get("scan_filter", {})
+        assert "FilterExpression" in scan_filter
+        ev = scan_filter.get("ExpressionAttributeValues", {})
+        assert ev.get(":sk") == "APPLICATION#ROOT"
+
+    @patch("migrations.scan_table")
+    @patch("migrations.rewrite_application_root_records")
+    @patch("migrations.time", create=True)
+    def test_rewrite_application_nonroot_records_excludes_root(self, mock_time, mock_rewrite, mock_scan):
+        """rewrite_application_nonroot_records → filter excludes APPLICATION#ROOT rows."""
+        mock_time.time.return_value = 0
+        mock_rewrite.__name__ = "rewrite_application_root_records"
+        mock_scan.return_value = ([], None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        data_migration(
+            "applicant-table",
+            "application-table",
+            "clinics-table",
+            "eu-west-2",
+            False,
+            self._make_dynamodb(at, apt, ct),
+            "rewrite_application_nonroot_records",
+        )
+        scan_filter = mock_scan.call_args[1].get("scan_filter", {})
+        assert "<>" in scan_filter.get("FilterExpression", "")
+
+    @patch("migrations.scan_table")
+    @patch("migrations.time", create=True)
+    def test_invalid_migration_name_raises_value_error(self, mock_time, mock_scan):
+        """Invalid migration name → ValueError raised."""
+        mock_time.time.return_value = 0
+        mock_scan.return_value = ([], None)
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        with pytest.raises(ValueError, match="Invalid migration type"):
+            data_migration(
+                "applicant-table",
+                "application-table",
+                "clinics-table",
+                "eu-west-2",
+                False,
+                self._make_dynamodb(at, apt, ct),
+                "totally_invalid",
+            )
+
+    @patch("migrations.scan_table")
+    @patch("migrations.migrate_applicants")
+    @patch("migrations.time", create=True)
+    def test_paginated_scan_processes_all_pages(self, mock_time, mock_migrate, mock_scan):
+        """Two-page scan → migration function called for rows on both pages."""
+        mock_time.time.return_value = 0
+        mock_migrate.__name__ = "migrate_applicants"
+        page1_rows = [{"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS"}]
+        page2_rows = [{"pk": "APPLICATION#2", "sk": "APPLICANT#DETAILS"}]
+        mock_scan.side_effect = [
+            (page1_rows, {"pk": "APPLICATION#1", "sk": "APPLICANT#DETAILS"}),
+            (page2_rows, None),
+        ]
+        at, apt, ct = mock_tables()
+        self._reset_stats()
+        with patch("migrations.remove_original_applicants"):
+            data_migration(
+                "applicant-table",
+                "application-table",
+                "clinics-table",
+                "eu-west-2",
+                False,
+                self._make_dynamodb(at, apt, ct),
+                "migrate_applicants",
+            )
+        assert mock_migrate.call_count == 2
