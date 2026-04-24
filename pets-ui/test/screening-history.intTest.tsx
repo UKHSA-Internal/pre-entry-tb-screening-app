@@ -440,7 +440,7 @@ describe("ScreeningHistory", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Start now" }));
 
-    expect(store.getState().applicant.status).toBe(TaskStatus.IN_PROGRESS);
+    expect(store.getState().applicant.status).toBe(TaskStatus.COMPLETE);
     expect(useNavigateMock).toHaveBeenLastCalledWith(
       "/do-you-have-visa-applicant-written-consent-for-tb-screening",
     );

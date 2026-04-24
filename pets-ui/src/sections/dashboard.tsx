@@ -11,7 +11,6 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import {
   setApplicantDetailsFromApiResponse,
   setApplicantPassportDetails,
-  setApplicantPhotoFileName,
 } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
 import { setApplicationsListDetailsFromApiResponse } from "@/redux/applicationsListSlice";
@@ -45,6 +44,7 @@ import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
+import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 const Dashboard = () => {
   const userClinicData = useAppSelector(selectUserClinic);
@@ -66,28 +66,6 @@ const Dashboard = () => {
     dispatch(clearTbCertificateDetails());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleApplicantPhoto = async (photoUrl: string) => {
-    const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
-    const fixedUrl =
-      env === "local" ? photoUrl.replace(/172\.\d+\.\d+\.\d+:4566/, "localhost:4566") : photoUrl;
-
-    const urlParts = photoUrl.split("/");
-    const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
-    dispatch(setApplicantPhotoFileName(filename));
-    const response = await fetch(fixedUrl);
-    const blob = await response.blob();
-    if (typeof File == "undefined") {
-      setApplicantPhotoUrl(fixedUrl);
-    } else {
-      try {
-        const file = new File([blob], filename, { type: blob.type });
-        setApplicantPhotoFile(file);
-      } catch {
-        setApplicantPhotoUrl(fixedUrl);
-      }
-    }
-  };
 
   const loadApplicantAndApplication = async (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -141,7 +119,12 @@ const Dashboard = () => {
       await fetchClinic(dispatch, applicationClinicId);
 
       if (applicationRes.data.applicantPhotoUrl) {
-        await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
+        await handleApplicantPhoto(
+          applicationRes.data.applicantPhotoUrl,
+          dispatch,
+          setApplicantPhotoFile,
+          setApplicantPhotoUrl,
+        );
       }
 
       if (applicationRes.data.travelInformation) {
