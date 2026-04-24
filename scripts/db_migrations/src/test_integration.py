@@ -542,7 +542,9 @@ def _seed_applicant_with_country(table, pk, country_of_issue="GB", **extra):
     return item
 
 
-def _seed_application_with_date(table, pk, sk="APPLICATION#ROOT", date_created="2024-01-01", **extra):
+def _seed_application_with_date(
+    table, pk, sk="APPLICATION#ROOT", date_created="2024-01-01", **extra
+):
     item = {"pk": pk, "sk": sk, "dateCreated": date_created}
     item.update(extra)
     table.put_item(Item=item)
@@ -567,7 +569,9 @@ class TestRewriteApplicantRecordsLive:
     def test_country_of_issue_value_unchanged_after_rewrite(self, mod, tables, dynamodb_local):
         """countryOfIssue attribute value is preserved (same value written back)."""
         applicant_table, _, _ = tables
-        _seed_applicant_with_country(applicant_table, "COUNTRY#GB#PASSPORT#1", country_of_issue="GB")
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#1", country_of_issue="GB"
+        )
 
         _run(
             mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_applicant_records"
@@ -608,7 +612,9 @@ class TestRewriteApplicantRecordsLive:
         applicant_table, _, _ = tables
         passports = ["P1", "P2", "P3"]
         for p in passports:
-            _seed_applicant_with_country(applicant_table, f"COUNTRY#GB#PASSPORT#{p}", country_of_issue="GB")
+            _seed_applicant_with_country(
+                applicant_table, f"COUNTRY#GB#PASSPORT#{p}", country_of_issue="GB"
+            )
 
         _run(
             mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_applicant_records"
@@ -626,7 +632,9 @@ class TestRewriteApplicantRecordsDryRun:
     def test_dry_run_record_value_unchanged(self, mod, tables, dynamodb_local):
         """dry_run=True → countryOfIssue not altered (record stays as seeded)."""
         applicant_table, _, _ = tables
-        _seed_applicant_with_country(applicant_table, "COUNTRY#GB#PASSPORT#1", country_of_issue="GB")
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#1", country_of_issue="GB"
+        )
 
         _run(
             mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_applicant_records"

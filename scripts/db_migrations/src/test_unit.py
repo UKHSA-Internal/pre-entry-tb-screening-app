@@ -889,7 +889,9 @@ class TestRewriteApplicationRootRecords:
         """dry_run=True, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
-        rewrite_application_root_records(self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats)
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
+        )
         assert stats["rewritten_application_root_rows"] == 1
         apt.update_item.assert_not_called()
 
@@ -925,7 +927,9 @@ class TestRewriteApplicationRootRecords:
         """dry_run=False, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
-        rewrite_application_root_records(self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats)
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
+        )
         assert stats["rewritten_application_root_rows"] == 1
 
     def test_live_root_sk_increments_nonroot_rows(self):
@@ -1017,7 +1021,9 @@ class TestDataMigrationExtended:
     @patch("migrations.scan_table")
     @patch("migrations.rewrite_application_root_records")
     @patch("migrations.time", create=True)
-    def test_rewrite_application_root_records_filter_expression(self, mock_time, mock_rewrite, mock_scan):
+    def test_rewrite_application_root_records_filter_expression(
+        self, mock_time, mock_rewrite, mock_scan
+    ):
         """rewrite_application_root_records → FilterExpression for APPLICATION#ROOT sent."""
         mock_time.time.return_value = 0
         mock_rewrite.__name__ = "rewrite_application_root_records"
@@ -1041,7 +1047,9 @@ class TestDataMigrationExtended:
     @patch("migrations.scan_table")
     @patch("migrations.rewrite_application_root_records")
     @patch("migrations.time", create=True)
-    def test_rewrite_application_nonroot_records_excludes_root(self, mock_time, mock_rewrite, mock_scan):
+    def test_rewrite_application_nonroot_records_excludes_root(
+        self, mock_time, mock_rewrite, mock_scan
+    ):
         """rewrite_application_nonroot_records → filter excludes APPLICATION#ROOT rows."""
         mock_time.time.return_value = 0
         mock_rewrite.__name__ = "rewrite_application_root_records"
