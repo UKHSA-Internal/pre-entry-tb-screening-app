@@ -39,13 +39,17 @@ statistics = {
     "skipped_rows_not_root": 0,
     "migrated_applications": 0,
     # 'rewrite_application_root_records' related:
-    "rewritten_applications_root_rows": 0,
+    "rewritten_application_root_rows": 0,
+    "skipped_application_root_rows": 0,
     # 'rewrite_application_nonroot_records' related:
-    "rewritten_applications_nonroot_rows": 0,
+    "rewritten_application_nonroot_rows": 0,
+    "skipped_application_nonroot_rows": 0,
     # 'rewrite_applicant_records' related:
     "rewritten_applicant_rows": 0,
+    "skipped_applicant_rows": 0,
     # 'rewrite_clinic_records' related:
-    "rewritten_clinics_rows": 0,
+    "rewritten_clinic_rows": 0,
+    "skipped_clinic_rows": 0,
 }
 
 
@@ -264,10 +268,10 @@ def rewrite_applicant_records(
     dry_run,
     statistics,
 ):
-    statistics["rewritten_applicant_rows"] += 1
-
     if dry_run:
         # Don't modify the record in DB, return instead
+        statistics["rewritten_applicant_rows"] += 1
+
         return
 
     # Re-writing the same data (countryOfIssue) to trigger DynamoDB Streams
@@ -278,11 +282,15 @@ def rewrite_applicant_records(
             ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
         )
 
-    except ClientError as e:
-        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
+        statistics["skipped_applicant_rows"] += 1
 
-        raise
+        return
 
+    statistics["rewritten_applicant_rows"] += 1
     logger.debug(f"Updated the application with pk: {record['pk']}")
 
 
@@ -298,13 +306,13 @@ def rewrite_application_root_records(
 ):
     statistics["all_applications"] += 1
 
-    if record["sk"] != "APPLICATION#ROOT":
-        statistics["rewritten_applications_root_rows"] += 1
-    else:
-        statistics["rewritten_applications_nonroot_rows"] += 1
-
     if dry_run:
         # Don't modify the record in DB, return instead
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["rewritten_application_root_rows"] += 1
+        else:
+            statistics["rewritten_application_nonroot_rows"] += 1
+
         return
 
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
@@ -315,10 +323,22 @@ def rewrite_application_root_records(
             ExpressionAttributeValues={":date": record["dateCreated"]},
         )
 
-    except ClientError as e:
-        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
 
-        raise
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["skipped_application_root_rows"] += 1
+        else:
+            statistics["skipped_application_nonroot_rows"] += 1
+
+        return
+
+    if record["sk"] != "APPLICATION#ROOT":
+        statistics["rewritten_application_root_rows"] += 1
+    else:
+        statistics["rewritten_application_nonroot_rows"] += 1
 
     logger.debug(f"Updated the application with pk: {record['pk']}")
 
@@ -331,10 +351,10 @@ def rewrite_clinic_records(
     dry_run,
     statistics,
 ):
-    statistics["rewritten_clinics_rows"] += 1
-
     if dry_run:
         # Don't modify the record in DB, return instead
+        statistics["rewritten_clinic_rows"] += 1
+
         return
 
     # Re-writing the same data (clinicId) to trigger DynamoDB Streams
@@ -345,11 +365,15 @@ def rewrite_clinic_records(
             ExpressionAttributeValues={":id": record["clinicId"]},
         )
 
-    except ClientError as e:
-        logger.error(f"Updating the record with pk={record['pk']} failed: {e}")
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
+        statistics["skipped_clinic_rows"] += 1
 
-        raise
+        return
 
+    statistics["rewritten_clinic_rows"] += 1
     logger.debug(f"Updated the application with pk: {record['pk']}")
 
 

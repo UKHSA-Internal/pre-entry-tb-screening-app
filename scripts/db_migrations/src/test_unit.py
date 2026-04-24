@@ -453,12 +453,12 @@ class TestRewriteClinicRecords:
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, True, stats)
         ct.update_item.assert_not_called()
 
-    def test_dry_run_increments_rewritten_clinics_rows(self):
-        """dry_run=True → rewritten_clinics_rows still incremented."""
+    def test_dry_run_increments_rewritten_clinic_rows(self):
+        """dry_run=True → rewritten_clinic_rows still incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, True, stats)
-        assert stats["rewritten_clinics_rows"] == 1
+        assert stats["rewritten_clinic_rows"] == 1
 
     def test_live_calls_update_item_with_correct_key(self):
         """dry_run=False → update_item called with pk/sk key."""
@@ -486,12 +486,12 @@ class TestRewriteClinicRecords:
         ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
         assert ev[":id"] == "abc"
 
-    def test_live_increments_rewritten_clinics_rows(self):
-        """dry_run=False → rewritten_clinics_rows incremented."""
+    def test_live_increments_rewritten_clinic_rows(self):
+        """dry_run=False → rewritten_clinic_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
-        assert stats["rewritten_clinics_rows"] == 1
+        assert stats["rewritten_clinic_rows"] == 1
 
     def test_client_error_is_re_raised(self):
         """Any ClientError from update_item must propagate."""

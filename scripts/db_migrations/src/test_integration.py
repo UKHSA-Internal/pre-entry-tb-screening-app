@@ -460,8 +460,8 @@ class TestRewriteClinicRecordsLive:
         assert record["clinicName"] == "Test Clinic"
         assert record["city"] == "London"
 
-    def test_statistics_rewritten_clinics_rows_incremented(self, mod, tables, dynamodb_local):
-        """rewritten_clinics_rows counter is incremented for each record."""
+    def test_statistics_rewritten_clinic_rows_incremented(self, mod, tables, dynamodb_local):
+        """rewritten_clinic_rows counter is incremented for each record."""
         _, _, clinics_table = tables
         _seed_clinics(clinics_table, "CLINIC#abc")
         _seed_clinics(clinics_table, "CLINIC#xyz")
@@ -470,7 +470,7 @@ class TestRewriteClinicRecordsLive:
             mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
         )
 
-        assert stats["rewritten_clinics_rows"] == 2
+        assert stats["rewritten_clinic_rows"] == 2
 
     def test_multiple_clinic_records_all_rewritten(self, mod, tables, dynamodb_local):
         """All seeded clinic records survive the rewrite with correct clinicId."""
@@ -501,7 +501,7 @@ class TestRewriteClinicRecordsDryRun:
         assert record is not None
 
     def test_dry_run_counter_incremented(self, mod, tables, dynamodb_local):
-        """dry_run=True → rewritten_clinics_rows is still counted."""
+        """dry_run=True → rewritten_clinic_rows is still counted."""
         _, _, clinics_table = tables
         _seed_clinics(clinics_table, "CLINIC#abc")
 
@@ -509,7 +509,7 @@ class TestRewriteClinicRecordsDryRun:
             mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
         )
 
-        assert stats["rewritten_clinics_rows"] == 1
+        assert stats["rewritten_clinic_rows"] == 1
 
 
 class TestRewriteClinicRecordsPagination:
@@ -527,7 +527,7 @@ class TestRewriteClinicRecordsPagination:
             mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
         )
 
-        assert stats["rewritten_clinics_rows"] == n
+        assert stats["rewritten_clinic_rows"] == n
 
         for i in [0, 14, 29]:
             record = _get(clinics_table, f"CLINIC#{i}", "CLINIC#ROOT")
