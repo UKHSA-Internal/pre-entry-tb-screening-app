@@ -72,23 +72,20 @@ vi.mock("../../shared/models/applicant", () => ({
 }));
 vi.mock("../models/dashboard-applications", () => ({
   DashboardApplication: {
-    getByClinicId: vi.fn().mockResolvedValue({
-      applications: [
-        {
-          toJson: () => ({
-            applicationId: "test-id",
-            applicantId: "COUNTRY#IND#PASSPORT#Test",
-            passportNumber: "Test",
-            countryOfIssue: CountryCode.IND,
-            clinicId: "clinic-123",
-            dateCreated: new Date(),
-            applicationStatus: ApplicationStatus.inProgress,
-            applicationStatusGroup: ApplicationStatusGroup.incomplete,
-          }),
-        },
-      ],
-      cursor: null,
-    }),
+    getByClinicId: vi.fn().mockResolvedValue([
+      {
+        toJson: () => ({
+          applicationId: "test-id",
+          applicantId: "COUNTRY#IND#PASSPORT#Test",
+          passportNumber: "Test",
+          countryOfIssue: CountryCode.IND,
+          clinicId: "clinic-123",
+          dateCreated: new Date(),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        }),
+      },
+    ]),
   },
 }));
 describe("Test for Application Lambda", () => {

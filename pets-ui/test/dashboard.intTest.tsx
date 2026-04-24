@@ -83,61 +83,58 @@ const populatedApplicantSlice = {
   townOrCity: "Sydney",
 };
 
-const applicationsInProgressSlice = {
-  applications: [
-    {
-      applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc1",
-      applicantName: "Name One",
-      passportNumber: "abc1",
-      countryOfIssue: "AFG",
-      clinicId: "my-clinic",
-      dateCreated: "2021-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "b1a2f682-9281-4b92-b4ef-878edfd06d23",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc2",
-      applicantName: "Name Two",
-      passportNumber: "abc2",
-      countryOfIssue: "AFG",
-      clinicId: "my-clinic",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "17811cbc-501d-4051-94ae-67692fe6f393",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc3",
-      applicantName: "Name Three",
-      passportNumber: "abc3",
-      countryOfIssue: "AFG",
-      clinicId: "my-clinic",
-      dateCreated: "2023-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-    {
-      applicationId: "17811cbc-501d-9951-94ae-67692fe6f393",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc4",
-      applicantName: "Name Four",
-      passportNumber: "abc4",
-      countryOfIssue: "AFG",
-      clinicId: "my-clinic",
-      dateCreated: "2022-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.SPUTUM_IN_PROGRESS,
-    },
-    {
-      applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
-      applicantId: "COUNTRY#AFG#PASSPORT#abc4",
-      applicantName: "Should not see - different clinic",
-      passportNumber: "abc4",
-      countryOfIssue: "AFG",
-      clinicId: "another-clinic",
-      dateCreated: "2026-04-07T15:32:34.470Z",
-      applicationStatus: ApplicationStatus.IN_PROGRESS,
-    },
-  ],
-  cursor: null,
-};
+const applicationsInProgressSlice = [
+  {
+    applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc1",
+    applicantName: "Name One",
+    passportNumber: "abc1",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2021-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
+  {
+    applicationId: "b1a2f682-9281-4b92-b4ef-878edfd06d23",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc2",
+    applicantName: "Name Two",
+    passportNumber: "abc2",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fe6f393",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc3",
+    applicantName: "Name Three",
+    passportNumber: "abc3",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2023-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-9951-94ae-67692fe6f393",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc4",
+    applicantName: "Name Four",
+    passportNumber: "abc4",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2022-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.SPUTUM_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc4",
+    applicantName: "Should not see - different clinic",
+    passportNumber: "abc4",
+    countryOfIssue: "AFG",
+    clinicId: "another-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+  },
+];
 
 describe("Dashboard", () => {
   let mock: MockAdapter;
@@ -416,21 +413,18 @@ describe("Dashboard", () => {
           createdBy: "",
         },
       },
-      applicationsInProgress: {
-        applications: [
-          {
-            applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
-            applicantId: "COUNTRY#AUS#PASSPORT#12345",
-            applicantName: "Maxwell Spiffington",
-            passportNumber: "12345",
-            countryOfIssue: "AUS",
-            clinicId: "my-clinic",
-            dateCreated: "2021-04-07T15:32:34.470Z",
-            applicationStatus: ApplicationStatus.IN_PROGRESS,
-          },
-        ],
-        cursor: null,
-      },
+      applicationsInProgress: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+          applicantId: "COUNTRY#AUS#PASSPORT#12345",
+          applicantName: "Maxwell Spiffington",
+          passportNumber: "12345",
+          countryOfIssue: "AUS",
+          clinicId: "my-clinic",
+          dateCreated: "2021-04-07T15:32:34.470Z",
+          applicationStatus: ApplicationStatus.IN_PROGRESS,
+        },
+      ],
       clinic: { clinicId: "my-clinic" },
     };
 

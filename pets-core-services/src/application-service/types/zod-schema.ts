@@ -541,11 +541,6 @@ export const DashboardApplicationSchema = z.object({
   }),
 });
 
-export const DashboardApplicationsSchema = z.object({
-  applications: z.array(DashboardApplicationSchema).openapi({
-    description: "Applicant's applications in Progress",
-  }),
-  cursor: z.string().openapi({
-    description: "Last Evaluated Key for pagination",
-  }),
+export const DashboardApplicationsSchema = z.array(DashboardApplicationSchema).openapi({
+  description: "Applicant's applications in Progress",
 });

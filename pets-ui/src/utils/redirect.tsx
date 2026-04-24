@@ -19,7 +19,7 @@ export const RedirectedRouteIfApplicationsInProgressEmpty = ({
   children: ReactNode;
 }) => {
   const applicationsInProgressData = useAppSelector(selectApplicationsInProgress);
-  if (applicationsInProgressData.applications.length < 1) {
+  if (applicationsInProgressData.length < 1) {
     return <Navigate to="/what-do-you-need-to-do" />;
   }
   return <>{children}</>;
