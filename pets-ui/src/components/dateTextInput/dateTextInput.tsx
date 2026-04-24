@@ -34,7 +34,7 @@ const DateTextInput: React.FC<DateProps> = (props: Readonly<DateProps>) => {
 
   const removeLeadingZeros = (s: string): string => {
     if (s === "") return "";
-    const noLeading = s.replace(/^0+/, "");
+    const noLeading = s.replace(/^0+/, "").trim();
     return noLeading === "" ? "0" : noLeading;
   };
 
