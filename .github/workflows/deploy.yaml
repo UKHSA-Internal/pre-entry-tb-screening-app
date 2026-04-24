@@ -463,7 +463,7 @@ jobs:
 
   virtuoso-tests:
     name: Virtuoso tests
-    uses: ./.github/workflows/virtuoso-nightly.yaml
+    uses: ./.github/workflows/run-virtuoso-ukhsa-ukprd.yaml
     needs: build-and-deploy-ui
     with:
       plan_id: "5"
