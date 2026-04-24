@@ -4,16 +4,17 @@ set -eou pipefail
 #-----------------------------#
 # Author: SpotQA
 # Contact: support@spotqa.com
+# Title: A script for triggering Virtuoso APIs to execute a plan.
+# Requirements: This script requires curl and jq to be installed.
 #-----------------------------#
 
-# ✅ CHANGED: support env + CLI fallback
 PLAN_ID="${PLAN_ID:-${1:-}}"
 PLAN_NAME="${PLAN_NAME:-${2:-}}"
 ENVIRONMENT_ID="${ENVIRONMENT_ID:-}"
 
 if [ -z "$PLAN_ID" ]; then
   echo "Usage: <path_to_script>.sh [PLAN_ID] [PLAN_NAME]"
-  echo "Or set PLAN_ID as environment variable"
+  echo "Or set PLAN_ID as an environment variable."
   exit 1
 fi
 
@@ -31,10 +32,11 @@ fi
 MAX_RETRY_TIME_SECONDS=300
 RETRY_DELAY_TIME_SECONDS=10
 
-# ✅ CHANGED: read token from env only
+# Token is read from environment only — set VIRTUOSO_TOKEN in GitHub secrets
 VIRTUOSO_TOKEN="${VIRTUOSO_TOKEN:-}"
 
-# Parse arguments (skip first 2 if provided)
+# Skip first two positional args (PLAN_ID / PLAN_NAME) if provided,
+# then parse any remaining optional flags
 shift $(( $# > 0 ? 1 : 0 ))
 shift $(( $# > 0 ? 1 : 0 ))
 
@@ -66,11 +68,11 @@ if [[ -z "$TOKEN" || "$TOKEN" == "null" ]]; then
 fi
 
 if [ -z "$PLAN_ID" ] || [ "$PLAN_ID" == "null" ]; then
-  echo "\"PLAN_ID\" is not set."
+  echo "\"PLAN_ID\" is not set. Please set it as an environment variable or pass it as the first argument."
   exit 1
 fi
 
-# ✅ Optional fallback name
+# Default plan name if not provided
 if [ -z "$PLAN_NAME" ]; then
   PLAN_NAME="Plan-$PLAN_ID"
 fi
@@ -125,7 +127,10 @@ for JOB_ID in $JOB_IDS; do
   echo "Polling job $JOB_ID..."
   RUNNING=true
   while $RUNNING; do
-    JOB=$(curl -s --header "Authorization: Bearer $VIRTUOSO_TOKEN" --header "X-Virtuoso-Client-Name: CICD" "https://api-uk.virtuoso.qa/api/executions/$JOB_ID/status?envelope=false" || echo "{}")
+    JOB=$(curl -s \
+      --header "Authorization: Bearer $VIRTUOSO_TOKEN" \
+      --header "X-Virtuoso-Client-Name: CICD" \
+      "https://api-uk.virtuoso.qa/api/executions/$JOB_ID/status?envelope=false" || echo "{}")
     JOB_STATUS=$(echo "$JOB" | jq -r .status)
     OUTCOME=$(echo "$JOB" | jq -r .outcome)
 
@@ -150,7 +155,11 @@ done
 echo "Exporting test results..."
 RESULTS_FILE="plan_execution_report.json"
 
-curl -s --header "Authorization: Bearer $TOKEN" --header "X-Virtuoso-Client-Name: CICD" "https://api-uk.virtuoso.qa/api/plans/executions/status/$PLAN_EXECUTION_ID?envelope=false" | jq -r '.' > "$RESULTS_FILE"
+curl -s \
+  --header "Authorization: Bearer $TOKEN" \
+  --header "X-Virtuoso-Client-Name: CICD" \
+  "https://api-uk.virtuoso.qa/api/plans/executions/status/$PLAN_EXECUTION_ID?envelope=false" \
+  | jq -r '.' > "$RESULTS_FILE"
 
 echo "Exported the report as \"$RESULTS_FILE\""
 
@@ -160,4 +169,3 @@ if [ "$ALL_SUCCESS" = false ]; then
 fi
 
 echo "All jobs finished successfully!"
-

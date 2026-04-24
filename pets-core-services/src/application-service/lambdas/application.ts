@@ -216,7 +216,7 @@ export const routes: PetsRoute[] = [
   },
   {
     method: "GET",
-    path: "/dashboard-applications/",
+    path: "/application/dashboard",
     handler: middy<PetsAPIGatewayProxyEvent>().handler(getDashboardApplicationsHandler),
     responseSchema: DashboardApplicationsSchema.openapi({
       description: "All in progress applications root records for the clinic of logged in user",

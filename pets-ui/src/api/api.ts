@@ -19,8 +19,8 @@ import {
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
+  ReceivedApplicationInProgressType,
   ReceivedApplicationListType,
-  ReceivedApplicationsInProgressType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
@@ -90,8 +90,8 @@ export const getApplication = async (applicationId: string) => {
 };
 
 export const getDashboardApplications = async () => {
-  const result = await petsApi.get("/dashboard-applications/");
-  return result as AxiosResponse<ReceivedApplicationsInProgressType>;
+  const result = await petsApi.get("/application/dashboard");
+  return result as AxiosResponse<ReceivedApplicationInProgressType[]>;
 };
 
 export const createNewApplication = async (applicantPassportDetails: ApplicantSearchFormType) => {

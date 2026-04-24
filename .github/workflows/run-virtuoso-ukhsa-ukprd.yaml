@@ -4,11 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       plan_id:
-        description: "5"
+        description: "Plan ID"
+        default: "5"
         required: true
       plan_name:
-        description: "CI/CD_PETS"
+        description: "Plan name"
         required: false
+  workflow_call:
+    inputs:
+      plan_id:
+        required: true
+        type: string
+      plan_name:
+        required: false
+        type: string
 
 jobs:
   run-virtuoso-plan:

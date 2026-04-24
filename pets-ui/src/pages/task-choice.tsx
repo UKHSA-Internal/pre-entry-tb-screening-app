@@ -20,7 +20,7 @@ import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
-import { ReceivedApplicationsInProgressType } from "@/types";
+import { ReceivedApplicationInProgressType } from "@/types";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { getUserProperties } from "@/utils/userProperties";
 
@@ -62,11 +62,11 @@ export default function TaskChoicePage() {
   const getApplicationsInProgress = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    let applicationsRes: AxiosResponse<ReceivedApplicationsInProgressType> | null = null;
+    let applicationsRes: AxiosResponse<ReceivedApplicationInProgressType[]> | null = null;
 
     try {
       applicationsRes = await getDashboardApplications();
-      dispatch(setApplicationsInProgress(applicationsRes.data.applications));
+      dispatch(setApplicationsInProgress(applicationsRes.data));
       navigate("/screenings-in-progress");
       return;
     } catch (error) {

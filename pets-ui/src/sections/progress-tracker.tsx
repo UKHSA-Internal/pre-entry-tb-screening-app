@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
+import { getApplication } from "@/api/api";
 import ApplicantDataHeader from "@/components/applicantDataHeader/applicantDataHeader";
 import Button from "@/components/button/button";
 import Heading from "@/components/heading/heading";
@@ -34,6 +35,7 @@ import {
   YesOrNo,
 } from "@/utils/enums";
 import { formatDateForDisplay, isDateInThePast, upsertAppIntoAppList } from "@/utils/helpers";
+import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 interface TaskProps {
   description: string;
@@ -130,6 +132,7 @@ const ProgressTracker = () => {
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -196,16 +199,52 @@ const ProgressTracker = () => {
     }
   }
 
-  const returnToScreeningHistory = (
+  const returnToScreeningHistory = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     currentApplication: ReduxApplicationDetailsType,
     applicationsList: ReduxApplicationDetailsType[],
   ) => {
     e.preventDefault();
     setIsLoading(true);
-    dispatch(
-      setApplicationsListDetails(upsertAppIntoAppList(currentApplication, applicationsList)),
-    );
+    const updatedApplicationsList = upsertAppIntoAppList(currentApplication, applicationsList);
+    dispatch(setApplicationsListDetails(updatedApplicationsList));
+    updatedApplicationsList.sort((a, b) => {
+      if (
+        a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        b.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return -1;
+      } else if (
+        b.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        a.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return 1;
+      }
+      const dateA = new Date(
+        Number.parseInt(a.dateCreated.year),
+        Number.parseInt(a.dateCreated.month),
+        Number.parseInt(a.dateCreated.day),
+      ).getTime();
+      const dateB = new Date(
+        Number.parseInt(b.dateCreated.year),
+        Number.parseInt(b.dateCreated.month),
+        Number.parseInt(b.dateCreated.day),
+      ).getTime();
+      return dateB - dateA;
+    });
+
+    for (const application of updatedApplicationsList) {
+      const applicationRes = await getApplication(application.applicationId);
+      if (applicationRes.data.applicantPhotoUrl) {
+        await handleApplicantPhoto(
+          applicationRes.data.applicantPhotoUrl,
+          dispatch,
+          setApplicantPhotoFile,
+          setApplicantPhotoUrl,
+        );
+        break;
+      }
+    }
     navigate("/screening-history");
   };
 
@@ -234,8 +273,8 @@ const ProgressTracker = () => {
                 title="Return to screening history for this visa applicant"
                 to="/screening-history"
                 externalLink={false}
-                onClick={(e) => {
-                  returnToScreeningHistory(e, applicationData, applicationsListData);
+                onClick={async (e) => {
+                  await returnToScreeningHistory(e, applicationData, applicationsListData);
                 }}
               />
             </NotificationBanner>
@@ -380,8 +419,8 @@ const ProgressTracker = () => {
           to="/screening-history"
           title="View the screening history for this visa applicant"
           externalLink={false}
-          onClick={(e) => {
-            returnToScreeningHistory(e, applicationData, applicationsListData);
+          onClick={async (e) => {
+            await returnToScreeningHistory(e, applicationData, applicationsListData);
           }}
         />
       </p>
