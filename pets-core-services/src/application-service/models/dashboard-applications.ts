@@ -121,6 +121,8 @@ export class DashboardApplication extends IDashboardApplication {
         return new DashboardApplication({
           ...app,
           applicantName: applicant.fullName,
+          passportNumber: applicant.passportNumber,
+          countryOfIssue: applicant.countryOfIssue,
         });
       });
 
