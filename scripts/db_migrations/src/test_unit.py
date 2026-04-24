@@ -933,7 +933,7 @@ class TestRewriteApplicationRootRecords:
         assert stats["rewritten_application_root_rows"] == 1
 
     def test_live_root_sk_increments_nonroot_rows(self):
-        """dry_run=False, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        """dry_run=False, ROOT row → rewritten_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
@@ -952,7 +952,7 @@ class TestRewriteApplicationRootRecords:
         assert stats["skipped_application_root_rows"] == 1
 
     def test_exception_root_sk_increments_skipped_nonroot_rows(self):
-        """update_item raises Exception, sk == ROOT → skipped_application_nonroot_rows incremented."""
+        """update_item raises Exception, ROOT row > skipped_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         apt.update_item.side_effect = Exception("boom")
