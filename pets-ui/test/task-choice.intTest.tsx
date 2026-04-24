@@ -49,64 +49,61 @@ describe("Task choice page", () => {
 
   it("store correctly populated and user navigated to dashboard when apps successfully retrieved (200 response)", async () => {
     const preloadedState = {
-      applicationsInProgress: { applications: [], cursor: null },
+      applicationsInProgress: [],
     };
 
-    const applicationsResFixture = {
-      applications: [
-        {
-          applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
-          applicantId: "COUNTRY#AFG#PASSPORT#abc1",
-          applicantName: "Name One",
-          passportNumber: "abc1",
-          countryOfIssue: "AFG",
-          clinicId: "my-clinic",
-          dateCreated: "2021-04-07T15:32:34.470Z",
-          applicationStatus: ApplicationStatus.IN_PROGRESS,
-        },
-        {
-          applicationId: "b1a2f682-9281-4b92-b4ef-878edfd06d23",
-          applicantId: "COUNTRY#AFG#PASSPORT#abc2",
-          applicantName: "Name Two",
-          passportNumber: "abc2",
-          countryOfIssue: "AFG",
-          clinicId: "my-clinic",
-          dateCreated: "2026-04-07T15:32:34.470Z",
-          applicationStatus: ApplicationStatus.IN_PROGRESS,
-        },
-        {
-          applicationId: "17811cbc-501d-4051-94ae-67692fe6f393",
-          applicantId: "COUNTRY#AFG#PASSPORT#abc3",
-          applicantName: "Name Three",
-          passportNumber: "abc3",
-          countryOfIssue: "AFG",
-          clinicId: "my-clinic",
-          dateCreated: "2023-04-07T15:32:34.470Z",
-          applicationStatus: ApplicationStatus.IN_PROGRESS,
-        },
-        {
-          applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
-          applicantId: "COUNTRY#AFG#PASSPORT#abc4",
-          applicantName: "Should not see - different clinic",
-          passportNumber: "abc4",
-          countryOfIssue: "AFG",
-          clinicId: "another-clinic",
-          dateCreated: "2026-04-07T15:32:34.470Z",
-          applicationStatus: ApplicationStatus.IN_PROGRESS,
-        },
-        {
-          applicationId: "17814cbc-501d-4051-94ae-67692fe6f363",
-          applicantId: "COUNTRY#AFG#PASSPORT#abc9",
-          applicantName: "Should not see - different status",
-          passportNumber: "abc9",
-          countryOfIssue: "AFG",
-          clinicId: "my-clinic",
-          dateCreated: "2026-04-07T15:32:34.470Z",
-          applicationStatus: ApplicationStatus.CERTIFICATE_NOT_ISSUED,
-        },
-      ],
-      cursor: null,
-    };
+    const applicationsResFixture = [
+      {
+        applicationId: "9189a071-945b-4834-a6cb-8748c4746eba",
+        applicantId: "COUNTRY#AFG#PASSPORT#abc1",
+        applicantName: "Name One",
+        passportNumber: "abc1",
+        countryOfIssue: "AFG",
+        clinicId: "my-clinic",
+        dateCreated: "2021-04-07T15:32:34.470Z",
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
+      {
+        applicationId: "b1a2f682-9281-4b92-b4ef-878edfd06d23",
+        applicantId: "COUNTRY#AFG#PASSPORT#abc2",
+        applicantName: "Name Two",
+        passportNumber: "abc2",
+        countryOfIssue: "AFG",
+        clinicId: "my-clinic",
+        dateCreated: "2026-04-07T15:32:34.470Z",
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
+      {
+        applicationId: "17811cbc-501d-4051-94ae-67692fe6f393",
+        applicantId: "COUNTRY#AFG#PASSPORT#abc3",
+        applicantName: "Name Three",
+        passportNumber: "abc3",
+        countryOfIssue: "AFG",
+        clinicId: "my-clinic",
+        dateCreated: "2023-04-07T15:32:34.470Z",
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
+      {
+        applicationId: "17811cbc-501d-4051-94ae-67692fe6f363",
+        applicantId: "COUNTRY#AFG#PASSPORT#abc4",
+        applicantName: "Should not see - different clinic",
+        passportNumber: "abc4",
+        countryOfIssue: "AFG",
+        clinicId: "another-clinic",
+        dateCreated: "2026-04-07T15:32:34.470Z",
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+      },
+      {
+        applicationId: "17814cbc-501d-4051-94ae-67692fe6f363",
+        applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+        applicantName: "Should not see - different status",
+        passportNumber: "abc9",
+        countryOfIssue: "AFG",
+        clinicId: "my-clinic",
+        dateCreated: "2026-04-07T15:32:34.470Z",
+        applicationStatus: ApplicationStatus.CERTIFICATE_NOT_ISSUED,
+      },
+    ];
 
     const { store } = renderWithProviders(<TaskChoicePage />, { preloadedState });
 

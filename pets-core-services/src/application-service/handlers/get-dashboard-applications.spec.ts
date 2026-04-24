@@ -54,33 +54,29 @@ describe("Getting Applications Handler", () => {
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (DashboardApplication.getByClinicId as any).mockResolvedValue({
-      applications: [
-        {
-          toJson: () => ({
-            applicationId: "test-id",
-            applicantId: "COUNTRY#IND#PASSPORT#Test",
-            passportNumber: "Test",
-            countryOfIssue: CountryCode.IND,
-            clinicId: "clinic-123",
-            dateCreated: new Date(),
-            applicationStatus: ApplicationStatus.inProgress,
-            applicationStatusGroup: ApplicationStatusGroup.incomplete,
-          }),
-        },
-      ],
-      cursor: null,
-    });
+    (DashboardApplication.getByClinicId as any).mockResolvedValue([
+      {
+        toJson: () => ({
+          applicationId: "test-id",
+          applicantId: "COUNTRY#IND#PASSPORT#Test",
+          passportNumber: "Test",
+          countryOfIssue: CountryCode.IND,
+          clinicId: "clinic-123",
+          dateCreated: new Date(),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        }),
+      },
+    ]);
     // Act
     const response = await getDashboardApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(DashboardApplication.getByClinicId).toHaveBeenCalledWith("clinic-123", 100, undefined);
+    expect(DashboardApplication.getByClinicId).toHaveBeenCalledWith("clinic-123", 100);
     const body = JSON.parse(response.body);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(body?.applications).toEqual([
+    expect(body).toEqual([
       {
         applicationId: "test-id",
         applicantId: "COUNTRY#IND#PASSPORT#Test",
@@ -104,31 +100,27 @@ describe("Getting Applications Handler", () => {
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (DashboardApplication.getByClinicId as any).mockResolvedValue({
-      applications: [
-        {
-          toJson: () => ({
-            applicationId: "test-id",
-            applicantId: "COUNTRY#IND#PASSPORT#Test",
-            passportNumber: "Test",
-            countryOfIssue: CountryCode.IND,
-            clinicId: "test-clinic",
-            dateCreated: new Date(),
-            applicationStatus: ApplicationStatus.inProgress,
-            applicationStatusGroup: ApplicationStatusGroup.incomplete,
-          }),
-        },
-      ],
-      cursor: null,
-    });
+    (DashboardApplication.getByClinicId as any).mockResolvedValue([
+      {
+        toJson: () => ({
+          applicationId: "test-id",
+          applicantId: "COUNTRY#IND#PASSPORT#Test",
+          passportNumber: "Test",
+          countryOfIssue: CountryCode.IND,
+          clinicId: "test-clinic",
+          dateCreated: new Date(),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        }),
+      },
+    ]);
     // Act
     const response = await getDashboardApplicationsHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(body?.applications).toEqual([
+    expect(body).toEqual([
       {
         applicationId: "test-id",
         applicantId: "COUNTRY#IND#PASSPORT#Test",
