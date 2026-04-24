@@ -690,7 +690,8 @@ class TestRewriteApplicationRootRecordsLive:
         assert record["dateCreated"] == "2024-06-15"
 
     def test_statistics_rewritten_root_rows_incremented(self, mod, tables, dynamodb_local):
-        """rewritten_application_nonroot_rows counter is incremented for each APPLICATION#ROOT record
+        """
+        rewritten_application_nonroot_rows counter is incremented for each APPLICATION#ROOT record
         (source code increments nonroot counter when sk == APPLICATION#ROOT).
         """
         _, application_table, _ = tables
@@ -792,7 +793,7 @@ class TestRewriteApplicationNonrootRecordsLive:
 
         # source code: sk != APPLICATION#ROOT → rewritten_application_root_rows incremented
         assert stats["rewritten_application_root_rows"] == 2
-        # rewritten_application_nonroot_rows should be zero (that branch needs sk == APPLICATION#ROOT,
+        # rewritten_application_nonroot_rows should be zero (that branch needs sk = APPLICATION#ROOT
         # but those rows are excluded by the scan filter)
         assert stats["rewritten_application_nonroot_rows"] == 0
 
