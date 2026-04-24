@@ -13,24 +13,14 @@ export const getDashboardApplicationsHandler = async (event: PetsAPIGatewayProxy
     logger.info({ clinicId }, "Retrieve Applications handler triggered");
 
     const limit = Number(event.queryStringParameters?.limit || 100);
-    const cursor = event.queryStringParameters?.cursor;
     if (!clinicId) {
       logger.error("Clinic Id missing");
       return HttpErrors.badRequest("Clinic Id missing");
     }
 
-    const applicationsListResult = await DashboardApplication.getByClinicId(
-      clinicId,
-      limit,
-      cursor,
-    );
+    const applicationsListResult = await DashboardApplication.getByClinicId(clinicId, limit);
 
-    return HttpResponses.ok(
-      JSON.stringify({
-        applications: applicationsListResult.applications.map((app) => app.toJson()),
-        cursor: applicationsListResult.cursor,
-      }),
-    );
+    return HttpResponses.ok(JSON.stringify(applicationsListResult.map((app) => app.toJson())));
   } catch (error) {
     logger.error(error, "Error retrieving list of applications");
     return HttpErrors.serverError("Something went wrong");

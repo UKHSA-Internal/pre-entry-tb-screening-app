@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ReceivedApplicationInProgressType, ReceivedApplicationsInProgressType } from "@/types";
+import { ReceivedApplicationInProgressType } from "@/types";
 
-const initialState: ReceivedApplicationsInProgressType = { applications: [], cursor: null };
+const initialState: ReceivedApplicationInProgressType[] = [];
 
 export const applicationsInProgressSlice = createSlice({
   name: "applicationsInProgress",
@@ -12,11 +12,11 @@ export const applicationsInProgressSlice = createSlice({
       state,
       action: PayloadAction<ReceivedApplicationInProgressType[]>,
     ) => {
-      state.applications.splice(0, state.applications.length);
-      state.applications.push(...action.payload);
+      state.splice(0, state.length);
+      state.push(...action.payload);
     },
     clearApplicationsInProgress: () => {
-      return { applications: [], cursor: null };
+      return [];
     },
   },
 });
