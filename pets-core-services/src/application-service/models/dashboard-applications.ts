@@ -65,18 +65,13 @@ export class DashboardApplication extends IDashboardApplication {
     });
   }
 
-  static async getByClinicId(
-    clinicId: string,
-    limit = 100,
-    cursor?: string,
-  ): Promise<DashboardApplicationsList> {
+  static async getByClinicId(clinicId: string, limit = 100): Promise<DashboardApplication[]> {
     try {
       logger.info(`Fetching applications by clinicId ${clinicId}`);
       const allItems: any[] = [];
       let lastEvaluatedKey: Record<string, any> | undefined = undefined;
       let result: QueryCommandOutput;
-      const lastKey = cursor ? JSON.parse(Buffer.from(cursor, "base64").toString()) : undefined;
-      logger.info(lastKey);
+
       do {
         result = await docClient.send(
           new QueryCommand({
@@ -114,7 +109,7 @@ export class DashboardApplication extends IDashboardApplication {
       });
 
       // Add applicantName
-      const enriched = applications.map((app) => {
+      const enrichedApplications = applications.map((app) => {
         const applicant = applicantMap.get(app.applicantId) as Applicant;
         return new DashboardApplication({
           ...app,
@@ -124,15 +119,7 @@ export class DashboardApplication extends IDashboardApplication {
         });
       });
 
-      //Encode cursor
-      const nextCursor = result.LastEvaluatedKey
-        ? Buffer.from(JSON.stringify(result.LastEvaluatedKey)).toString("base64")
-        : null;
-
-      return {
-        applications: enriched,
-        cursor: nextCursor,
-      };
+      return enrichedApplications;
     } catch (error) {
       logger.error(error, "Error retrieving applications by clinicId");
       throw error;

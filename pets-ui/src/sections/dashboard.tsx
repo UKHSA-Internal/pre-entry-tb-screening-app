@@ -181,7 +181,7 @@ const Dashboard = () => {
     }
   };
 
-  const applicationTableInfo = applicationsInProgressData.applications
+  const applicationTableInfo = applicationsInProgressData
     .filter((app) => app.clinicId == userClinicData.clinicId)
     .sort(
       (app1, app2) => new Date(app2.dateCreated).getTime() - new Date(app1.dateCreated).getTime(),
