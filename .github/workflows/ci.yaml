@@ -315,7 +315,7 @@ jobs:
         working-directory: pets-ui
   virtuoso-tests:
     name: Virtuoso tests
-    uses: ./.github/workflows/run-virtuoso-ukhsa-ukprd.yaml
+    uses: ./.github/workflows/virtuoso-nightly.yaml
     with:
       plan_id: "5"
       plan_name: "CI/CD_PETS"
