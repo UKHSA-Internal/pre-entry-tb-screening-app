@@ -46,6 +46,28 @@ import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
+const getLinkText = (status: ApplicationStatus) => {
+  switch (status) {
+    case ApplicationStatus.TRAVEL_IN_PROGRESS:
+      return "Continue: travel information";
+    case ApplicationStatus.MEDICAL_SCREENING_IN_PROGRESS:
+      return "Continue: TB symptoms and medical history";
+    case ApplicationStatus.CHEST_XRAY_IN_PROGRESS:
+      return "Continue: upload chest X-ray";
+    case ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS:
+      return "Continue: radiological outcome";
+    case ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS:
+      return "Continue: Make a sputum decision";
+    case ApplicationStatus.SPUTUM_IN_PROGRESS:
+    case ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS:
+      return "Continue: sputum results";
+    case ApplicationStatus.CERTIFICATE_IN_PROGRESS:
+      return "Continue: TB certificate outcome";
+    default:
+      return "Continue with screening";
+  }
+};
+
 const Dashboard = () => {
   const userClinicData = useAppSelector(selectUserClinic);
   const applicationsInProgressData = useAppSelector(selectApplicationsInProgress);
@@ -177,11 +199,7 @@ const Dashboard = () => {
         formatDateForDisplay(convertDateStrToObj(app.dateCreated)),
         <LinkLabel
           key={app.applicationId}
-          title={
-            app.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
-              ? "Continue: sputum results"
-              : "Continue with screening"
-          }
+          title={getLinkText(app.applicationStatus)}
           to="/tracker"
           externalLink={false}
           onClick={async (e) => {
