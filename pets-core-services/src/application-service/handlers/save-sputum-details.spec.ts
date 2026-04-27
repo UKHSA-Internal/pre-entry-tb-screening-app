@@ -1,7 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
-import { TaskStatus } from "../../shared/types/enum";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { SputumDetailsDbOps } from "../models/sputum-details";
 import { SputumCollectionMethod } from "../types/enums";
@@ -51,7 +52,12 @@ describe("Test for Saving Sputum Details into DB", () => {
         authorizer: { clinicId: "test1", createdBy: "user1" },
       },
     };
-
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.sputumResultsInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveSputumDetailsHandler(event);
 
@@ -61,6 +67,12 @@ describe("Test for Saving Sputum Details into DB", () => {
       applicationId: seededApplications[0].applicationId,
       dateCreated: dateCreated.toISOString(),
       ...newSputumDetails,
+    });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.sputumResultsInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "user1",
     });
   });
 
@@ -142,6 +154,27 @@ describe("Test for Saving Sputum Details into DB", () => {
     expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Sputum Details Request validation failed",
+    });
+  });
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveSputumDetailsEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newSputumDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "test1", createdBy: "user1" },
+      },
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveSputumDetailsHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
     });
   });
   test("Unexpected error returns a 500 response", async () => {
