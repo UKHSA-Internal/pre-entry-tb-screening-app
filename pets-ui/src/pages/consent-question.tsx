@@ -27,7 +27,9 @@ export default function ConsentQuestionPage() {
     formState: { errors },
   } = methods;
 
-  dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
+  useEffect(() => {
+    dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
+  });
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(

@@ -28,21 +28,23 @@ const Container = ({
   shouldClearHistory = false,
   useTwoThirdsColumn = true,
 }: Readonly<ContainerProps>) => {
-  useNavigationHistory(shouldClearHistory);
   const pageStart = useRef<HTMLDivElement | null>(null);
   const mainContent = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
 
+  useNavigationHistory(shouldClearHistory);
+
   useEffect(() => {
-    if (location.hash) {
-      const target = location.hash.substring(1);
-      if (target == "main-content") {
+    const hash = location.hash;
+    if (hash) {
+      const target = hash.substring(1);
+      if (target === "main-content") {
         mainContent.current?.focus({ preventScroll: true });
+        return;
       }
-    } else {
-      pageStart.current?.focus({ preventScroll: true });
     }
-  }, [location]);
+    pageStart.current?.focus({ preventScroll: true });
+  }, [location.pathname, location.hash]);
 
   return (
     <div ref={pageStart}>
