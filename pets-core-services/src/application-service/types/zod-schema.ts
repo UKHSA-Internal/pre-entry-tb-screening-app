@@ -513,8 +513,12 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
-
-export const DashboardApplicationSchema = z.object({
+export const DashboardApplicationsRequestSchema = z.object({
+  clinicId: z.string().optional().openapi({
+    description: "ID of the Clinic(Optional). Only applicable for support clinic",
+  }),
+});
+export const DashboardApplicationResponseSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
   }),
@@ -541,6 +545,8 @@ export const DashboardApplicationSchema = z.object({
   }),
 });
 
-export const DashboardApplicationsSchema = z.array(DashboardApplicationSchema).openapi({
-  description: "Applicant's applications in Progress",
-});
+export const DashboardApplicationsResponseSchema = z
+  .array(DashboardApplicationResponseSchema)
+  .openapi({
+    description: "Applicant's applications in Progress",
+  });

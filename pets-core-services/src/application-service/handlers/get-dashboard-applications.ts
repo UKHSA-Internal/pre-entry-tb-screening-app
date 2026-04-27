@@ -1,14 +1,29 @@
+import { z } from "zod";
+
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { DashboardApplication } from "../models/dashboard-applications";
+import { DashboardApplicationsRequestSchema } from "../types/zod-schema";
 
-export const getDashboardApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) => {
+export type DashboardApplicationsRequestSchema = z.infer<typeof DashboardApplicationsRequestSchema>;
+export type DashboardApplications = PetsAPIGatewayProxyEvent & {
+  parsedBody?: DashboardApplicationsRequestSchema;
+};
+export const getDashboardApplicationsHandler = async (event: DashboardApplications) => {
   try {
-    const { clinicId } = event.requestContext.authorizer;
+    const clinicIdFromToken = event.requestContext.authorizer.clinicId;
+
+    const clinicIdFromRequest = event.parsedBody?.clinicId;
+    let clinicId;
+
     const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
-    if (clinicId === SUPPORT_CLINIC_ID) {
+    //Accept clinic Id  from request only from support clinics, for others take from token
+    if (clinicIdFromToken === SUPPORT_CLINIC_ID) {
       logger.info("Logged in as a support clinicId");
+      clinicId = clinicIdFromRequest;
+    } else {
+      clinicId = clinicIdFromToken;
     }
     logger.info({ clinicId }, "Retrieve Applications handler triggered");
 
