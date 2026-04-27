@@ -1,20 +1,13 @@
-import { z } from "zod";
-
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { DashboardApplication } from "../models/dashboard-applications";
-import { DashboardApplicationsRequestSchema } from "../types/zod-schema";
 
-export type DashboardApplicationsRequestSchema = z.infer<typeof DashboardApplicationsRequestSchema>;
-export type DashboardApplications = PetsAPIGatewayProxyEvent & {
-  parsedBody?: DashboardApplicationsRequestSchema;
-};
-export const getDashboardApplicationsHandler = async (event: DashboardApplications) => {
+export const getDashboardApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
     const clinicIdFromToken = event.requestContext.authorizer.clinicId;
 
-    const clinicIdFromRequest = event.parsedBody?.clinicId;
+    const clinicIdFromRequest = event?.queryStringParameters?.clinicId;
     let clinicId;
 
     const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;

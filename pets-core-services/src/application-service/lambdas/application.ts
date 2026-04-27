@@ -27,8 +27,7 @@ import {
   ChestXRayResponseSchema,
   CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
-  DashboardApplicationsRequestSchema,
-  DashboardApplicationsResponseSchema,
+  DashboardApplicationsSchema,
   ImageUploadUrlRequestSchema,
   ImageUploadUrlResponseSchema,
   MedicalScreeningRequestSchema,
@@ -219,10 +218,14 @@ export const routes: PetsRoute[] = [
     method: "GET",
     path: "/application/dashboard",
     handler: middy<PetsAPIGatewayProxyEvent>().handler(getDashboardApplicationsHandler),
-    requestBodySchema: DashboardApplicationsRequestSchema.openapi({
-      description: "Dashboard Applications Request",
-    }),
-    responseSchema: DashboardApplicationsResponseSchema.openapi({
+    queryParams: {
+      clinicId: z
+        .string({
+          description: "ID of the Clinic(Optional). Only applicable for support clinic",
+        })
+        .optional(),
+    },
+    responseSchema: DashboardApplicationsSchema.openapi({
       description: "All in progress applications root records for the clinic of logged in user",
     }),
   },
