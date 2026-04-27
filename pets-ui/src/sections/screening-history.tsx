@@ -73,9 +73,8 @@ const ScreeningHistory = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
-
   useEffect(() => {
+    dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
@@ -193,7 +192,7 @@ const ScreeningHistory = () => {
     (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
   );
 
-  const applicationTableInfo = applicationsListData
+  const applicationTableInfo = [...applicationsListData]
     .sort((a, b) => {
       if (
         a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
