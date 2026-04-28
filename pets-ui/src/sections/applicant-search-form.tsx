@@ -23,11 +23,12 @@ import {
   setApplicationsListDetailsFromApiResponse,
 } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
 import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
+import { selectUserClinic } from "@/redux/store";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
 import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
@@ -40,6 +41,7 @@ import { formRegex } from "@/utils/records";
 import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
+  const userClinicData = useAppSelector(selectUserClinic);
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
@@ -118,8 +120,17 @@ const ApplicantSearchForm = () => {
         const dateB = new Date(b.dateCreated).getTime();
         return dateB - dateA;
       });
+    } catch (error) {
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
+    }
 
-      for (const application of applicantRes.data.applications) {
+    for (const application of applicantRes.data.applications) {
+      if (userClinicData.clinicId && userClinicData.clinicId != application.clinicId) {
+        continue;
+      }
+      try {
         const applicationRes = await getApplication(application.applicationId);
         if (applicationRes.data.applicantPhotoUrl) {
           await handleApplicantPhoto(
@@ -130,13 +141,17 @@ const ApplicantSearchForm = () => {
           );
           break;
         }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.status == 403) {
+          continue;
+        } else {
+          console.error(error);
+          navigate("/sorry-there-is-problem-with-service");
+          return;
+        }
       }
-      navigate("/screening-history");
-    } catch (error) {
-      console.error(error);
-      navigate("/sorry-there-is-problem-with-service");
-      return;
     }
+    navigate("/screening-history");
   };
 
   return (
