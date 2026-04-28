@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 const HISTORY_KEY = "navigationHistory";
@@ -34,29 +34,30 @@ export const useNavigationHistory = (shouldClearHistory = false) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentPath = location.pathname + location.search + location.hash;
+
     if (shouldClearHistory) {
       clearNavigationHistory();
-      setNavigationHistory([location.pathname]);
+      setNavigationHistory([currentPath]);
       return;
     }
 
     const history = getNavigationHistory();
-    const currentPath = location.pathname + location.search + location.hash;
 
-    if (history.length === 0 || history.at(-1) !== currentPath) {
+    if (history.at(-1) !== currentPath) {
       const newHistory = [...history, currentPath];
       if (newHistory.length > MAX_HISTORY_SIZE) {
         newHistory.shift();
       }
       setNavigationHistory(newHistory);
     }
-  }, [location, shouldClearHistory]);
+  }, [location.pathname, location.search, location.hash, shouldClearHistory]);
 
-  const goBack = (fallbackUrl: string) => {
-    const history = getNavigationHistory();
-    const currentPath = location.pathname + location.search + location.hash;
+  const goBack = useCallback(
+    (fallbackUrl: string) => {
+      const history = getNavigationHistory();
+      const currentPath = location.pathname + location.search + location.hash;
 
-    if (history.length > 1) {
       const currentIndex = history.lastIndexOf(currentPath);
       if (currentIndex > 0) {
         const previousPath = history[currentIndex - 1];
@@ -65,10 +66,10 @@ export const useNavigationHistory = (shouldClearHistory = false) => {
         navigate(previousPath);
         return;
       }
-    }
-
-    navigate(fallbackUrl);
-  };
+      navigate(fallbackUrl);
+    },
+    [navigate, location.pathname, location.search, location.hash],
+  );
 
   return { goBack };
 };
