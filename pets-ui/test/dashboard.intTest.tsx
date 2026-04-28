@@ -134,6 +134,66 @@ const applicationsInProgressSlice = [
     dateCreated: "2026-04-07T15:32:34.470Z",
     applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.TRAVEL_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.MEDICAL_SCREENING_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.CHEST_XRAY_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.CERTIFICATE_IN_PROGRESS,
+  },
 ];
 
 describe("Dashboard", () => {
@@ -203,6 +263,36 @@ describe("Dashboard", () => {
     expect(
       screen.getByRole("row", {
         name: "Name Four abc4 Afghanistan 7 April 2022 Continue: sputum results",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: travel information",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: TB symptoms and medical history",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: upload chest X-ray",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: radiological outcome",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: Make a sputum decision",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: TB certificate outcome",
       }),
     ).toBeInTheDocument();
 
