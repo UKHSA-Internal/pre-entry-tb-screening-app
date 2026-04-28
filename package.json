@@ -61,7 +61,8 @@
       "form-data": "^4.0.5",
       "@smithy/types": "latest",
       "@smithy/smithy-client": "latest",
-      "@smithy/middleware-stack": "latest"
+      "@smithy/middleware-stack": "latest",
+      "fast-xml-parser": "5.3.4"
     }
   }
 }
