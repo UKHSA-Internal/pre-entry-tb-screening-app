@@ -18,19 +18,28 @@ on:
       plan_name:
         required: false
         type: string
+    outputs:
+      outcome:
+        description: "Overall outcome of the Virtuoso plan execution (PASS or FAIL)"
+        value: ${{ jobs.run-virtuoso-plan.outputs.outcome }}
+      report_artifact:
+        description: "Name of the uploaded execution report artifact"
+        value: ${{ jobs.run-virtuoso-plan.outputs.report_artifact }}
 
 jobs:
   run-virtuoso-plan:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
-      id-token: write
 
     env:
       VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
       PLAN_ID: ${{ inputs.plan_id || '5' }}
       PLAN_NAME: ${{ inputs.plan_name || 'CI/CD_PETS' }}
+
+    outputs:
+      outcome: ${{ steps.set_outcome.outputs.outcome }}
+      report_artifact: ${{ steps.set_outcome.outputs.report_artifact }}
 
     steps:
       - name: Checkout repository
@@ -64,146 +73,19 @@ jobs:
           name: execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}
           path: reports/plan_execution_report.json
 
-      # ── Transform report → test-results.json for the dashboard ──────────
-      # Only runs on schedule/workflow_dispatch — skipped when called from
-      # ci.yml or deploy.yml via workflow_call.
-      #
-      # The dashboard HTML expects this shape in test-results.json:
-      #   results.98.chrome / .firefox / .edge  (per-browser counts)
-      #
-      # Virtuoso returns .jobs as a keyed object (not an array).
-      # Actual field names on each job object from Virtuoso:
-      #   .outcome                    "PASS" | "FAIL" | "ERROR"
-      #   .totalTestExecutions        integer
-      #   .successfulTestExecutions   integer
-      #   .failedTestExecutions       integer
-      #   .skippedTestExecutions      integer
-      
-      - name: Transform results to dashboard format
-        if: always() && github.event_name != 'workflow_call'
+      - name: Set outputs
+        id: set_outcome
+        if: always()
         run: |
-          REPORT="reports/plan_execution_report.json"
-          ENVIRONMENT="98"
-          BROWSERS=("chrome" "firefox" "edge")
+          OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' reports/plan_execution_report.json)
+          echo "outcome=$OUTCOME" >> "$GITHUB_OUTPUT"
+          echo "report_artifact=execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
 
-          TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
-          OVERALL_OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' "$REPORT")
-
-          mkdir -p dashboard
-
-          echo "{"               > dashboard/test-results.json
-          echo '  "results": {' >> dashboard/test-results.json
-          echo "    \"$ENVIRONMENT\": {" >> dashboard/test-results.json
-
-          FIRST_BROWSER=true
-          for BROWSER in "${BROWSERS[@]}"; do
-            BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
-
-            # .jobs is a keyed object — iterate its values with .jobs[]
-            JOB=$(jq -c \
-              --arg b "$BROWSER_UPPER" \
-              '.jobs | to_entries[].value | select((.browser // "" | ascii_upcase) == $b)' \
-              "$REPORT" 2>/dev/null | head -1 || true)
-
-            # Fallback: if no job carries a .browser field, map the first job to chrome only
-            if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
-              HAS_BROWSER=$(jq '[.jobs | to_entries[].value | .browser] | map(select(. != null)) | length' \
-                "$REPORT" 2>/dev/null || echo "0")
-              if [[ "$HAS_BROWSER" == "0" ]]; then
-                # FIX: .jobs is a keyed object — use to_entries to get first value
-                JOB=$(jq -c '.jobs | to_entries[0].value // empty' "$REPORT" 2>/dev/null || true)
-              fi
-            fi
-
-            if [[ -n "$JOB" ]]; then
-              OUTCOME=$(echo "$JOB" | jq -r '.outcome // "UNKNOWN"')
-              # FIX: use Virtuoso's actual field names
-              TOTAL=$(echo   "$JOB" | jq -r '.totalTestExecutions        // 0')
-              PASSED=$(echo  "$JOB" | jq -r '.successfulTestExecutions   // 0')
-              FAILED=$(echo  "$JOB" | jq -r '.failedTestExecutions       // 0')
-              PENDING=$(echo "$JOB" | jq -r '.skippedTestExecutions      // 0')
-              STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
-            else
-              # No data for this browser — mark as SKIP rather than FAIL
-              STATUS="SKIP"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
-            fi
-
-            TOTAL_TESTS=$((TOTAL_TESTS   + TOTAL))
-            TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
-            TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
-            TOTAL_PENDING=$((TOTAL_PENDING + PENDING))
-
-            [[ "$FIRST_BROWSER" == "false" ]] && echo "," >> dashboard/test-results.json
-            cat >> dashboard/test-results.json <<EOF
-          "$BROWSER": {
-            "status": "$STATUS",
-            "testCounts": {
-              "total":   $TOTAL,
-              "passed":  $PASSED,
-              "failed":  $FAILED,
-              "pending": $PENDING
-            }
-          }
-          EOF
-            FIRST_BROWSER=false
-            echo "  $BROWSER: status=$STATUS total=$TOTAL passed=$PASSED failed=$FAILED"
-          done
-
-          OVERALL_STATUS=$([[ "$OVERALL_OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
-
-          # Calculate actual success rate from real counts
-          if [[ "$TOTAL_TESTS" -gt 0 ]]; then
-            SUCCESS_RATE=$(echo "scale=1; $TOTAL_PASSED * 100 / $TOTAL_TESTS" | bc)
-          else
-            SUCCESS_RATE="0.0"
-          fi
-
-          FAILED_COMBINATIONS=$([[ "$OVERALL_STATUS" == "PASS" ]] && echo "0" || echo "1")
-
-          cat >> dashboard/test-results.json <<EOF
-            }
-          },
-          "overallStatus":      "$OVERALL_STATUS",
-          "totalCombinations":  1,
-          "failedCombinations": $FAILED_COMBINATIONS,
-          "totalTests":         $TOTAL_TESTS,
-          "totalPassed":        $TOTAL_PASSED,
-          "totalFailed":        $TOTAL_FAILED,
-          "totalPending":       $TOTAL_PENDING,
-          "successRate":        $SUCCESS_RATE,
-          "runUrl":             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-          "branch":             "${{ github.ref_name }}",
-          "timestamp":          "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
-
-          echo "=== test-results.json ==="
-          cat dashboard/test-results.json
-
-      - name: Copy dashboard HTML
-        if: always() && github.event_name != 'workflow_call'
-        run: cp .github/workflows/PETSNightlyDashboard.html dashboard/index.html
-
-      - name: Setup Pages
-        if: always() && github.event_name != 'workflow_call'
-        uses: actions/configure-pages@v4
-
-      - name: Upload to GitHub Pages
-        if: always() && github.event_name != 'workflow_call'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./dashboard"
-
-      - name: Deploy to GitHub Pages
-        if: always() && github.event_name != 'workflow_call'
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Dashboard URL
-        if: always() && github.event_name != 'workflow_call'
+      - name: Summary
+        if: always()
         run: |
           if [[ "${{ steps.virtuoso_run.outcome }}" == "success" ]]; then
-            echo "::notice::✅ Virtuoso tests passed! Dashboard: ${{ steps.deployment.outputs.page_url }}"
+            echo "::notice::✅ Virtuoso tests passed."
           else
-            echo "::warning::⚠️ Some tests failed. Dashboard: ${{ steps.deployment.outputs.page_url }}"
+            echo "::warning::⚠️ Some Virtuoso tests failed."
           fi
