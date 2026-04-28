@@ -69,7 +69,7 @@ jobs:
       # ci.yml or deploy.yml via workflow_call.
       #
       # The dashboard HTML expects this shape in test-results.json:
-      #   results.qat.chrome / .firefox / .edge  (per-browser counts)
+      #   results.98.chrome / .firefox / .edge  (per-browser counts)
       #
       # Virtuoso returns one job per browser in the plan execution report.
       # Expected fields on each job object:
@@ -87,7 +87,7 @@ jobs:
         if: always() && github.event_name != 'workflow_call'
         run: |
           REPORT="reports/plan_execution_report.json"
-          ENVIRONMENT="qat"
+          ENVIRONMENT="98"
           BROWSERS=("chrome" "firefox" "edge")
 
           TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
