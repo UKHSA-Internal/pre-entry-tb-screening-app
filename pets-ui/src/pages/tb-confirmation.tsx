@@ -19,11 +19,13 @@ export default function TbConfirmationPage() {
 
   const isCertificateIssued = tbCertificateData.isIssued === YesOrNo.YES;
 
-  if (isCertificateIssued) {
-    dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_AVAILABLE));
-  } else {
-    dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_NOT_ISSUED));
-  }
+  useEffect(() => {
+    if (isCertificateIssued) {
+      dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_AVAILABLE));
+    } else {
+      dispatch(setApplicationStatus(ApplicationStatus.CERTIFICATE_NOT_ISSUED));
+    }
+  });
 
   const furtherInfo = [
     <LinkLabel
