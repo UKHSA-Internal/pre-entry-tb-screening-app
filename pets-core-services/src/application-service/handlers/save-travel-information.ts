@@ -3,7 +3,9 @@ import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { TravelInformation, TravelInformationDbOps } from "../models/travel-information";
 import { TravelInformationPostRequestSchema } from "../types/zod-schema";
 
@@ -28,8 +30,9 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
     }
 
     let travelInformation: TravelInformation;
+    const { createdBy } = event.requestContext.authorizer;
+
     try {
-      const { createdBy } = event.requestContext.authorizer;
       travelInformation = await TravelInformationDbOps.createTravelInformation({
         ...parsedBody,
         createdBy,
@@ -40,6 +43,14 @@ export const saveTravelInformationHandler = async (event: SaveTravelInformationE
         return HttpErrors.conflictError("Travel Details already saved");
       throw error;
     }
+    // Update details in APPLICATION#ROOT record as well
+
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: ApplicationStatus.medicalScreeningInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
 
     return HttpResponses.ok({
       ...travelInformation.toJson(),

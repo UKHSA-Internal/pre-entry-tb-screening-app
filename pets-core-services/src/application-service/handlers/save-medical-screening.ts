@@ -3,12 +3,15 @@ import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import {
   MedicalScreeningChestXray,
   MedicalScreeningDbOps,
   MedicalScreeningNoChestXray,
 } from "../models/medical-screening";
+import { YesOrNo } from "../types/enums";
 import { MedicalScreeningRequestSchema } from "../types/zod-schema";
 
 export type MedicalScreeningRequestSchema = z.infer<typeof MedicalScreeningRequestSchema>;
@@ -44,7 +47,17 @@ export const saveMedicalScreeningHandler = async (event: SaveMedicalScreeningEve
         return HttpErrors.conflictError("Medical Screening already saved");
       throw error;
     }
-
+    // Update details in APPLICATION#ROOT record as well
+    const applicationStatus =
+      medicalScreening.isXrayRequired === YesOrNo.Yes
+        ? ApplicationStatus.chestXrayInProgress
+        : ApplicationStatus.sputumDecisionInProgress;
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: applicationStatus,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
     return HttpResponses.ok({
       ...medicalScreening.toJson(),
     });
