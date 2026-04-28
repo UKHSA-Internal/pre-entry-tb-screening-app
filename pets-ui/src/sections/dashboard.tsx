@@ -43,7 +43,12 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
-import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
+import {
+  convertDateStrToObj,
+  formatDateForDisplay,
+  getCountryName,
+  inProgressStatuses,
+} from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 const getLinkText = (status: ApplicationStatus) => {
@@ -121,10 +126,11 @@ const Dashboard = () => {
       dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
 
       const applicationRes = await getApplication(applicationId);
-      const remappedApplicationStatus =
-        applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
-          ? ApplicationStatus.IN_PROGRESS
-          : applicationRes.data.applicationStatus;
+      const remappedApplicationStatus = inProgressStatuses.includes(
+        applicationRes.data.applicationStatus,
+      )
+        ? ApplicationStatus.IN_PROGRESS
+        : applicationRes.data.applicationStatus;
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
