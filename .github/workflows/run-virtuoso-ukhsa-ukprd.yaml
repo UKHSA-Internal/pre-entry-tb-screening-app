@@ -54,7 +54,7 @@ jobs:
           if [ -f plan_execution_report.json ]; then
             mv plan_execution_report.json reports/plan_execution_report.json
           else
-            echo '{"outcome":"ERROR","jobs":[]}' > reports/plan_execution_report.json
+            echo '{"outcome":"ERROR","jobs":{}}' > reports/plan_execution_report.json
           fi
 
       - name: Upload report
@@ -71,18 +71,14 @@ jobs:
       # The dashboard HTML expects this shape in test-results.json:
       #   results.98.chrome / .firefox / .edge  (per-browser counts)
       #
-      # Virtuoso returns one job per browser in the plan execution report.
-      # Expected fields on each job object:
-      #   .outcome        "PASS" | "FAIL" | "ERROR"
-      #   .browser        "CHROME" | "FIREFOX" | "EDGE"  (case-insensitive)
-      #   .totalTests     integer
-      #   .passedTests    integer
-      #   .failedTests    integer
-      #   .pendingTests   integer  (optional)
-      #
-      # After the first successful run, open the execution-report artifact
-      # and check the actual field names. Update the jq paths below if they
-      # differ from what's listed above.
+      # Virtuoso returns .jobs as a keyed object (not an array).
+      # Actual field names on each job object from Virtuoso:
+      #   .outcome                    "PASS" | "FAIL" | "ERROR"
+      #   .totalTestExecutions        integer
+      #   .successfulTestExecutions   integer
+      #   .failedTestExecutions       integer
+      #   .skippedTestExecutions      integer
+      
       - name: Transform results to dashboard format
         if: always() && github.event_name != 'workflow_call'
         run: |
@@ -91,7 +87,7 @@ jobs:
           BROWSERS=("chrome" "firefox" "edge")
 
           TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
-          OVERALL_OUTCOME=$(jq -r '.outcome // "ERROR"' "$REPORT")
+          OVERALL_OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' "$REPORT")
 
           mkdir -p dashboard
 
@@ -103,29 +99,33 @@ jobs:
           for BROWSER in "${BROWSERS[@]}"; do
             BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
 
+            # .jobs is a keyed object — iterate its values with .jobs[]
             JOB=$(jq -c \
               --arg b "$BROWSER_UPPER" \
-              '.jobs[]? | select((.browser // "" | ascii_upcase) == $b)' \
+              '.jobs | to_entries[].value | select((.browser // "" | ascii_upcase) == $b)' \
               "$REPORT" 2>/dev/null | head -1 || true)
 
-            # Fallback: if no job has a .browser field, use first job for chrome
+            # Fallback: if no job carries a .browser field, map the first job to chrome only
             if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
-              HAS_BROWSER=$(jq '[.jobs[]?.browser] | map(select(. != null)) | length' \
+              HAS_BROWSER=$(jq '[.jobs | to_entries[].value | .browser] | map(select(. != null)) | length' \
                 "$REPORT" 2>/dev/null || echo "0")
               if [[ "$HAS_BROWSER" == "0" ]]; then
-                JOB=$(jq -c '.jobs[0]? // empty' "$REPORT" 2>/dev/null || true)
+                # FIX: .jobs is a keyed object — use to_entries to get first value
+                JOB=$(jq -c '.jobs | to_entries[0].value // empty' "$REPORT" 2>/dev/null || true)
               fi
             fi
 
             if [[ -n "$JOB" ]]; then
               OUTCOME=$(echo "$JOB" | jq -r '.outcome // "UNKNOWN"')
-              TOTAL=$(echo   "$JOB" | jq -r '.totalTests   // .stats.tests    // 0')
-              PASSED=$(echo  "$JOB" | jq -r '.passedTests  // .stats.passes   // 0')
-              FAILED=$(echo  "$JOB" | jq -r '.failedTests  // .stats.failures // 0')
-              PENDING=$(echo "$JOB" | jq -r '.pendingTests // .stats.pending  // 0')
+              # FIX: use Virtuoso's actual field names
+              TOTAL=$(echo   "$JOB" | jq -r '.totalTestExecutions        // 0')
+              PASSED=$(echo  "$JOB" | jq -r '.successfulTestExecutions   // 0')
+              FAILED=$(echo  "$JOB" | jq -r '.failedTestExecutions       // 0')
+              PENDING=$(echo "$JOB" | jq -r '.skippedTestExecutions      // 0')
               STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
             else
-              STATUS="FAIL"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
+              # No data for this browser — mark as SKIP rather than FAIL
+              STATUS="SKIP"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
             fi
 
             TOTAL_TESTS=$((TOTAL_TESTS   + TOTAL))
@@ -150,14 +150,22 @@ jobs:
           done
 
           OVERALL_STATUS=$([[ "$OVERALL_OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
-          SUCCESS_RATE=$([[ "$OVERALL_STATUS" == "PASS" ]] && echo "100.0" || echo "0.0")
+
+          # Calculate actual success rate from real counts
+          if [[ "$TOTAL_TESTS" -gt 0 ]]; then
+            SUCCESS_RATE=$(echo "scale=1; $TOTAL_PASSED * 100 / $TOTAL_TESTS" | bc)
+          else
+            SUCCESS_RATE="0.0"
+          fi
+
+          FAILED_COMBINATIONS=$([[ "$OVERALL_STATUS" == "PASS" ]] && echo "0" || echo "1")
 
           cat >> dashboard/test-results.json <<EOF
             }
           },
           "overallStatus":      "$OVERALL_STATUS",
           "totalCombinations":  1,
-          "failedCombinations": $([[ "$OVERALL_STATUS" == "PASS" ]] && echo "0" || echo "1"),
+          "failedCombinations": $FAILED_COMBINATIONS,
           "totalTests":         $TOTAL_TESTS,
           "totalPassed":        $TOTAL_PASSED,
           "totalFailed":        $TOTAL_FAILED,
