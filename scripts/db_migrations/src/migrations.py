@@ -1,3 +1,5 @@
+import importlib
+
 # It has to be import early for pytest to be able to test
 # the functions separately without running the whole script
 import logging
@@ -22,16 +24,32 @@ logger.addHandler(handler)
 # during the migration process,
 # (applicants_to_remove is used to remove old migrated applicant records)
 statistics = {
-    "all_applicants": 0,
+    # whichever migration is used that changes application records, this will be updated
+    # to reflect the total number of application records processed
     "all_applications": 0,
+    # 'migrate_applicants' related:
+    "all_applicants": 0,
     "skipped_missing": 0,
     "skipped_migrated": 0,
-    # This is added with the check while it's still in development
-    "skipped_rows_not_root": 0,
-    "skipped_updating_statusgroup": 0,
     "migrated_applicants": 0,
-    "migrated_applications": 0,
     "applicants_to_remove": [],
+    # 'set_application_statusgroup':
+    "skipped_updating_statusgroup": 0,
+    # Used in 'set_application_statusgroup', 'rewrite_application_root_records':
+    "skipped_rows_not_root": 0,
+    "migrated_applications": 0,
+    # 'rewrite_application_root_records' related:
+    "rewritten_application_root_rows": 0,
+    "skipped_application_root_rows": 0,
+    # 'rewrite_application_nonroot_records' related:
+    "rewritten_application_nonroot_rows": 0,
+    "skipped_application_nonroot_rows": 0,
+    # 'rewrite_applicant_records' related:
+    "rewritten_applicant_rows": 0,
+    "skipped_applicant_rows": 0,
+    # 'rewrite_clinic_records' related:
+    "rewritten_clinic_rows": 0,
+    "skipped_clinic_rows": 0,
 }
 
 
@@ -53,10 +71,11 @@ class ApplicationStatusGroup(Enum):
     incomplete = "Incomplete"
 
 
-def migrate_applicant(
+def migrate_applicants(
     applicant_row,
     applicant_table,
     application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
@@ -87,15 +106,11 @@ def migrate_applicant(
     logger.debug(f"MIGRATE {applicationId} -> {new_applicant_pk} (sk={sk})")
 
     # --------------- APPLICATION RECORD CHANGES SECTION ---------------
-    response = application_table.get_item(
-        Key={"pk": applicationId, "sk": "APPLICATION#ROOT"}
-    )
+    response = application_table.get_item(Key={"pk": applicationId, "sk": "APPLICATION#ROOT"})
     applicationRootRow = response.get("Item")
 
     if not applicationRootRow:
-        logger.warning(
-            f"WARNING: No ROOT row in application table for pk={applicationId}"
-        )
+        logger.warning(f"WARNING: No ROOT row in application table for pk={applicationId}")
         return
 
     new_application_status = None
@@ -134,8 +149,7 @@ def migrate_applicant(
     applicant_table.put_item(Item=new_item)
 
     logger.debug(
-        "[MIGRATION] Applicant table pk updated from "
-        f"{applicationId} to {new_applicant_pk}"
+        f"[MIGRATION] Applicant table pk updated from {applicationId} to {new_applicant_pk}"
     )
 
     # --------------- ADDING OLD APPLICANT RECORD TO THE LIST FOR REMOVAL ---------------
@@ -150,16 +164,13 @@ def migrate_applicant(
         application_table.update_item(
             Key={"pk": applicationId, "sk": "APPLICATION#ROOT"},
             UpdateExpression=(
-                "SET applicantId = :new_applicant_pk, "
-                "applicationStatus = :new_application_status"
+                "SET applicantId = :new_applicant_pk, applicationStatus = :new_application_status"
             ),
             ExpressionAttributeValues={
                 ":new_applicant_pk": new_applicant_pk,
                 ":new_application_status": new_application_status,
             },
-            ConditionExpression=(
-                "attribute_exists(pk) AND attribute_not_exists(applicantId)"
-            ),
+            ConditionExpression=("attribute_exists(pk) AND attribute_not_exists(applicantId)"),
         )
 
     except ClientError as e:
@@ -188,10 +199,14 @@ def remove_original_applicants(applicant_table, id_list):
                 ddb_batch.delete_item(Key=key)
 
 
-def add_application_statusgroup(
+def set_application_statusgroup(
     # application_row should always be the APPLICATION#ROOT row
     application_row,
+    # these 2 tables are not used in this migration function, included in the parameters
+    # to keep the same function signature for any migration functions and for future flexibility
+    _applicant_table,
     application_table,
+    _clinics_table,
     dry_run,
     statistics,
 ):
@@ -239,9 +254,127 @@ def add_application_statusgroup(
         else:
             raise
     logger.debug(
-        f"Updated application {application_pk} - "
-        f"applicationStatusGroup set to {new_status_group}"
+        f"Updated application {application_pk} - applicationStatusGroup set to {new_status_group}"
     )
+
+
+def rewrite_applicant_records(
+    record,
+    applicant_table,
+    # these 2 tables are not used in this migration function, included in the parameters
+    # to keep the same function signature for any migration functions and for future flexibility
+    _application_table,
+    _clinics_table,
+    dry_run,
+    statistics,
+):
+    if dry_run:
+        # Don't modify the record in DB, return instead
+        statistics["rewritten_applicant_rows"] += 1
+
+        return
+
+    # Re-writing the same data (countryOfIssue) to trigger DynamoDB Streams
+    try:
+        applicant_table.update_item(
+            Key={"pk": record["pk"], "sk": record["sk"]},
+            UpdateExpression=("SET countryOfIssue = :countryOfIssue"),
+            ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
+        )
+
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
+        statistics["skipped_applicant_rows"] += 1
+
+        return
+
+    statistics["rewritten_applicant_rows"] += 1
+    logger.debug(f"Updated the application with pk: {record['pk']}")
+
+
+def rewrite_application_root_records(
+    record,
+    # applicant_table is not used in this migration function, but it's included in the parameters
+    # to keep the same function signature for any migration functions and for future flexibility
+    _applicant_table,
+    application_table,
+    _clinics_table,
+    dry_run,
+    statistics,
+):
+    statistics["all_applications"] += 1
+
+    if dry_run:
+        # Don't modify the record in DB, return instead
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["rewritten_application_root_rows"] += 1
+        else:
+            statistics["rewritten_application_nonroot_rows"] += 1
+
+        return
+
+    # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
+    try:
+        application_table.update_item(
+            Key={"pk": record["pk"], "sk": record["sk"]},
+            UpdateExpression=("SET dateCreated = :date"),
+            ExpressionAttributeValues={":date": record["dateCreated"]},
+        )
+
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
+
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["skipped_application_root_rows"] += 1
+        else:
+            statistics["skipped_application_nonroot_rows"] += 1
+
+        return
+
+    if record["sk"] != "APPLICATION#ROOT":
+        statistics["rewritten_application_root_rows"] += 1
+    else:
+        statistics["rewritten_application_nonroot_rows"] += 1
+
+    logger.debug(f"Updated the application with pk: {record['pk']}")
+
+
+def rewrite_clinic_records(
+    record,
+    _applicant_table,
+    _application_table,
+    clinics_table,
+    dry_run,
+    statistics,
+):
+    if dry_run:
+        # Don't modify the record in DB, return instead
+        statistics["rewritten_clinic_rows"] += 1
+
+        return
+
+    # Re-writing the same data (clinicId) to trigger DynamoDB Streams
+    try:
+        clinics_table.update_item(
+            Key={"pk": record["pk"], "sk": record["sk"]},
+            UpdateExpression=("SET clinicId = :id"),
+            ExpressionAttributeValues={":id": record["clinicId"]},
+        )
+
+    except Exception as e:
+        logger.error(
+            f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
+        )
+        statistics["skipped_clinic_rows"] += 1
+
+        return
+
+    statistics["rewritten_clinic_rows"] += 1
+    logger.debug(f"Updated the application with pk: {record['pk']}")
 
 
 def scan_table(table, last_evaluated_key=None, scan_filter={}):  # noqa: B006
@@ -265,6 +398,7 @@ def scan_table(table, last_evaluated_key=None, scan_filter={}):  # noqa: B006
 def data_migration(
     applicant_table_name,
     application_table_name,
+    clinics_table_name,
     aws_region,
     dry_run,
     dynamodb=None,
@@ -277,22 +411,60 @@ def data_migration(
 
     applicant_table = dynamodb.Table(applicant_table_name)
     application_table = dynamodb.Table(application_table_name)
+    clinics_table = dynamodb.Table(clinics_table_name)
 
     start_time = time.time()
-    table = (
-        application_table if migration == "application_statusgroup" else applicant_table
-    )
+
+    if migration in ("migrate_applicants", "rewrite_applicant_records"):
+        table = applicant_table
+    elif migration in (
+        "set_application_statusgroup",
+        "rewrite_application_root_records",
+        "rewrite_application_nonroot_records",
+    ):
+        table = application_table
+    elif migration == "rewrite_clinic_records":
+        table = clinics_table
+    else:
+        raise ValueError(f"Invalid migration type: {migration}")
+
     last_evaluated_key = None
     first_scan = True
     scan_filter = {}
 
-    # For application_statusgroup migration we only want to scan the APPLICATION#ROOT rows
-    if migration == "application_statusgroup":
+    # Setting up the scan filter based on the migration type,
+    # to optimize the scanning process and only get relevant records.
+    # For set_application_statusgroup migration we only want to scan the APPLICATION#ROOT rows
+    if migration in ("set_application_statusgroup", "rewrite_application_root_records"):
         scan_filter = {
             "FilterExpression": "sk = :sk",
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
+    elif migration == "rewrite_application_nonroot_records":
+        scan_filter = {
+            "FilterExpression": "sk <> :sk",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
+        }
 
+    # Selecting the migration function based on the migration type
+    if migration == "rewrite_application_nonroot_records":
+        # Reusing the ohter function as the logic is the same,
+        # just different filter for scanning
+        func = rewrite_application_root_records
+    else:
+        # For functions with the exact same name as migration,
+        # we can directly get the function by its name using getattr
+        func = getattr(importlib.import_module(__name__), migration)
+
+        if not (func := getattr(importlib.import_module(__name__), migration)):
+            raise (
+                f"Migration: {migration} is not a correct one, "
+                "or function for this migration is not yet created."
+            )
+
+    logger.info(f"Selected function: {func.__name__} for migration: {migration}")
+
+    # The main loop for scanning the table and processing the records in batches,
     while first_scan or last_evaluated_key:
         logger.info(f"Scanning {table.name}...")
 
@@ -303,38 +475,29 @@ def data_migration(
         )
         first_scan = False
 
-        if migration == "applicant_migration":
-            for row in rows:
-                migrate_applicant(
-                    row,
-                    applicant_table,
-                    application_table,
-                    dry_run,
-                    statistics,
-                )
-        elif migration == "application_statusgroup":
-            for row in rows:
-                add_application_statusgroup(
-                    row,
-                    application_table,
-                    dry_run,
-                    statistics,
-                )
+        for row in rows:
+            func(
+                row,
+                applicant_table,
+                application_table,
+                clinics_table,
+                dry_run,
+                statistics,
+            )
 
     # Post-migration cleanup actions, e.g. removing old applicant records after migration
-    if migration == "applicant_migration" and not dry_run:
+    if migration == "migrate_applicants" and not dry_run:
         logger.info("Now removing the original applicant records...")
         remove_original_applicants(applicant_table, statistics["applicants_to_remove"])
-        logger.info(
-            f"Removed {len(statistics['applicants_to_remove'])} "
-            "original applicant records"
-        )
+        logger.info(f"Removed {len(statistics['applicants_to_remove'])} original applicant records")
 
-    # If it's not applicant_migration, then remove applicants_to_remove
-    # (in case that migration was run before) from statistics as it's not relevant
-    if migration != "applicant_migration":
+    # If it's not migrate_applicants, then remove applicants_to_remove
+    # (in case that migration was run before) from statistics
+    # as it's not relevant in the logs for this migration
+    if migration != "migrate_applicants":
         statistics["applicants_to_remove"] = []
 
+    # Printing the final statistics after the migration is completed
     for key, value in statistics.items():
         logger.info(f"{key}: {value}")
 
@@ -352,49 +515,76 @@ if __name__ == "__main__":
 
     args = getResolvedOptions(
         sys.argv,
-        ["APPLICANT_TABLE", "APPLICATION_TABLE", "MIGRATIONS", "AWS_REGION", "DRY_RUN"],
+        [
+            "APPLICANT_TABLE",
+            "APPLICATION_TABLE",
+            "CLINICS_TABLE",
+            "MIGRATIONS",
+            "AWS_REGION",
+            "DRY_RUN",
+        ],
     )
     logger.info(f"Received arguments: {args}")
 
     APPLICANT_TABLE_NAME = args.get("APPLICANT_TABLE")
-    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"]
+    APPLICATION_TABLE_NAME = args["APPLICATION_TABLE"].strip()
+    CLINICS_TABLE_NAME = args.get("CLINICS_TABLE")
     MIGRATIONS = args["MIGRATIONS"]
     AWS_REGION = args["AWS_REGION"]
     DRY_RUN = args["DRY_RUN"]
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
-    VALID_MIGRATIONS = ["applicant_migration", "application_statusgroup"]
+    VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
+    REWRITE_DB_ITEMS_SUBMIGRATIONS = [
+        "rewrite_applicant_records",
+        "rewrite_application_root_records",
+        "rewrite_application_nonroot_records",
+        "rewrite_clinic_records",
+    ]
 
+    # Stripping the table names to avoid issues with extra spaces in the input parameters
     if APPLICANT_TABLE_NAME:
         APPLICANT_TABLE_NAME = APPLICANT_TABLE_NAME.strip()
 
-    APPLICATION_TABLE_NAME = APPLICATION_TABLE_NAME.strip()
+    if CLINICS_TABLE_NAME:
+        CLINICS_TABLE_NAME = CLINICS_TABLE_NAME.strip()
+
     # Converting MIGRATIONS to a list of migration names,
     # in case there are multiple migrations to run
     if "," in MIGRATIONS:
         MIGRATIONS = [m.strip() for m in MIGRATIONS.split(",")]
     else:
         MIGRATIONS = [MIGRATIONS.strip()]
+
     # Converting DRY_RUN to a boolean value, it should default to True
     dry_run = not bool(DRY_RUN.lower() == "false")
 
     # Validate that the provided migration names are correct
     for migration in MIGRATIONS:
         if migration not in VALID_MIGRATIONS:
-            logger.info(
-                f"Invalid migration name '{migration}' provided in MIGRATIONS parameter."
-            )
+            logger.info(f"Invalid migration name '{migration}' provided in MIGRATIONS parameter.")
             logger.info(f"Valid migration names are: {VALID_MIGRATIONS}")
             sys.exit(1)
 
-        if migration == "applicant_migration":
+        # Do some extra things for different migration types if needed
+        if migration in ("migrate_applicants", "rewrite_db_items"):
             if not APPLICANT_TABLE_NAME:
-                logger.error(
-                    "APPLICANT_TABLE parameter is required for applicant migration."
-                )
+                logger.error("APPLICANT_TABLE parameter is required for applicant migration.")
                 sys.exit(1)
 
+        if migration == "rewrite_db_items":
+            if not CLINICS_TABLE_NAME:
+                logger.error("CLINICS_TABLE parameter is required for rewrite_db_items migration.")
+                sys.exit(1)
+
+    # In case of "rewrite_db_items" migration, it will be replaced with the list of sub-migrations
+    # for refreshing different types of items (it's better to do it after validation)
+    if "rewrite_db_items" in MIGRATIONS:
+        MIGRATIONS.pop(MIGRATIONS.index(migration))
+        MIGRATIONS.extend(REWRITE_DB_ITEMS_SUBMIGRATIONS)
+
     logger.info(f"Starting Glue DynamoDB migration (DRY_RUN={dry_run})")
+    # This will be used only for logging
     run_migrations = []
 
     # -------------------------------- Running Migrations --------------------------------
@@ -405,11 +595,13 @@ if __name__ == "__main__":
         data_migration(
             APPLICANT_TABLE_NAME,
             APPLICATION_TABLE_NAME,
+            CLINICS_TABLE_NAME,
             AWS_REGION,
             dry_run,
             dynamodb=None,
             migration=migration,
         )
+        # Adding the migration to the list of completed migrations (for logging purposes)
         run_migrations.append(migration)
 
         logger.info(f"Migration {migration} completed.")

@@ -1,5 +1,5 @@
 [project]
-name = "applicant_migration"
+name = "db_migrations"
 version = "0.1.0"
 description = "Applicant table migration, application table update"
 authors = ["UKHSA"]
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-p no:warnings -p no:cacheprovider --cov=migration_script --cov-report=term-missing"
+addopts = "-p no:warnings -p no:cacheprovider --cov=migrations --cov-report=term-missing"
 testpaths = ["src"]
 pythonpath = ["src"]
 filterwarnings = [
@@ -30,7 +30,7 @@ exclude_lines = [
 [tool.isort]
 py_version=311
 skip = [".gitignore", ".json"]
-line_length = 90
+line_length = 100
 multi_line_output = 3
 # default_section = FIRSTPARTY
 use_parentheses = true
@@ -68,7 +68,7 @@ exclude = [
 ]
 
 # Same as Black.
-line-length = 90
+line-length = 100
 indent-width = 4
 
 # Assume Python 3.9
