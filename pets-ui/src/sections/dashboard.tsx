@@ -57,7 +57,7 @@ const getLinkText = (status: ApplicationStatus) => {
     case ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS:
       return "Continue: radiological outcome";
     case ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS:
-      return "Continue: Make a sputum decision";
+      return "Continue: make a sputum decision";
     case ApplicationStatus.SPUTUM_IN_PROGRESS:
     case ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS:
       return "Continue: sputum results";

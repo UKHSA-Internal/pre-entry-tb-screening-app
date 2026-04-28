@@ -287,7 +287,7 @@ describe("Dashboard", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("row", {
-        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: Make a sputum decision",
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: make a sputum decision",
       }),
     ).toBeInTheDocument();
     expect(
