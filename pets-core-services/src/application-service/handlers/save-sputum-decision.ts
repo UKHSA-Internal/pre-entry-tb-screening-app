@@ -53,7 +53,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
     const applicationStatus =
       sputumDecision.sputumRequired === YesOrNo.Yes
         ? ApplicationStatus.sputumInProgress
-        : ApplicationStatus.inProgress;
+        : ApplicationStatus.certificateInProgress;
 
     await Application.updateApplication({
       applicationId: applicationId,
