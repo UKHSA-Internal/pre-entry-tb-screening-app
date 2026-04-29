@@ -64,7 +64,6 @@
       "@smithy/middleware-stack": "latest",
       "fast-xml-parser": ">=5.7.0",
       "rollup": ">=4.59.0",
-      "immutable": ">=5.1.5",
       "systeminformation": ">=5.31.0",
       "minimatch": ">=9.0.7",
       "lodash": ">=4.18.0",
