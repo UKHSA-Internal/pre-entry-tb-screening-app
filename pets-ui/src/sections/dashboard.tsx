@@ -5,6 +5,7 @@ import { validate as uuidValidate } from "uuid";
 
 import { getApplicants, getApplication } from "@/api/api";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import Pagination from "@/components/pagination/pagination";
 import Spinner from "@/components/spinner/spinner";
 import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -81,6 +82,10 @@ const Dashboard = () => {
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [pageNum, setPageNum] = useState(1);
+  const pageSize = 10;
+  const startIndex = (pageNum - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
 
   useEffect(() => {
     dispatch(clearApplicationDetails());
@@ -192,11 +197,15 @@ const Dashboard = () => {
     }
   };
 
-  const applicationTableInfo = applicationsInProgressData
-    .filter((app) => app.clinicId == userClinicData.clinicId)
+  const filteredApplicationsData = applicationsInProgressData.filter(
+    (app) => app.clinicId == userClinicData.clinicId,
+  );
+
+  const applicationTableInfo = filteredApplicationsData
     .sort(
       (app1, app2) => new Date(app2.dateCreated).getTime() - new Date(app1.dateCreated).getTime(),
     )
+    .slice(startIndex, endIndex)
     .map((app) => ({
       rowTitle: app.applicantName,
       cells: [
@@ -235,6 +244,21 @@ const Dashboard = () => {
         tableRows={applicationTableInfo}
         removeRowTitleStyling
       />
+      {filteredApplicationsData.length > pageSize && (
+        <Pagination
+          currentPage={pageNum}
+          maximumPage={Math.ceil(filteredApplicationsData.length / pageSize)}
+          onClickPrevious={() => {
+            setPageNum(pageNum - 1);
+          }}
+          onClickNext={() => {
+            setPageNum(pageNum + 1);
+          }}
+          onClickNumberedPage={(clickedPageNum) => {
+            setPageNum(clickedPageNum);
+          }}
+        />
+      )}
     </div>
   );
 };
