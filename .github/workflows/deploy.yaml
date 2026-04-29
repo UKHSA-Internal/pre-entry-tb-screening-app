@@ -203,7 +203,7 @@ jobs:
     name: Build and Deploy UI
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    needs: [ load-deployment-config, deploy-lambdas, deploy-swagger-spec ]
+    needs: [load-deployment-config, deploy-lambdas, deploy-swagger-spec]
 
     env:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -414,7 +414,6 @@ jobs:
     name: Copy migration script to S3 bucket
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.environment == 'dev'
 
     env:
       MIGRATION_SCRIPT_S3_BUCKET: ${{ vars.MIGRATION_SCRIPT_S3_BUCKET }}
