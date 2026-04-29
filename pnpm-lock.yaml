@@ -225,7 +225,7 @@ importers:
         specifier: ^5.18.0
         version: 5.18.0
       axios:
-        specifier: ^1.15.1
+        specifier: ^1.15.2
         version: 1.15.2
       dicom-parser:
         specifier: ^1.8.21
