@@ -77,7 +77,7 @@
     "mochawesome-merge": "^5.1.0",
     "mochawesome-report-generator": "^6.3.2",
     "msw": "^2.6.6",
-    "vite": ">=7.3.2",
+    "vite": "^7.3.2",
     "vite-tsconfig-paths": "^5.1.2",
     "vitest": "^4.1.3"
   },
