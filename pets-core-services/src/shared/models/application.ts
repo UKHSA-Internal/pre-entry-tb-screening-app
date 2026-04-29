@@ -10,7 +10,7 @@ import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
 import { logger } from "../logger";
-import { ApplicationStatus } from "../types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../types/enum";
 import { ApplicantBase } from "./applicant";
 
 const { dynamoDBDocClient: docClient } = awsClients;
@@ -23,6 +23,7 @@ export abstract class IApplication {
   dateCreated: Date;
   createdBy: string;
   applicationStatus: ApplicationStatus;
+  applicationStatusGroup: ApplicationStatusGroup;
   cancellationReason?: string;
   cancellationFurtherInfo?: string;
   expiryDate?: Date;
@@ -37,6 +38,7 @@ export abstract class IApplication {
     this.dateCreated = new Date(details.dateCreated);
     this.createdBy = details.createdBy;
     this.applicationStatus = details.applicationStatus;
+    this.applicationStatusGroup = details.applicationStatusGroup;
     this.cancellationReason = details.cancellationReason;
     this.cancellationFurtherInfo = details.cancellationFurtherInfo;
     this.expiryDate = details.expiryDate ? new Date(details.expiryDate) : undefined;
@@ -45,7 +47,10 @@ export abstract class IApplication {
   }
 }
 
-export type NewApplication = Omit<IApplication, "dateCreated" | "applicationStatus">;
+export type NewApplication = Omit<
+  IApplication,
+  "dateCreated" | "applicationStatus" | "applicationStatusGroup"
+>;
 
 export class Application extends IApplication {
   static readonly getPk = (applicationId: string) => `APPLICATION#${applicationId}`;
@@ -79,6 +84,7 @@ export class Application extends IApplication {
         ...details,
         dateCreated: new Date(),
         applicationStatus: ApplicationStatus.inProgress,
+        applicationStatusGroup: ApplicationStatusGroup.incomplete,
       };
       const newApplication = new Application(updatedDetails);
       const dbItem = newApplication.todbItem();
@@ -227,6 +233,7 @@ export class Application extends IApplication {
       clinicId: this.clinicId,
       dateCreated: this.dateCreated.toISOString(),
       applicationStatus: this.applicationStatus,
+      applicationStatusGroup: this.applicationStatusGroup,
       cancellationReason: this.cancellationReason,
       cancellationFurtherInfo: this.cancellationFurtherInfo,
       expiryDate: this.expiryDate ? this.expiryDate.toISOString() : undefined,

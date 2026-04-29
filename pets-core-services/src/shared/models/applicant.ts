@@ -158,6 +158,27 @@ export class Applicant extends ApplicantBase {
     this.dateCreated = new Date(details.dateCreated);
     this.status = details.status;
   }
+  static fromDb(item: Record<string, any>): Applicant {
+    return new Applicant({
+      ...item,
+      dateCreated: item.dateCreated,
+      issueDate: item.issueDate,
+      expiryDate: item.expiryDate,
+      dateOfBirth: item.dateOfBirth,
+      status: item.status,
+      countryOfIssue: item.countryOfIssue,
+      country: item.country,
+      countryOfNationality: item.countryOfNationality,
+      passportNumber: item.passportNumber,
+      townOrCity: item.townOrCity,
+      fullName: item.fullName,
+      provinceOrState: item.provinceOrState,
+      sex: item.sex,
+      applicantHomeAddress1: item.applicantHomeAddress1,
+      postcode: item.postcode,
+      createdBy: item.createdBy,
+    });
+  }
 }
 
 export class ApplicantUpdate extends ApplicantBase {

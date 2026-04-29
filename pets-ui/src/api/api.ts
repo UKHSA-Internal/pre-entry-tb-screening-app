@@ -19,6 +19,7 @@ import {
   PostedTravelDetailsType,
   ReceivedApplicantDetailsType,
   ReceivedApplicationDetailsType,
+  ReceivedApplicationInProgressType,
   ReceivedApplicationListType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
@@ -61,7 +62,12 @@ petsApi.interceptors.response.use(
       sendGoogleAnalyticsHttpError(0, url);
     }
 
-    if (error.response?.status && error.response?.status !== 404 && error.response.status >= 400) {
+    if (
+      error.response?.status &&
+      error.response?.status !== 404 &&
+      error.response?.status !== 403 &&
+      error.response.status >= 400
+    ) {
       globalThis.location.href = "/sorry-there-is-problem-with-service";
     }
 
@@ -86,6 +92,11 @@ export const getApplication = async (applicationId: string) => {
   } else {
     throw new Error("Application ID in unexpected format or does not exist");
   }
+};
+
+export const getDashboardApplications = async () => {
+  const result = await petsApi.get("/application/dashboard");
+  return result as AxiosResponse<ReceivedApplicationInProgressType[]>;
 };
 
 export const createNewApplication = async (applicantPassportDetails: ApplicantSearchFormType) => {

@@ -2,9 +2,9 @@ name: Pets CI
 
 on:
   push:
-    branches: [main, develop, release/**]
+    branches: [ main, develop, release/** ]
   pull_request:
-    branches: [main, develop, release/**]
+    branches: [ main, develop, release/** ]
 
   workflow_dispatch:
 
@@ -64,127 +64,6 @@ jobs:
         with:
           name: coverage-ui
           path: pets-ui/coverage/
-
-  cypress-run:
-    name: Run cypress tests
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, edge]
-    env:
-      USER_1_EMAIL: ${{ secrets.USER_1_EMAIL }}
-      USER_1_PASSWORD: ${{ secrets.USER_1_PASSWORD }}
-      USER_2_EMAIL: ${{ secrets.USER_2_EMAIL }}
-      USER_2_PASSWORD: ${{ secrets.USER_2_PASSWORD }}
-      USER_3_EMAIL: ${{ secrets.USER_3_EMAIL }}
-      USER_3_PASSWORD: ${{ secrets.USER_3_PASSWORD }}
-      USER_4_EMAIL: ${{ secrets.USER_4_EMAIL }}
-      USER_4_PASSWORD: ${{ secrets.USER_4_PASSWORD }}
-      USER_5_EMAIL: ${{ secrets.USER_5_EMAIL }}
-      USER_5_PASSWORD: ${{ secrets.USER_5_PASSWORD }}
-      USER_6_EMAIL: ${{ secrets.USER_6_EMAIL }}
-      USER_6_PASSWORD: ${{ secrets.USER_6_PASSWORD }}
-      VITE_MSAL_CLIENT_ID: ${{ secrets.LOCAL_MSAL_CLIENT_ID }}
-      VITE_MSAL_TENANT_ID: ${{ secrets.LOCAL_MSAL_TENANT_ID }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm i
-
-      - name: Debug available Cypress specs
-        run: ls -R pets-ui/cypress/e2e
-
-      - name: Cache Cypress binary
-        id: cache-cypress-binary
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/Cypress
-          key: cypress-binary-${{ runner.os }}-${{ hashFiles('pets-ui/pnpm-lock.yaml') }}
-
-      - name: Install Cypress Binary
-        if: steps.cache-cypress-binary.outputs.cache-hit != 'true'
-        run: |
-          pnpm exec cypress install --force
-          pnpm exec cypress verify
-        working-directory: pets-ui
-
-      - name: Start Local Environment
-        run: |
-          pnpm start & sleep 120
-
-      - name: Wait for Localstack healthcheck
-        run: |
-          until curl -fsS http://localhost:4566/_localstack/health | grep '"running"'; do
-            COUNT=$((COUNT + 1))
-            if [ "$COUNT" -ge 24 ]; then
-              echo "Localstack healthcheck failed after 2 minutes"
-              exit 1
-            fi
-            echo "Waiting for healthcheck to pass"
-            sleep 5
-          done
-          echo "Healthcheck passed"
-          sleep 20
-
-      - name: Cypress run tests
-        uses: cypress-io/github-action@v6
-        continue-on-error: true
-        id: initial_attempt
-        with:
-          install: false
-          working-directory: pets-ui
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Retry if failed
-        if: steps.initial_attempt.outcome != 'success'
-        uses: cypress-io/github-action@v6
-        id: retry_attempt
-        with:
-          install: false
-          working-directory: pets-ui
-          browser: ${{ matrix.browser }}
-          config-file: cypress/cypress.config.mjs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Failed Tests Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: failed-tests-screenshots-${{ matrix.browser }}
-          path: pets-ui/cypress/screenshots
-
-      - name: Merge Mochawesome Reports
-        run: |
-          JSON_DIR=pets-ui/cypress/reports/mochawesome/.jsons
-          if ls ${JSON_DIR}/*.json 1> /dev/null 2>&1; then
-            npx mochawesome-merge ${JSON_DIR}/*.json > pets-ui/cypress/reports/mochawesome/mochawesome.json
-          else
-            echo "No mochawesome JSON files found. Skipping merge."
-          fi
-
-      - name: Upload Mochawesome Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-report-${{ matrix.browser }}
-          path: pets-ui/cypress/reports/mochawesome/
 
   core-services-tests:
     name: Run tests for core services
@@ -251,40 +130,79 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Check migration_script changed
-        working-directory: "scripts/applicant_migration/"
+        working-directory: "scripts/"
         id: check_file_changed
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          FILE: "scripts/applicant_migration/src/migration_script.py"
         run: |
-          run_tests=$(./file_changed.sh)
+          run_tests=$(./file_changed.sh ${{ env.FILE }})
           echo "run tests?: $run_tests"
           echo "run_tests=$run_tests" >> $GITHUB_OUTPUT
 
-      - name: Setting up Python
+      - name: Set up Python
         if: steps.check_file_changed.outputs.run_tests == 'true'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version-file: "scripts/applicant_migration/.python-version"
 
-      - name: Install Python dependencies
+      - name: Install uv
+        if: steps.check_file_changed.outputs.run_tests == 'true'
+        uses: astral-sh/setup-uv@v7
+        with:
+          # Install a specific version of uv.
+          version: "0.9.18"
+
+      - name: Install the project
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/applicant_migration/"
-        run: python -m pip install -r requirements.txt
+        run: uv sync --locked
 
       - name: Run unit tests for applicant migration script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/applicant_migration/"
-        run: python -m pytest -c ./pytest.ini --cov=migration_script --cov-report=term-missing ./src/test_unit.py
+        run: uv run pytest -c ./pyproject.toml --cov=migration_script --cov-report=html
+          ./src/test_unit.py
 
       - name: Run integration tests for applicant migration script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/applicant_migration/"
-        run: python -m pytest -c ./pytest.ini --cov=migration_script --cov-report=term-missing ./src/test_integration.py
+        run: uv run pytest -c ./pyproject.toml --cov=migration_script --cov-report=html
+          ./src/test_integration.py
+
+  migration-script-linter-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "scripts/applicant_migration/.python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          # Install a specific version of uv.
+          version: "0.9.18"
+
+      - name: Install the project
+        working-directory: "scripts/applicant_migration/"
+        run: uv sync --locked
+
+      - name: Ruff code check
+        working-directory: "scripts/applicant_migration"
+        run: uv run ruff check ./src --config pyproject.toml
+
+      - name: Ruff format check
+        working-directory: "scripts/applicant_migration"
+        run: uv run ruff format --check ./src --config ./pyproject.toml
 
   onboarding-script-tests:
     runs-on: ubuntu-latest
@@ -326,16 +244,18 @@ jobs:
       - name: Run unit tests for applicant onboarding script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/onboarding_glue_job/"
-        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load --cov-report=term-missing ./src/test_unit.py
+        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load
+          --cov-report=term-missing ./src/test_unit.py
 
       - name: Run integration tests for applicant onboarding script
         if: steps.check_file_changed.outputs.run_tests == 'true'
         working-directory: "scripts/onboarding_glue_job/"
-        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load --cov-report=term-missing ./src/test_integration.py
+        run: uv run pytest -c ./pyproject.toml --cov=clinics_data_load
+          --cov-report=term-missing ./src/test_integration.py
 
   sonar-scan:
     runs-on: ubuntu-latest
-    needs: [ui-tests, core-services-tests]
+    needs: [ ui-tests, core-services-tests ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -393,3 +313,10 @@ jobs:
       - name: Create UI build
         run: pnpm run build
         working-directory: pets-ui
+  virtuoso-tests:
+    name: Virtuoso tests
+    uses: ./.github/workflows/run-virtuoso-ukhsa-ukprd.yaml
+    with:
+      plan_id: "5"
+      plan_name: "CI/CD_PETS"
+    secrets: inherit

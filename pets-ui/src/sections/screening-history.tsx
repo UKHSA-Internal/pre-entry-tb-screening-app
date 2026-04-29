@@ -11,7 +11,7 @@ import StartButton from "@/components/startButton/startButton";
 import StatusTag from "@/components/statusTag/statusTag";
 import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
-import { setApplicantDetailsStatus, setApplicantPhotoFileName } from "@/redux/applicantSlice";
+import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { clearApplicationDetails, setApplicationDetails } from "@/redux/applicationSlice";
 import { clearChestXrayDetails, setChestXrayFromApiResponse } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -43,6 +43,7 @@ import { ReduxApplicationDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { AdditionalStatusTagTexts, ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { convertDateStrToObj, formatDateForDisplay, isDateInThePast } from "@/utils/helpers";
+import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): string => {
   if (
@@ -73,6 +74,7 @@ const ScreeningHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    dispatch(setApplicantDetailsStatus(TaskStatus.COMPLETE));
     dispatch(clearApplicationDetails());
     dispatch(clearMedicalScreeningDetails());
     dispatch(clearTravelDetails());
@@ -84,28 +86,6 @@ const ScreeningHistory = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleApplicantPhoto = async (photoUrl: string) => {
-    const env = import.meta.env.VITE_ENVIRONMENT as string | undefined;
-    const fixedUrl =
-      env === "local" ? photoUrl.replace(/172\.\d+\.\d+\.\d+:4566/, "localhost:4566") : photoUrl;
-
-    const urlParts = photoUrl.split("/");
-    const filename = urlParts.pop()?.split("?")[0] ?? "applicant-photo.jpg";
-    dispatch(setApplicantPhotoFileName(filename));
-    const response = await fetch(fixedUrl);
-    const blob = await response.blob();
-    if (typeof File == "undefined") {
-      setApplicantPhotoUrl(fixedUrl);
-    } else {
-      try {
-        const file = new File([blob], filename, { type: blob.type });
-        setApplicantPhotoFile(file);
-      } catch {
-        setApplicantPhotoUrl(fixedUrl);
-      }
-    }
-  };
-
   const loadSingleApplication = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     applicationId: string,
@@ -115,10 +95,14 @@ const ScreeningHistory = () => {
 
     try {
       const applicationRes = await getApplication(applicationId);
+      const remappedApplicationStatus =
+        applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
+          ? ApplicationStatus.IN_PROGRESS
+          : applicationRes.data.applicationStatus;
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
-          applicationStatus: applicationRes.data.applicationStatus,
+          applicationStatus: remappedApplicationStatus,
           clinicId: applicationRes.data.clinicId,
           dateCreated: convertDateStrToObj(applicationRes?.data.dateCreated ?? ""),
           dateUpdated: convertDateStrToObj(applicationRes?.data.dateUpdated ?? ""),
@@ -131,7 +115,12 @@ const ScreeningHistory = () => {
       await fetchClinic(dispatch, applicationClinicId);
 
       if (applicationRes.data.applicantPhotoUrl) {
-        await handleApplicantPhoto(applicationRes.data.applicantPhotoUrl);
+        await handleApplicantPhoto(
+          applicationRes.data.applicantPhotoUrl,
+          dispatch,
+          setApplicantPhotoFile,
+          setApplicantPhotoUrl,
+        );
       }
 
       if (applicationRes.data.travelInformation) {
@@ -203,40 +192,56 @@ const ScreeningHistory = () => {
     (application) => application.applicationStatus !== ApplicationStatus.IN_PROGRESS,
   );
 
-  const applicationTableInfo = applicationsListData.map((application) => {
-    let textOverride = undefined;
-    let classOverride = undefined;
-    if (
-      application.applicationStatus !== ApplicationStatus.CANCELLED &&
-      application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
-      application.expiryDate &&
-      application.expiryDate.day.length > 0 &&
-      application.expiryDate.month.length > 0 &&
-      application.expiryDate.year.length > 0 &&
-      isDateInThePast(
-        application.expiryDate.day,
-        application.expiryDate.month,
-        application.expiryDate.year,
-      )
-    ) {
-      textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
-      classOverride = "govuk-tag govuk-tag--grey";
-    }
+  const applicationTableInfo = [...applicationsListData]
+    .sort((a, b) => {
+      if (
+        a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        b.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return -1;
+      } else if (
+        b.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+        a.applicationStatus !== ApplicationStatus.IN_PROGRESS
+      ) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+    .map((application) => {
+      let textOverride = undefined;
+      let classOverride = undefined;
+      if (
+        application.applicationStatus !== ApplicationStatus.CANCELLED &&
+        application.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
+        application.expiryDate &&
+        application.expiryDate.day.length > 0 &&
+        application.expiryDate.month.length > 0 &&
+        application.expiryDate.year.length > 0 &&
+        isDateInThePast(
+          application.expiryDate.day,
+          application.expiryDate.month,
+          application.expiryDate.year,
+        )
+      ) {
+        textOverride = AdditionalStatusTagTexts.CERTIFICATE_EXPIRED;
+        classOverride = "govuk-tag govuk-tag--grey";
+      }
 
-    return {
-      rowTitle: formatDateForDisplay(application.dateCreated),
-      cells: [
-        getApplicationExpiryDate(application),
-        <StatusTag
-          key={`application-${application.applicationId.slice(0, 8)}-state`}
-          status={application.applicationStatus}
-          textOverride={textOverride}
-          classOverride={classOverride}
-        />,
-        getApplicationAction(application),
-      ],
-    };
-  });
+      return {
+        rowTitle: formatDateForDisplay(application.dateCreated),
+        cells: [
+          getApplicationExpiryDate(application),
+          <StatusTag
+            key={`application-${application.applicationId.slice(0, 8)}-state`}
+            status={application.applicationStatus}
+            textOverride={textOverride}
+            classOverride={classOverride}
+          />,
+          getApplicationAction(application),
+        ],
+      };
+    });
 
   return (
     <div>

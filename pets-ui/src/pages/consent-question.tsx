@@ -7,9 +7,10 @@ import ErrorSummary from "@/components/errorSummary/errorSummary";
 import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
-import { useAppSelector } from "@/redux/hooks";
+import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { selectApplicationsList } from "@/redux/store";
-import { ButtonClass, RadioIsInline, YesOrNo } from "@/utils/enums";
+import { ButtonClass, RadioIsInline, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   sendGoogleAnalyticsFormErrorEvent,
   sendGoogleAnalyticsJourneyEvent,
@@ -17,6 +18,7 @@ import {
 
 export default function ConsentQuestionPage() {
   const applicationsListData = useAppSelector(selectApplicationsList);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const methods = useForm<{ consent: YesOrNo }>({ reValidateMode: "onSubmit" });
@@ -24,6 +26,10 @@ export default function ConsentQuestionPage() {
     handleSubmit,
     formState: { errors },
   } = methods;
+
+  useEffect(() => {
+    dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
+  });
 
   useEffect(() => {
     sendGoogleAnalyticsJourneyEvent(

@@ -11,7 +11,7 @@ import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus, TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { context, mockAPIGwEvent } from "../../test/mocks/events";
 import { SaveApplicationEvent } from "../handlers/create-application";
 import { ImageHelper } from "../helpers/image-helper";
@@ -70,6 +70,24 @@ vi.mock("../../shared/models/applicant", () => ({
     }),
   },
 }));
+vi.mock("../models/dashboard-applications", () => ({
+  DashboardApplication: {
+    getByClinicId: vi.fn().mockResolvedValue([
+      {
+        toJson: () => ({
+          applicationId: "test-id",
+          applicantId: "COUNTRY#IND#PASSPORT#Test",
+          passportNumber: "Test",
+          countryOfIssue: CountryCode.IND,
+          clinicId: "clinic-123",
+          dateCreated: new Date(),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        }),
+      },
+    ]),
+  },
+}));
 describe("Test for Application Lambda", () => {
   test("Creating an Application Successfully", async () => {
     const newApplication = {
@@ -109,7 +127,7 @@ describe("Test for Application Lambda", () => {
       expect(response.statusCode).toBe(200);
     });
 
-    test("Fetching an application taht does not exist throws 404", async () => {
+    test("Fetching an application that does not exist throws 404", async () => {
       // Arrange
       const event: PetsAPIGatewayProxyEvent = {
         ...mockAPIGwEvent,
@@ -713,6 +731,42 @@ describe("Test for Application Lambda", () => {
         }),
       };
 
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+  });
+
+  describe("Dashboard: Fetching all in progress applications ", () => {
+    test("Fetching applications in progress for a clinic", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        resource: "/application/dashboard",
+        path: `/application/dashboard`,
+        httpMethod: "GET",
+      };
+      // Act
+      const response: APIGatewayProxyResult = await handler(event, context);
+
+      // Assert
+      expect(response.statusCode).toBe(200);
+    });
+
+    test("Fetch applications from support clinic as ukhsa staff", async () => {
+      // Arrange
+      const event: PetsAPIGatewayProxyEvent = {
+        ...mockAPIGwEvent,
+        requestContext: {
+          ...mockAPIGwEvent.requestContext,
+          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        },
+        resource: "/application/dashboard",
+        path: `/application/dashboard`,
+        httpMethod: "GET",
+      };
       // Act
       const response: APIGatewayProxyResult = await handler(event, context);
 

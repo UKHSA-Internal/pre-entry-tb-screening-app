@@ -29,6 +29,7 @@ import ChestXrayUploadPage from "./pages/chest-xray-upload";
 import ConsentInstructionPage from "./pages/consent-instruction";
 import ConsentQuestionPage from "./pages/consent-question";
 import CookiesPage from "./pages/cookies";
+import DashboardPage from "./pages/dashboard";
 import EnterSputumSampleResultsPage from "./pages/enter-sputum-sample-results";
 import ErrorPage from "./pages/error-page";
 import HomePage from "./pages/home-page";
@@ -51,6 +52,7 @@ import SputumConfirmation from "./pages/sputum-confirmation";
 import SputumDecisionConfirmation from "./pages/sputum-decision-confirmation";
 import SputumDecisionSummaryPage from "./pages/sputum-decision-summary";
 import SputumQuestionPage from "./pages/sputum-question";
+import TaskChoicePage from "./pages/task-choice";
 import TbCertificateDeclarationPage from "./pages/tb-certificate-declaration";
 import TbCertificateNotIssuedPage from "./pages/tb-certificate-not-issued";
 import TbCertificatePrintPage from "./pages/tb-certificate-print";
@@ -62,7 +64,10 @@ import TravelSummaryPage from "./pages/travel-summary";
 import TravelAddressAndContactDetailsPage from "./pages/travel-uk-address";
 import TravelVisaCategoryPage from "./pages/travel-visa-category";
 import { updateGoogleAnalyticsConsent } from "./utils/google-analytics-utils";
-import { RedirectedRouteIfReduxEmpty } from "./utils/redirect";
+import {
+  RedirectedRouteIfApplicationsInProgressEmpty,
+  RedirectedRouteIfReduxEmpty,
+} from "./utils/redirect";
 
 function App() {
   useEffect(() => {
@@ -79,6 +84,24 @@ function App() {
           <UnauthenticatedRoute>
             <HomePage />
           </UnauthenticatedRoute>
+        }
+      />
+      <Route
+        path="/what-do-you-need-to-do"
+        element={
+          <AuthenticatedRoute>
+            <TaskChoicePage />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/screenings-in-progress"
+        element={
+          <AuthenticatedRoute>
+            <RedirectedRouteIfApplicationsInProgressEmpty>
+              <DashboardPage />
+            </RedirectedRouteIfApplicationsInProgressEmpty>
+          </AuthenticatedRoute>
         }
       />
       <Route

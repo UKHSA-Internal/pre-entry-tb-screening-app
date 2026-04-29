@@ -430,7 +430,7 @@ describe("ScreeningHistory", () => {
       clinic: { clinicId: "my-clinic" },
     };
 
-    const { store } = renderWithProviders(
+    renderWithProviders(
       <ApplicantPhotoProvider>
         <ScreeningHistory />
       </ApplicantPhotoProvider>,
@@ -440,7 +440,6 @@ describe("ScreeningHistory", () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Start now" }));
 
-    expect(store.getState().applicant.status).toBe(TaskStatus.IN_PROGRESS);
     expect(useNavigateMock).toHaveBeenLastCalledWith(
       "/do-you-have-visa-applicant-written-consent-for-tb-screening",
     );

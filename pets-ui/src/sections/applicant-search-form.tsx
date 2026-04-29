@@ -23,29 +23,29 @@ import {
   setApplicationsListDetailsFromApiResponse,
 } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
-import { setUserClinicId } from "@/redux/clinicSlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
 import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
+import { selectUserClinic } from "@/redux/store";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
 import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
-import { ButtonClass } from "@/utils/enums";
-import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
+import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { handleApplicantPhoto } from "@/utils/photo-helpers";
 import { formRegex } from "@/utils/records";
-import { getUserProperties } from "@/utils/userProperties";
 
-import { getApplicants } from "../api/api";
+import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
+  const userClinicData = useAppSelector(selectUserClinic);
   const navigate = useNavigate();
   const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
   const dispatch = useAppDispatch();
-  const { setApplicantPhotoUrl } = useApplicantPhoto();
+  const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,19 +62,6 @@ const ApplicantSearchForm = () => {
     dispatch(clearTbCertificateDetails());
     dispatch(setApplicantPhotoFileName(""));
     setApplicantPhotoUrl(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const setUserProperties = async () => {
-      const userProperties = await getUserProperties();
-      setGoogleAnalyticsParams("user_properties", {
-        user_role: userProperties.jobTitle,
-        clinic_id: userProperties.clinicId,
-      });
-      dispatch(setUserClinicId(userProperties.clinicId ?? ""));
-    };
-    void setUserProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,10 +85,12 @@ const ApplicantSearchForm = () => {
         if (!uuidValidate(application.applicationId)) {
           throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
         }
+        if (application.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS) {
+          application.applicationStatus = ApplicationStatus.IN_PROGRESS;
+        }
       }
       dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
       dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
-      navigate("/screening-history");
     } catch (error) {
       if (axios.isAxiosError(error) && error.status == 404) {
         await fetchClinic(dispatch);
@@ -113,6 +102,56 @@ const ApplicantSearchForm = () => {
         return;
       }
     }
+
+    try {
+      applicantRes.data.applications.sort((a, b) => {
+        if (
+          a.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+          b.applicationStatus !== ApplicationStatus.IN_PROGRESS
+        ) {
+          return -1;
+        } else if (
+          b.applicationStatus === ApplicationStatus.IN_PROGRESS &&
+          a.applicationStatus !== ApplicationStatus.IN_PROGRESS
+        ) {
+          return 1;
+        }
+        const dateA = new Date(a.dateCreated).getTime();
+        const dateB = new Date(b.dateCreated).getTime();
+        return dateB - dateA;
+      });
+    } catch (error) {
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
+    }
+
+    for (const application of applicantRes.data.applications) {
+      if (userClinicData.clinicId && userClinicData.clinicId != application.clinicId) {
+        continue;
+      }
+      try {
+        const applicationRes = await getApplication(application.applicationId);
+        if (applicationRes.data.applicantPhotoUrl) {
+          await handleApplicantPhoto(
+            applicationRes.data.applicantPhotoUrl,
+            dispatch,
+            setApplicantPhotoFile,
+            setApplicantPhotoUrl,
+          );
+          break;
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.status == 403) {
+          continue;
+        } else {
+          console.error(error);
+          navigate("/sorry-there-is-problem-with-service");
+          return;
+        }
+      }
+    }
+    navigate("/screening-history");
   };
 
   return (
