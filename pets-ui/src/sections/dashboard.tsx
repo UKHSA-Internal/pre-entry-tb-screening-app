@@ -5,6 +5,7 @@ import { validate as uuidValidate } from "uuid";
 
 import { getApplicants, getApplication } from "@/api/api";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import Pagination from "@/components/pagination/pagination";
 import Spinner from "@/components/spinner/spinner";
 import Table from "@/components/table/table";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -43,8 +44,35 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
-import { convertDateStrToObj, formatDateForDisplay, getCountryName } from "@/utils/helpers";
+import {
+  convertDateStrToObj,
+  formatDateForDisplay,
+  getCountryName,
+  inProgressStatuses,
+} from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
+
+const getLinkText = (status: ApplicationStatus) => {
+  switch (status) {
+    case ApplicationStatus.TRAVEL_IN_PROGRESS:
+      return "Continue: travel information";
+    case ApplicationStatus.MEDICAL_SCREENING_IN_PROGRESS:
+      return "Continue: TB symptoms and medical history";
+    case ApplicationStatus.CHEST_XRAY_IN_PROGRESS:
+      return "Continue: upload chest X-ray";
+    case ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS:
+      return "Continue: radiological outcome";
+    case ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS:
+      return "Continue: make a sputum decision";
+    case ApplicationStatus.SPUTUM_IN_PROGRESS:
+    case ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS:
+      return "Continue: sputum results";
+    case ApplicationStatus.CERTIFICATE_IN_PROGRESS:
+      return "Continue: TB certificate outcome";
+    default:
+      return "Continue with screening";
+  }
+};
 
 const Dashboard = () => {
   const userClinicData = useAppSelector(selectUserClinic);
@@ -54,6 +82,10 @@ const Dashboard = () => {
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [pageNum, setPageNum] = useState(1);
+  const pageSize = 10;
+  const startIndex = (pageNum - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
 
   useEffect(() => {
     dispatch(clearApplicationDetails());
@@ -99,10 +131,11 @@ const Dashboard = () => {
       dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
 
       const applicationRes = await getApplication(applicationId);
-      const remappedApplicationStatus =
-        applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
-          ? ApplicationStatus.IN_PROGRESS
-          : applicationRes.data.applicationStatus;
+      const remappedApplicationStatus = inProgressStatuses.includes(
+        applicationRes.data.applicationStatus,
+      )
+        ? ApplicationStatus.IN_PROGRESS
+        : applicationRes.data.applicationStatus;
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
@@ -164,11 +197,15 @@ const Dashboard = () => {
     }
   };
 
-  const applicationTableInfo = applicationsInProgressData
-    .filter((app) => app.clinicId == userClinicData.clinicId)
+  const filteredApplicationsData = applicationsInProgressData.filter(
+    (app) => app.clinicId == userClinicData.clinicId,
+  );
+
+  const applicationTableInfo = filteredApplicationsData
     .sort(
       (app1, app2) => new Date(app2.dateCreated).getTime() - new Date(app1.dateCreated).getTime(),
     )
+    .slice(startIndex, endIndex)
     .map((app) => ({
       rowTitle: app.applicantName,
       cells: [
@@ -177,11 +214,7 @@ const Dashboard = () => {
         formatDateForDisplay(convertDateStrToObj(app.dateCreated)),
         <LinkLabel
           key={app.applicationId}
-          title={
-            app.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
-              ? "Continue: sputum results"
-              : "Continue with screening"
-          }
+          title={getLinkText(app.applicationStatus)}
           to="/tracker"
           externalLink={false}
           onClick={async (e) => {
@@ -211,6 +244,21 @@ const Dashboard = () => {
         tableRows={applicationTableInfo}
         removeRowTitleStyling
       />
+      {filteredApplicationsData.length > pageSize && (
+        <Pagination
+          currentPage={pageNum}
+          maximumPage={Math.ceil(filteredApplicationsData.length / pageSize)}
+          onClickPrevious={() => {
+            setPageNum(pageNum - 1);
+          }}
+          onClickNext={() => {
+            setPageNum(pageNum + 1);
+          }}
+          onClickNumberedPage={(clickedPageNum) => {
+            setPageNum(clickedPageNum);
+          }}
+        />
+      )}
     </div>
   );
 };

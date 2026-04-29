@@ -2,7 +2,8 @@ import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
-import { TaskStatus } from "../../shared/types/enum";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededSputumDecision } from "../fixtures/sputum-decision";
 import { SputumDecision } from "../models/sputum-decision";
@@ -22,6 +23,12 @@ describe("Test for Sputum Decision into DB", () => {
       parsedBody: newSputumDecisionDetails,
     };
 
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.certificateInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveSputumDecisionHandler(event);
 
@@ -31,6 +38,12 @@ describe("Test for Sputum Decision into DB", () => {
       applicationId: seededApplications[0].applicationId,
       ...newSputumDecisionDetails,
       dateCreated: expect.any(String),
+    });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.certificateInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
     });
   });
 
@@ -107,6 +120,23 @@ describe("Test for Sputum Decision into DB", () => {
     });
   });
 
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveSputumDecisionEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newSputumDecisionDetails,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveSputumDecisionHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+  });
   test("Any error returns a 500 response", async () => {
     // Arrange;
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {

@@ -513,7 +513,6 @@ export const ApplicationSchema = ApplicationBaseSchema.extend({
   sputumDetails: SputumResponseSchema,
   tbCertificate: TbCertificateResponseSchema,
 });
-
 export const DashboardApplicationSchema = z.object({
   applicationId: z.string().openapi({
     description: "Application id",
