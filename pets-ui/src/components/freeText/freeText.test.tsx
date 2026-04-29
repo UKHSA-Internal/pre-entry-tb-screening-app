@@ -81,4 +81,127 @@ describe("FreeText component", () => {
     expect(screen.queryByText("test-hint")).toBeNull();
     expect(screen.queryByText("test error")).toBeTruthy();
   });
+
+  it("input type is overridden when inputTypeOverride is specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+            inputTypeOverride="email"
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("type", "email");
+  });
+
+  it("input type is correct when inputTypeOverride is not specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("type", "text");
+  });
+
+  it("autocomplete is disabled when disableAutocomplete is specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+            disableAutocomplete
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("autocomplete", "off");
+  });
+
+  it("autocomplete is not set when disableAutocomplete is not specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("autocomplete");
+  });
+
+  it("spellcheck is disabled when disableSpellcheck is specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+            disableSpellcheck
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).toHaveAttribute("spellcheck", "false");
+  });
+
+  it("spellcheck is not set when disableSpellcheck is not specified", () => {
+    const FreetextToTest = () => {
+      const methods = useForm<FormValues>();
+      return (
+        <FormProvider {...methods}>
+          <FreeText
+            id="test-id"
+            errorMessage=""
+            formValue="testValue"
+            required="This is required."
+            patternValue={testRegex.lettersAndNumbers}
+            patternError="Pattern error"
+          />
+        </FormProvider>
+      );
+    };
+    render(<FreetextToTest />);
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("spellcheck");
+  });
 });
