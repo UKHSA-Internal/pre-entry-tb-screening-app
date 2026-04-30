@@ -202,6 +202,8 @@ const ApplicantTravelAddressAndContactDetails = () => {
             patternValue={formRegex.numbersOnly}
             patternError="Enter applicant's UK phone number"
             defaultValue={travelData.ukMobileNumber}
+            inputTypeOverride="tel"
+            disableAutocomplete
           />
         </div>
 
@@ -216,6 +218,9 @@ const ApplicantTravelAddressAndContactDetails = () => {
             patternValue={formRegex.emailAddress}
             patternError="Email must be in correct format"
             defaultValue={travelData.ukEmail}
+            inputTypeOverride="email"
+            disableAutocomplete
+            disableSpellcheck
           />
         </div>
 
