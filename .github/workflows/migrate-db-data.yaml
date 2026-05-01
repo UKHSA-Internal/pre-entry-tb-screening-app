@@ -12,7 +12,7 @@ on:
         required: true
         default: "dev"
         type: choice
-        options: [dev, qat, preprod]
+        options: [dev, qat, preprod, prod]
       dry_run:
         description: "Dry Run? (no changes will be made to the data)"
         required: true
@@ -24,12 +24,7 @@ on:
         required: true
         default: "application_statusgroup"
         type: choice
-        options:
-          [
-            "applicant_migration",
-            "application_statusgroup",
-            "applicant_migration,application_statusgroup",
-          ]
+        options: ["applicant_migration", "application_statusgroup"]
 
 jobs:
   migrate_applicant_data:
