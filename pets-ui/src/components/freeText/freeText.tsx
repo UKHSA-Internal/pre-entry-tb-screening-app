@@ -24,6 +24,9 @@ export interface FreeTextProps {
   headingStyle?: React.CSSProperties;
   labelStyle?: React.CSSProperties;
   divStyle?: React.CSSProperties;
+  disableAutocomplete?: boolean;
+  disableSpellcheck?: boolean;
+  inputTypeOverride?: string;
 }
 
 export default function FreeText(props: Readonly<FreeTextProps>) {
@@ -58,7 +61,7 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
         aria-labelledby={props.heading && `${props.id}-field`}
         id={props.label && !props.heading ? `${props.id}-field` : undefined}
         aria-describedby={getDescribedBy(props.id, props.hint, props.heading, props.label)}
-        type="text"
+        type={props.inputTypeOverride ?? "text"}
         data-testid={props.id}
         {...register(props.formValue, {
           required: props.required,
@@ -73,6 +76,8 @@ export default function FreeText(props: Readonly<FreeTextProps>) {
           setValueAs: (value: string) => value.trim(),
         })}
         defaultValue={props.defaultValue ?? ""}
+        autoComplete={props.disableAutocomplete ? "off" : undefined}
+        spellCheck={props.disableSpellcheck ? "false" : undefined}
       />
       {props.suffixText && (
         <div className="govuk-input__suffix" style={{ display: "inline-flex" }}>

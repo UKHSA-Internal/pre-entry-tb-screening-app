@@ -387,7 +387,7 @@ describe("ApplicantReview", () => {
       screen.queryByRole("link", { name: "Change home province or state" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Change postcode" })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Change country" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Change home address country" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Change applicant photo" })).toBeInTheDocument();
   });
 });

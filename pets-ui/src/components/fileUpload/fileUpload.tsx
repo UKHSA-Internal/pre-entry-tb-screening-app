@@ -210,7 +210,11 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               tabIndex={-1}
               className={inputClass}
               type="file"
-              accept={props.type === ImageType.Dicom ? ".dcm" : ""}
+              accept={
+                props.type === ImageType.Dicom
+                  ? ".dcm,application/dicom"
+                  : "image/jpeg,image/png,.jpg,.jpeg,.png"
+              }
               data-testid={props.id}
               name={name}
               onBlur={onBlur}
