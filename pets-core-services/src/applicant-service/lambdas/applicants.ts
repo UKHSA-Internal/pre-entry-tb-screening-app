@@ -38,14 +38,9 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(validateClinicAndApplication)
       .handler(updateApplicantHandler),
-    requestBodySchema: {
-      base: ApplicantUpdateRequestSchema.openapi({
-        description: "Details about an Applicant",
-      }),
-      super: SuperuserApplicantSchema.openapi({
-        description: "Details about an Applicant (super user mode)",
-      }),
-    },
+    requestBodySchema: z.union([ApplicantUpdateRequestSchema, SuperuserApplicantSchema]).openapi({
+      description: "Applicant update (base or super user)",
+    }),
     responseSchema: ApplicantUpdateResponseSchema.openapi({
       description: "Updated Applicant Details",
     }),
