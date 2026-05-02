@@ -148,7 +148,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "other one",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/{applicationId}",
         path: `/application/${seededApplications[1].applicationId}`,
@@ -168,7 +172,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "UK/LHR/00/",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/{applicationId}",
         path: `/application/${seededApplications[1].applicationId}`,
@@ -761,7 +769,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "UK/LHR/00/",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/dashboard",
         path: `/application/dashboard`,

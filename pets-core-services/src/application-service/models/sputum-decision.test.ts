@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
 import { YesOrNo } from "../types/enums";
-import { ISputumDecision, SputumDecision } from "./sputum-decision";
+import { ISputumDecision, SputumDecisionDbOps } from "./sputum-decision";
 
 describe("Tests for Medical Screening Information Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -17,6 +17,7 @@ describe("Tests for Medical Screening Information Model", () => {
   const newSputumDecision: Omit<ISputumDecision, "dateCreated" | "status"> = {
     applicationId: "test-application-id",
     sputumRequired: YesOrNo.Yes,
+    createdBy: "test",
   };
 
   test("Creating new sputum decision", async () => {
@@ -27,7 +28,7 @@ describe("Tests for Medical Screening Information Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const sputumDecision = await SputumDecision.createSputumDecision(newSputumDecision);
+    const sputumDecision = await SputumDecisionDbOps.createSputumDecision(newSputumDecision);
 
     // Assert
     expect(sputumDecision).toMatchObject({
@@ -62,7 +63,9 @@ describe("Tests for Medical Screening Information Model", () => {
     });
 
     // Act
-    const sputumDecision = await SputumDecision.getByApplicationId(newSputumDecision.applicationId);
+    const sputumDecision = await SputumDecisionDbOps.getByApplicationId(
+      newSputumDecision.applicationId,
+    );
 
     // Assert
     expect(sputumDecision).toMatchObject({
@@ -78,7 +81,9 @@ describe("Tests for Medical Screening Information Model", () => {
     });
 
     // Act
-    const sputumDecision = await SputumDecision.getByApplicationId(newSputumDecision.applicationId);
+    const sputumDecision = await SputumDecisionDbOps.getByApplicationId(
+      newSputumDecision.applicationId,
+    );
 
     // Assert
     expect(infoLoggerMock).toHaveBeenNthCalledWith(2, "No Sputum Decision found");
@@ -91,7 +96,7 @@ describe("Tests for Medical Screening Information Model", () => {
 
     // Act
     await expect(
-      SputumDecision.getByApplicationId(newSputumDecision.applicationId),
+      SputumDecisionDbOps.getByApplicationId(newSputumDecision.applicationId),
     ).rejects.toThrow("this error");
 
     // Assert

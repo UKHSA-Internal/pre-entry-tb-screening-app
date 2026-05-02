@@ -6,19 +6,20 @@ import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicantUpdateRequestSchema } from "../types/zod-schema";
+import { ApplicantUpdateRequestSchema, SuperuserApplicantSchema } from "../types/zod-schema";
 
-export type ApplicantRequestSchema = z.infer<typeof ApplicantUpdateRequestSchema>;
+export type ApplicantBase = z.infer<typeof ApplicantUpdateRequestSchema>;
+export type ApplicantSuper = z.infer<typeof SuperuserApplicantSchema>;
 
 export type PutApplicantEvent = PetsAPIGatewayProxyEvent & {
-  parsedBody?: ApplicantRequestSchema;
+  superuser: boolean;
+  parsedBody: ApplicantBase | ApplicantSuper;
 };
-
-export const updateApplicantHandler = async (event: PutApplicantEvent) => {
+export const updateApplicantHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
     logger.info("Put applicant details handler triggered");
 
-    const { parsedBody } = event;
+    const { parsedBody } = event as PutApplicantEvent;
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");

@@ -8,7 +8,7 @@ import { seededTravelInformation } from "../application-service/fixtures/travel-
 import { ChestXRay } from "../application-service/models/chest-xray";
 import { MedicalScreeningDbOps } from "../application-service/models/medical-screening";
 import { RadiologicalOutcome } from "../application-service/models/radiological-outcome";
-import { SputumDecision } from "../application-service/models/sputum-decision";
+import { SputumDecisionDbOps } from "../application-service/models/sputum-decision";
 import { TbCertificateDbOps } from "../application-service/models/tb-certificate";
 import { TravelInformationDbOps } from "../application-service/models/travel-information";
 import { seededAuditData } from "../audit-service/fixtures/audit-data";
@@ -45,7 +45,7 @@ export const seedDatabase = async () => {
   }
 
   for (const sputumDecision of seededSputumDecision) {
-    await SputumDecision.createSputumDecision(sputumDecision);
+    await SputumDecisionDbOps.createSputumDecision(sputumDecision);
   }
 
   for (const tbCertificate of seededTbCertificate) {

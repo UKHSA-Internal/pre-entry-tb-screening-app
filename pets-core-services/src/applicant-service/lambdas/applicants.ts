@@ -15,6 +15,7 @@ import {
   ApplicantSearchResponseSchema,
   ApplicantUpdateRequestSchema,
   ApplicantUpdateResponseSchema,
+  SuperuserApplicantSchema,
 } from "../types/zod-schema";
 
 extendZodWithOpenApi(z);
@@ -37,9 +38,14 @@ export const routes: PetsRoute[] = [
     handler: middy<PetsAPIGatewayProxyEvent>()
       .before(validateClinicAndApplication)
       .handler(updateApplicantHandler),
-    requestBodySchema: ApplicantUpdateRequestSchema.openapi({
-      description: "Details about an Applicant",
-    }),
+    requestBodySchema: {
+      base: ApplicantUpdateRequestSchema.openapi({
+        description: "Details about an Applicant",
+      }),
+      super: SuperuserApplicantSchema.openapi({
+        description: "Details about an Applicant (super user mode)",
+      }),
+    },
     responseSchema: ApplicantUpdateResponseSchema.openapi({
       description: "Updated Applicant Details",
     }),

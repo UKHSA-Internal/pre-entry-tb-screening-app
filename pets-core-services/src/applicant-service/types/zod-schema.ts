@@ -110,7 +110,34 @@ export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
   }),
 });
 
-export const ApplicantUpdateRequestSchema = ApplicantBaseSchema;
+export const ApplicantUpdateRequestSchema = z.object({
+  passportNumber: z.string().openapi({
+    description: "PassportNumber of Applicant",
+  }),
+  countryOfIssue: z.nativeEnum(CountryCode).openapi({
+    description: "Passport Issue Country",
+  }),
+  applicantHomeAddress1: z.string().optional().openapi({
+    description: "First line of Applicant's Address",
+  }),
+  applicantHomeAddress2: z.string().optional().openapi({
+    description: "Second line of Applicant's Address",
+  }),
+  applicantHomeAddress3: z.string().optional().openapi({
+    description: "Third line of Applicant's Address",
+  }),
+  townOrCity: z.string().optional(),
+  provinceOrState: z.string().optional(),
+  postcode: z.string().optional(),
+  country: z.nativeEnum(CountryCode).optional().openapi({
+    description: "Country of Applican't Address",
+  }),
+});
+
+export const SuperuserApplicantSchema = ApplicantBaseSchema;
+
+export const getApplicantUpdateSchema = (isSuperuser: boolean) =>
+  isSuperuser ? SuperuserApplicantSchema.strict() : ApplicantUpdateRequestSchema.strict();
 
 export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend({
   applicationId: z.string().openapi({

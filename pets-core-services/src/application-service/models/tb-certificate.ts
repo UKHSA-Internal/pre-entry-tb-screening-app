@@ -1,4 +1,10 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
 import { getDateWithoutTime } from "../../shared/date";
@@ -50,6 +56,15 @@ type ITbCertificateIssued = {
   referenceNumber: string;
 };
 
+export type ITbCertificateDetailsUpdate = {
+  applicationId: string;
+  dateUpdated: Date;
+  updatedBy: string;
+
+  comments?: string;
+  physicianName: string;
+};
+
 export type NewTbCertificateIssuedDetails = Omit<
   ITbCertificateIssued,
   "dateCreated" | "issueDate" | "expiryDate" | "status"
@@ -91,6 +106,33 @@ export class TbCertificateIssued extends TbCertificateBase {
       comments: this.comments,
       certificateNumber: this.certificateNumber,
       referenceNumber: this.referenceNumber,
+    };
+  }
+}
+
+export class TbCertificateDetailsUpdate {
+  applicationId: string;
+  dateUpdated: Date;
+  updatedBy: string;
+
+  comments?: string;
+  physicianName: string;
+
+  constructor(details: ITbCertificateDetailsUpdate) {
+    this.applicationId = details.applicationId;
+    this.comments = details.comments;
+    this.physicianName = details.physicianName;
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
+  }
+
+  toJson() {
+    return {
+      applicationId: this.applicationId,
+      physicianName: this.physicianName,
+      comments: this.comments,
+      dateUpdated: this.dateUpdated,
+      updatedBy: this.updatedBy,
     };
   }
 }
@@ -210,7 +252,68 @@ export class TbCertificateDbOps {
       throw error;
     }
   }
+  static async updateTbCertificate(
+    details: Omit<ITbCertificateDetailsUpdate, "dateUpdated">,
+  ): Promise<TbCertificateDetailsUpdate> {
+    try {
+      logger.info("Update Travel Information to DB");
+      const pk = TbCertificateDbOps.getPk(details.applicationId);
+      const sk = TbCertificateDbOps.sk;
 
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      // Add audit fields
+      fieldsToUpdate["dateUpdated"] = new Date().toISOString();
+
+      // Build the UpdateExpression dynamically
+      const updateParts: string[] = [];
+      const ExpressionAttributeNames: Record<string, string> = {};
+      const ExpressionAttributeValues: Record<string, any> = {};
+
+      for (const [key, value] of Object.entries(fieldsToUpdate)) {
+        const nameKey = `#${key}`;
+        const valueKey = `:${key}`;
+        updateParts.push(`${nameKey} = ${valueKey}`);
+        ExpressionAttributeNames[nameKey] = key;
+        ExpressionAttributeValues[valueKey] = value;
+      }
+      const updateExpression = "SET " + updateParts.join(", ");
+
+      const params: UpdateCommandInput = {
+        TableName: TbCertificateDbOps.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes!;
+      if (!attrs) throw new Error("Update failed");
+
+      logger.info({ response }, "TB cert details updated successfully");
+      const updatedTBCertificate = new TbCertificateDetailsUpdate({
+        applicationId: attrs?.applicationId,
+        physicianName: attrs?.physicianName,
+        comments: attrs?.comments,
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        updatedBy: attrs?.updatedBy,
+      });
+      return updatedTBCertificate;
+    } catch (error) {
+      logger.error(error, "Error updating travel information");
+      throw error;
+    }
+  }
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("fetching TB Certificate information");

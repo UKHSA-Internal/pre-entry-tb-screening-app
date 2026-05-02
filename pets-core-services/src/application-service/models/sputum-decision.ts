@@ -1,4 +1,10 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -8,14 +14,23 @@ import { YesOrNo } from "../types/enums";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-export abstract class ISputumDecision {
+export type ISputumDecision = {
   applicationId: string;
   status: TaskStatus;
 
   sputumRequired: YesOrNo;
 
   dateCreated: Date;
-  createdBy?: string;
+  createdBy: string;
+};
+export class SputumDecision {
+  applicationId: string;
+  status: TaskStatus;
+
+  sputumRequired: YesOrNo;
+
+  dateCreated: Date;
+  createdBy: string;
 
   constructor(details: ISputumDecision) {
     this.applicationId = details.applicationId;
@@ -26,25 +41,74 @@ export abstract class ISputumDecision {
     this.dateCreated = details.dateCreated;
     this.createdBy = details.createdBy;
   }
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
 }
 
-export class SputumDecision extends ISputumDecision {
+export type ISputumDecisionUpdate = {
+  applicationId: string;
+
+  sputumRequired?: YesOrNo;
+
+  dateUpdated: Date;
+  updatedBy: string;
+};
+
+export class SputumDecisionUpdate {
+  applicationId: string;
+
+  sputumRequired?: YesOrNo;
+
+  dateUpdated: Date;
+  updatedBy: string;
+
+  constructor(details: ISputumDecisionUpdate) {
+    this.applicationId = details.applicationId;
+
+    this.sputumRequired = details.sputumRequired;
+    // Audit
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
+  }
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
+}
+export class SputumDecisionDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
 
   static readonly sk = "APPLICATION#SPUTUM#DECISION";
 
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  private constructor(details: ISputumDecision) {
-    super(details);
-  }
+  // private constructor(details: ISputumDecision) {
+  //   super(details);
+  // }
 
-  private todbItem() {
+  static todbItem(sputumDecision: SputumDecision) {
     const dbItem = {
-      ...this,
-      dateCreated: this.dateCreated.toISOString(),
-      pk: SputumDecision.getPk(this.applicationId),
-      sk: SputumDecision.sk,
+      ...sputumDecision,
+      dateCreated: sputumDecision.dateCreated.toISOString(),
+      pk: SputumDecisionDbOps.getPk(sputumDecision.applicationId),
+      sk: SputumDecisionDbOps.sk,
     };
     return dbItem;
   }
@@ -61,9 +125,10 @@ export class SputumDecision extends ISputumDecision {
 
       const sputumDecision = new SputumDecision(updatedDetails);
 
-      const dbItem = sputumDecision.todbItem();
+      const dbItem = SputumDecisionDbOps.todbItem(sputumDecision);
+
       const params: PutCommandInput = {
-        TableName: SputumDecision.getTableName(),
+        TableName: SputumDecisionDbOps.getTableName(),
         Item: { ...dbItem },
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
@@ -79,15 +144,78 @@ export class SputumDecision extends ISputumDecision {
     }
   }
 
+  static async updateSputumDecision(
+    details: Omit<ISputumDecisionUpdate, "dateUpdated" | "status">,
+  ): Promise<SputumDecisionUpdate> {
+    try {
+      logger.info("Update Travel Information to DB");
+      const pk = SputumDecisionDbOps.getPk(details.applicationId);
+      const sk = SputumDecisionDbOps.sk;
+
+      // Clean up: remove undefined fields before building update expression
+      const fieldsToUpdate = Object.entries(details).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      // Add audit fields
+      fieldsToUpdate["dateUpdated"] = new Date().toISOString();
+
+      // Build the UpdateExpression dynamically
+      const updateParts: string[] = [];
+      const ExpressionAttributeNames: Record<string, string> = {};
+      const ExpressionAttributeValues: Record<string, any> = {};
+
+      for (const [key, value] of Object.entries(fieldsToUpdate)) {
+        const nameKey = `#${key}`;
+        const valueKey = `:${key}`;
+        updateParts.push(`${nameKey} = ${valueKey}`);
+        ExpressionAttributeNames[nameKey] = key;
+        ExpressionAttributeValues[valueKey] = value;
+      }
+      const updateExpression = "SET " + updateParts.join(", ");
+
+      const params: UpdateCommandInput = {
+        TableName: SputumDecisionDbOps.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes!;
+      if (!attrs) throw new Error("Update failed");
+
+      logger.info({ response }, "Sputum Decision updated successfully");
+
+      const updatedSputumDecision = new SputumDecisionUpdate({
+        applicationId: attrs?.applicationId,
+        sputumRequired: attrs?.sputumRequired,
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        updatedBy: attrs?.updatedBy,
+      });
+
+      return updatedSputumDecision;
+    } catch (error) {
+      logger.error(error, "Error updating travel information");
+      throw error;
+    }
+  }
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("Fetching Sputum Decision");
 
       const params = {
-        TableName: SputumDecision.getTableName(),
+        TableName: SputumDecisionDbOps.getTableName(),
         Key: {
-          pk: SputumDecision.getPk(applicationId),
-          sk: SputumDecision.sk,
+          pk: SputumDecisionDbOps.getPk(applicationId),
+          sk: SputumDecisionDbOps.sk,
         },
       };
 
@@ -101,26 +229,18 @@ export class SputumDecision extends ISputumDecision {
 
       logger.info("Sputum Decision fetched successfully");
 
-      const dbItem = data.Item as ReturnType<SputumDecision["todbItem"]>;
+      const sputumDecisionDbItem = data.Item as ReturnType<
+        (typeof SputumDecisionDbOps)["todbItem"]
+      >;
 
       const sputumDecision = new SputumDecision({
-        ...dbItem,
-        dateCreated: new Date(dbItem.dateCreated),
+        ...sputumDecisionDbItem,
+        dateCreated: new Date(sputumDecisionDbItem.dateCreated),
       });
       return sputumDecision;
     } catch (error) {
       logger.error(error, "Error retrieving Sputum Decision details");
       throw error;
     }
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-      sputumRequired: this.sputumRequired,
-      // Audit
-      dateCreated: this.dateCreated,
-    };
   }
 }

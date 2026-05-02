@@ -3,6 +3,7 @@ import { assertEnvExists } from "../shared/config";
 export enum Roles {
   ApplicationWrite = "application.write",
   ApplicationRead = "application.read",
+  ApplicationUpdate = "application.update",
   ApplicantsWrite = "applicants.write",
   ApplicantsRead = "applicants.read",
   ClinicsRead = "clinics.read",
@@ -30,6 +31,10 @@ export const policyMapping: Record<Roles, string[]> = {
   [Roles.ApplicationWrite]: [
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application`,
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/POST/application/*`,
+    `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application`,
+    `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application/*`,
+  ],
+  [Roles.ApplicationUpdate]: [
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application`,
     `arn:aws:execute-api:${AWS_REGION}:${AWS_ACCOUNT_ID}:${API_GATEWAY_ID}/*/PUT/application/*`,
   ],

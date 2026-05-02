@@ -6,7 +6,7 @@ import { Application } from "../../shared/models/application";
 import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededSputumDecision } from "../fixtures/sputum-decision";
-import { SputumDecision } from "../models/sputum-decision";
+import { SputumDecisionDbOps } from "../models/sputum-decision";
 import { YesOrNo } from "../types/enums";
 import { SaveSputumDecisionEvent, saveSputumDecisionHandler } from "./save-sputum-decision";
 
@@ -160,7 +160,7 @@ describe("Test for Sputum Decision into DB", () => {
     // Arrange;
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const errorMessage = "Couldn't save it";
-    vi.spyOn(SputumDecision, "createSputumDecision").mockImplementation(() => {
+    vi.spyOn(SputumDecisionDbOps, "createSputumDecision").mockImplementation(() => {
       throw new Error(errorMessage);
     });
     const event: SaveSputumDecisionEvent = {

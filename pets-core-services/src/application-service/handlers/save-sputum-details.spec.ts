@@ -49,7 +49,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       parsedBody: newSputumDetails,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "test1", createdBy: "user1" },
+        authorizer: { clinicId: "test1", createdBy: "user1", superuser: "false" },
       },
     };
     const updatedApplication = seededApplications[0];
@@ -90,7 +90,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       parsedBody: newSputumDetails,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "test1", createdBy: "user1" },
+        authorizer: { clinicId: "test1", createdBy: "user1", superuser: "false" },
       },
     };
 
@@ -111,7 +111,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       pathParameters: { applicationId: seededApplications[2].applicationId },
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "test1", createdBy: "user1" },
+        authorizer: { clinicId: "test1", createdBy: "user1", superuser: "false" },
       },
     };
 
@@ -142,7 +142,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       pathParameters: { applicationId: seededApplications[2].applicationId },
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "test1", createdBy: "user1" },
+        authorizer: { clinicId: "test1", createdBy: "user1", superuser: "false" },
       },
       parsedBody: sputumDetails,
     };
@@ -164,7 +164,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       parsedBody: newSputumDetails,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "test1", createdBy: "user1" },
+        authorizer: { clinicId: "test1", createdBy: "user1", superuser: "false" },
       },
     };
     vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));

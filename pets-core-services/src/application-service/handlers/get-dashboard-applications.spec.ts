@@ -31,7 +31,7 @@ describe("Getting Applications Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "", createdBy: "hardcoded@user.com", superuser: "false" },
       },
     };
 

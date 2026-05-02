@@ -79,7 +79,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: newChestXray,

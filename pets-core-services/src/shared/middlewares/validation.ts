@@ -6,8 +6,15 @@ import { HttpErrors } from "../httpResponses";
 import { logger } from "../logger";
 import { RouteParam } from "../types";
 
+type RoleBasedSchema = {
+  base: z.ZodTypeAny;
+  super: z.ZodTypeAny;
+};
+
+export type RequestSchema = z.ZodTypeAny | RoleBasedSchema;
+
 export type ValidateRequestType = {
-  requestSchema?: z.ZodTypeAny;
+  requestSchema?: RequestSchema;
   queryStringParametersSchema?: RouteParam;
   headersSchema?: RouteParam;
 };
@@ -26,8 +33,29 @@ export const validateRequest = ({
       try {
         if (requestSchema) {
           logger.info("Validating Request Body");
-          const { body } = event;
-          const parsedResult = requestSchema.safeParse(JSON.parse(body ?? "{}"));
+          const superuser = event.requestContext?.authorizer?.superuser === "true";
+
+          let schema: z.ZodTypeAny;
+
+          if (
+            typeof requestSchema === "object" &&
+            requestSchema !== null &&
+            "base" in requestSchema &&
+            "super" in requestSchema
+          ) {
+            const roleSchema = requestSchema as unknown as {
+              base: z.ZodTypeAny;
+              super: z.ZodTypeAny;
+            };
+
+            schema = superuser ? roleSchema.super : roleSchema.base;
+          } else {
+            schema = requestSchema;
+          }
+
+          const rawBody = JSON.parse(event.body ?? "{}");
+
+          const parsedResult = schema.safeParse(rawBody);
 
           if (parsedResult.error) {
             logger.error("Failed Validation");
@@ -39,7 +67,7 @@ export const validateRequest = ({
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          Object.assign(request.event, { parsedBody: parsedResult.data });
+          Object.assign(request.event, { parsedBody: parsedResult.data, superuser });
         }
 
         if (
