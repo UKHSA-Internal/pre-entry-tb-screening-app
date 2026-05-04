@@ -53,7 +53,7 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
     const applicationStatus =
       sputumDetails.status === TaskStatus.completed
         ? ApplicationStatus.certificateInProgress
-        : ApplicationStatus.sputumResultsInProgress;
+        : ApplicationStatus.sputumInProgress;
 
     await Application.updateApplication({
       applicationId: applicationId,

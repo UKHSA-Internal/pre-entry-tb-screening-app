@@ -477,7 +477,6 @@ const inProgressStatuses = [
   ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS,
   ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS,
   ApplicationStatus.SPUTUM_IN_PROGRESS,
-  ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS,
   ApplicationStatus.CERTIFICATE_IN_PROGRESS,
 ];
 
