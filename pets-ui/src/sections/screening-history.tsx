@@ -239,6 +239,7 @@ const ScreeningHistory = () => {
         cells: [
           getApplicationExpiryDate(application),
           <StatusTag
+            id={`application-${application.applicationId.slice(0, 8)}-state`}
             key={`application-${application.applicationId.slice(0, 8)}-state`}
             status={application.applicationStatus}
             textOverride={textOverride}
