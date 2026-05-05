@@ -39,6 +39,7 @@ import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 interface TaskProps {
   description: string;
+  id: string;
   taskStatus: TaskStatus;
   applicationStatus: ApplicationStatus;
   linkWhenIncomplete: string;
@@ -61,58 +62,62 @@ const Task = (props: Readonly<TaskProps>) => {
   return (
     <li className="govuk-task-list__item govuk-task-list__item--with-link">
       <div className="govuk-task-list__name-and-hint">
-        {props.taskStatus == TaskStatus.COMPLETE && (
-          <LinkLabel
-            className="govuk-link govuk-task-list__link"
-            to={props.linkWhenComplete}
-            title={props.description}
-            externalLink={false}
-          />
-        )}
-        {props.applicationStatus != ApplicationStatus.CANCELLED &&
-          allPrerequisitesComplete &&
-          (props.taskStatus == TaskStatus.NOT_YET_STARTED ||
-            props.taskStatus == TaskStatus.IN_PROGRESS) && (
+        <span aria-describedby={props.id}>
+          {props.taskStatus == TaskStatus.COMPLETE && (
             <LinkLabel
               className="govuk-link govuk-task-list__link"
-              to={props.linkWhenIncomplete}
+              to={props.linkWhenComplete}
               title={props.description}
               externalLink={false}
             />
           )}
-        {((props.applicationStatus != ApplicationStatus.CANCELLED &&
-          props.taskStatus != TaskStatus.COMPLETE &&
-          (!allPrerequisitesComplete || props.taskStatus == TaskStatus.NOT_REQUIRED)) ||
-          (props.applicationStatus == ApplicationStatus.CANCELLED &&
-            props.taskStatus != TaskStatus.COMPLETE)) && (
-          <p className="govuk-body task-description-static">{props.description}</p>
-        )}
+          {props.applicationStatus != ApplicationStatus.CANCELLED &&
+            allPrerequisitesComplete &&
+            (props.taskStatus == TaskStatus.NOT_YET_STARTED ||
+              props.taskStatus == TaskStatus.IN_PROGRESS) && (
+              <LinkLabel
+                className="govuk-link govuk-task-list__link"
+                to={props.linkWhenIncomplete}
+                title={props.description}
+                externalLink={false}
+              />
+            )}
+          {((props.applicationStatus != ApplicationStatus.CANCELLED &&
+            props.taskStatus != TaskStatus.COMPLETE &&
+            (!allPrerequisitesComplete || props.taskStatus == TaskStatus.NOT_REQUIRED)) ||
+            (props.applicationStatus == ApplicationStatus.CANCELLED &&
+              props.taskStatus != TaskStatus.COMPLETE)) && <>{props.description}</>}
+        </span>
       </div>
 
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         allPrerequisitesComplete &&
         props.taskStatus == TaskStatus.NOT_YET_STARTED && (
-          <StatusTag status={props.taskStatus} taskListWrapper />
+          <StatusTag id={props.id} status={props.taskStatus} taskListWrapper />
         )}
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         !allPrerequisitesComplete &&
         props.taskStatus == TaskStatus.NOT_YET_STARTED && (
-          <StatusTag status={AdditionalStatusTagTexts.CANNOT_START_YET} taskListWrapper />
+          <StatusTag
+            id={props.id}
+            status={AdditionalStatusTagTexts.CANNOT_START_YET}
+            taskListWrapper
+          />
         )}
       {props.applicationStatus != ApplicationStatus.CANCELLED &&
         props.taskStatus == TaskStatus.IN_PROGRESS && (
-          <StatusTag status={props.taskStatus} taskListWrapper />
+          <StatusTag id={props.id} status={props.taskStatus} taskListWrapper />
         )}
       {props.taskStatus == TaskStatus.COMPLETE && (
         <div className="govuk-task-list__status">{props.statusOverride ?? <>Completed</>}</div>
       )}
       {props.taskStatus == TaskStatus.NOT_REQUIRED && (
-        <StatusTag status={props.taskStatus} taskListWrapper />
+        <StatusTag id={props.id} status={props.taskStatus} taskListWrapper />
       )}
       {props.applicationStatus == ApplicationStatus.CANCELLED &&
         props.taskStatus != TaskStatus.COMPLETE &&
         props.taskStatus != TaskStatus.NOT_REQUIRED && (
-          <StatusTag status={props.applicationStatus} taskListWrapper />
+          <StatusTag id={props.id} status={props.applicationStatus} taskListWrapper />
         )}
     </li>
   );
@@ -306,6 +311,7 @@ const ProgressTracker = () => {
       <Heading title="1. Visa applicant information" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
+          id="visa-applicant-details"
           description="Visa applicant details"
           taskStatus={applicantData.status}
           applicationStatus={applicationData.applicationStatus}
@@ -314,6 +320,7 @@ const ProgressTracker = () => {
           prerequisiteTaskStatuses={[]}
         />
         <Task
+          id="uk-travel-information"
           description="UK travel information"
           taskStatus={travelData.status}
           applicationStatus={applicationData.applicationStatus}
@@ -325,6 +332,7 @@ const ProgressTracker = () => {
       <Heading title="2. Medical screening" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
+          id="medical-history-and-tb-symptoms"
           description="Medical history and TB symptoms"
           taskStatus={medicalScreeningData.status}
           applicationStatus={applicationData.applicationStatus}
@@ -333,6 +341,7 @@ const ProgressTracker = () => {
           prerequisiteTaskStatuses={[applicantData.status, travelData.status]}
         />
         <Task
+          id="upload-chest-xray-images"
           description="Upload chest X-ray images"
           taskStatus={chestXrayStatus}
           applicationStatus={applicationData.applicationStatus}
@@ -345,6 +354,7 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          id="radiological-outcome"
           description="Radiological outcome"
           taskStatus={radiologicalOutcomeStatus}
           applicationStatus={applicationData.applicationStatus}
@@ -358,6 +368,7 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          id="make-a-sputum-decision"
           description="Make a sputum decision"
           taskStatus={sputumDecisionData.status}
           applicationStatus={applicationData.applicationStatus}
@@ -372,6 +383,7 @@ const ProgressTracker = () => {
           ]}
         />
         <Task
+          id="sputum-collection-and-results"
           description="Sputum collection and results"
           taskStatus={sputumCollectionStatus}
           applicationStatus={applicationData.applicationStatus}
@@ -390,6 +402,7 @@ const ProgressTracker = () => {
       <Heading title="3. Review outcome" level={2} size="s" />
       <ul className="govuk-task-list">
         <Task
+          id="tb-certificate-outcome"
           description="TB certificate outcome"
           taskStatus={tbCertificateData.status}
           applicationStatus={applicationData.applicationStatus}
