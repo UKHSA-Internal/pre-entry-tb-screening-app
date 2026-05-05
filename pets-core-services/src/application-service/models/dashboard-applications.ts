@@ -129,18 +129,33 @@ export class DashboardApplication extends IDashboardApplication {
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
-      // Add applicantName
-      const enrichedApplications = applications.map((app) => {
-        const applicant = applicantMap.get(app.applicantId) as Applicant;
-        return new DashboardApplication({
-          ...app,
-          applicantName: applicant.fullName,
-          passportNumber: applicant.passportNumber,
-          countryOfIssue: applicant.countryOfIssue,
-        });
-      });
+      // Enrich with applicant details
 
-      return enrichedApplications;
+      const enrichedApplications = [];
+
+      for (const app of applications) {
+        const applicant = applicantMap.get(app.applicantId) as Applicant;
+
+        if (!applicant) {
+          logger.error(
+            {
+              applicationId: app.applicationId,
+              applicantId: app.applicantId,
+            },
+            "Skipping application - applicant not found",
+          );
+          continue;
+        }
+
+        enrichedApplications.push(
+          new DashboardApplication({
+            ...app,
+            applicantName: applicant.fullName,
+            passportNumber: applicant.passportNumber,
+            countryOfIssue: applicant.countryOfIssue,
+          }),
+        );
+      }
     } catch (error) {
       logger.error(error, "Error retrieving applications by clinicId");
       throw error;
