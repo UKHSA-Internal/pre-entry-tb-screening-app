@@ -9,6 +9,7 @@ interface TableProps {
   tableRows: TableRow[];
   removeRowTitleStyling?: boolean;
   hiddenCaption?: string;
+  firstColumnIsHeader?: boolean;
 }
 
 export default function Table(props: Readonly<TableProps>) {
@@ -37,15 +38,13 @@ export default function Table(props: Readonly<TableProps>) {
         {props.tableRows.map((tableRow, i) => {
           return (
             <tr className="govuk-table__row" key={i + ": " + tableRow.rowTitle}>
-              {props.removeRowTitleStyling ? (
-                <td scope="row" className="govuk-table__cell">
-                  {tableRow.rowTitle}
-                </td>
-              ) : (
-                <th scope="row" className="govuk-table__header">
-                  {tableRow.rowTitle}
-                </th>
-              )}
+              <th
+                scope="row"
+                className="govuk-table__header"
+                style={props.removeRowTitleStyling ? { fontWeight: 400 } : {}}
+              >
+                {tableRow.rowTitle}
+              </th>
               {tableRow.cells.map((cell, j) => {
                 return (
                   <td className="govuk-table__cell" key={"cell-" + i + "-" + j}>
