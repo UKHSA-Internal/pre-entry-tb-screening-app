@@ -8,6 +8,7 @@ interface TableProps {
   columnHeaders?: string[];
   tableRows: TableRow[];
   removeRowTitleStyling?: boolean;
+  hiddenCaption?: string;
 }
 
 export default function Table(props: Readonly<TableProps>) {
@@ -15,6 +16,9 @@ export default function Table(props: Readonly<TableProps>) {
     <table className="govuk-table">
       {props.title && (
         <caption className="govuk-table__caption govuk-table__caption--m">{props.title}</caption>
+      )}
+      {props.hiddenCaption && (
+        <caption className="govuk-visually-hidden">{props.hiddenCaption}</caption>
       )}
       {props.columnHeaders && (
         <thead className="govuk-table__head">
