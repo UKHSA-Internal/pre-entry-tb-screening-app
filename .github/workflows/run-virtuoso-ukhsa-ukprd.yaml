@@ -18,19 +18,32 @@ on:
       plan_name:
         required: false
         type: string
+    outputs:
+      outcome:
+        description: "Overall outcome of the Virtuoso plan execution (PASS or FAIL)"
+        value: ${{ jobs.run-virtuoso-plan.outputs.outcome }}
+      report_artifact:
+        description: "Name of the uploaded execution report artifact"
+        value: ${{ jobs.run-virtuoso-plan.outputs.report_artifact }}
 
 jobs:
   run-virtuoso-plan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     env:
       VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
-      PLAN_ID: ${{ inputs.plan_id }}
-      PLAN_NAME: ${{ inputs.plan_name }}
+      PLAN_ID: ${{ inputs.plan_id || '5' }}
+      PLAN_NAME: ${{ inputs.plan_name || 'CI/CD_PETS' }}
+
+    outputs:
+      outcome: ${{ steps.set_outcome.outputs.outcome }}
+      report_artifact: ${{ steps.set_outcome.outputs.report_artifact }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -39,6 +52,8 @@ jobs:
         run: chmod +x scripts/execute.sh
 
       - name: Run Virtuoso plan
+        id: virtuoso_run
+        continue-on-error: true
         run: scripts/execute.sh
 
       - name: Move report to reports folder
@@ -46,12 +61,31 @@ jobs:
         run: |
           mkdir -p reports
           if [ -f plan_execution_report.json ]; then
-            mv plan_execution_report.json reports/
+            mv plan_execution_report.json reports/plan_execution_report.json
+          else
+            echo '{"outcome":"ERROR","jobs":{}}' > reports/plan_execution_report.json
           fi
 
       - name: Upload report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
-          name: execution-report-${{ inputs.plan_id }}-${{ github.run_attempt }}
+          name: execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}
           path: reports/plan_execution_report.json
+
+      - name: Set outputs
+        id: set_outcome
+        if: always()
+        run: |
+          OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' reports/plan_execution_report.json)
+          echo "outcome=$OUTCOME" >> "$GITHUB_OUTPUT"
+          echo "report_artifact=execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        if: always()
+        run: |
+          if [[ "${{ steps.virtuoso_run.outcome }}" == "success" ]]; then
+            echo "::notice::✅ Virtuoso tests passed."
+          else
+            echo "::warning::⚠️ Some Virtuoso tests failed."
+          fi
