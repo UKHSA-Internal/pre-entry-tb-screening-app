@@ -131,8 +131,7 @@ export class DashboardApplication extends IDashboardApplication {
 
       // Enrich with applicant details
 
-      const enrichedApplications = [];
-
+      const enrichedApplications: DashboardApplication[] = [];
       for (const app of applications) {
         const applicant = applicantMap.get(app.applicantId) as Applicant;
 
@@ -155,7 +154,9 @@ export class DashboardApplication extends IDashboardApplication {
             countryOfIssue: applicant.countryOfIssue,
           }),
         );
+        return enrichedApplications;
       }
+      return [];
     } catch (error) {
       logger.error(error, "Error retrieving applications by clinicId");
       throw error;
