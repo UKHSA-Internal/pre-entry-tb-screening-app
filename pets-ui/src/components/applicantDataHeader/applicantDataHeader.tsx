@@ -75,6 +75,7 @@ export default function ApplicantDataHeader(props: Readonly<ApplicantDataHeaderP
             </th>
             <td className="govuk-table__cell progress-tracker-header-cells">
               <StatusTag
+                id="application-status"
                 status={props.applicationStatus}
                 textOverride={textOverride}
                 classOverride={classOverride}

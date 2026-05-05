@@ -41,7 +41,7 @@ describe("StatusTag", () => {
     ],
   ])("status mapping", (status, expectedText, expectedClass) => {
     it(`renders "${expectedText}" with correct class`, () => {
-      render(<StatusTag status={status} />);
+      render(<StatusTag id="test-id" status={status} />);
 
       const tag = screen.getByText(expectedText);
 
@@ -52,13 +52,21 @@ describe("StatusTag", () => {
 
   describe("overrides", () => {
     it("uses textOverride instead of mapped text", () => {
-      render(<StatusTag status={TaskStatus.NOT_YET_STARTED} textOverride="Custom override" />);
+      render(
+        <StatusTag
+          id="test-id"
+          status={TaskStatus.NOT_YET_STARTED}
+          textOverride="Custom override"
+        />,
+      );
 
       expect(screen.getByText("Custom override")).toBeInTheDocument();
     });
 
     it("uses classOverride instead of mapped class", () => {
-      render(<StatusTag status={TaskStatus.NOT_YET_STARTED} classOverride="custom-class" />);
+      render(
+        <StatusTag id="test-id" status={TaskStatus.NOT_YET_STARTED} classOverride="custom-class" />,
+      );
 
       const tag = screen.getByText(TaskStatus.NOT_YET_STARTED);
 
@@ -69,7 +77,9 @@ describe("StatusTag", () => {
 
   describe("taskListWrapper", () => {
     it("wraps the tag in govuk-task-list__status when enabled", () => {
-      const { container } = render(<StatusTag status={TaskStatus.IN_PROGRESS} taskListWrapper />);
+      const { container } = render(
+        <StatusTag id="test-id" status={TaskStatus.IN_PROGRESS} taskListWrapper />,
+      );
 
       const wrapper = container.querySelector(".govuk-task-list__status");
       const tag = screen.getByText(TaskStatus.IN_PROGRESS);
@@ -79,7 +89,7 @@ describe("StatusTag", () => {
     });
 
     it("does not render wrapper when disabled", () => {
-      const { container } = render(<StatusTag status={TaskStatus.IN_PROGRESS} />);
+      const { container } = render(<StatusTag id="test-id" status={TaskStatus.IN_PROGRESS} />);
 
       const wrapper = container.querySelector(".govuk-task-list__status");
 
