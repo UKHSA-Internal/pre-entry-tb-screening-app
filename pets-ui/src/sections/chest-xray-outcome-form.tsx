@@ -18,7 +18,10 @@ const ChestXrayOutcomeForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

@@ -30,6 +30,7 @@ const MedicalScreeningFormU11Qs = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<MedicalScreeningU11Data>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       underElevenConditions: medicalData.underElevenConditions,
       underElevenConditionsDetail: medicalData.underElevenConditionsDetail,

@@ -110,6 +110,7 @@ const SputumCollectionForm = () => {
 
   const methods = useForm<SputumCollectionFormFields>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       dateOfSputumSample1: sputumData.sample1.collection.dateOfSample || {
         day: "",

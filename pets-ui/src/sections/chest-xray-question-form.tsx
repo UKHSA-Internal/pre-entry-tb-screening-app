@@ -20,6 +20,7 @@ const ChestXrayQuestionForm = () => {
 
   const methods = useForm<ReduxMedicalScreeningType>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
   });
   const {
     handleSubmit,

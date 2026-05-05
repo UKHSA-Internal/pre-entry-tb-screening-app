@@ -72,6 +72,7 @@ const ChestXrayForm = () => {
 
   const methods = useForm<ReduxChestXrayDetailsType>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     criteriaMode: "all",
   });
   const {

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { FieldErrors } from "react-hook-form";
 
 import { attributeToComponentId } from "@/utils/records";
@@ -9,14 +9,13 @@ interface ErrorSummaryProps {
 }
 
 export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
-  const hasFocusedRef = useRef(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
-  const setErrorSummaryRef = (element: HTMLDivElement | null) => {
-    if (element && !hasFocusedRef.current && props.errorsToShow.length > 0) {
-      hasFocusedRef.current = true;
-      setTimeout(() => element.focus(), 0);
+  useEffect(() => {
+    if (props.errorsToShow.length > 0) {
+      summaryRef.current?.focus();
     }
-  };
+  }, [props.errorsToShow]);
 
   const handleFocus = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -35,7 +34,7 @@ export default function ErrorSummary(props: Readonly<ErrorSummaryProps>) {
       className="govuk-error-summary"
       data-module="govuk-error-summary"
       tabIndex={-1}
-      ref={setErrorSummaryRef}
+      ref={summaryRef}
       data-testid="error-summary"
     >
       <div role="alert">
