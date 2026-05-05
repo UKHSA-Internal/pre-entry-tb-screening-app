@@ -22,6 +22,7 @@ export interface TextAreaProps {
   labelStyle?: React.CSSProperties;
   divStyle?: React.CSSProperties;
   maxWordCount?: number;
+  hiddenLabel?: string;
 }
 
 export default function TextArea(props: Readonly<TextAreaProps>) {
@@ -58,6 +59,11 @@ export default function TextArea(props: Readonly<TextAreaProps>) {
       labelStyle={props.labelStyle}
       divStyle={props.divStyle}
     >
+      {props.hiddenLabel && (
+        <label className="govuk-visually-hidden" htmlFor={`${props.id}-field`}>
+          {props.hiddenLabel}
+        </label>
+      )}
       <textarea
         aria-labelledby={props.heading && `${props.id}-field`}
         id={props.label && !props.heading ? `${props.id}-field` : undefined}
