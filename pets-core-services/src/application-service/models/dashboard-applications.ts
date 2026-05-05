@@ -154,15 +154,13 @@ export class DashboardApplication extends IDashboardApplication {
             countryOfIssue: applicant.countryOfIssue,
           }),
         );
-        return enrichedApplications;
       }
-      return [];
+      return enrichedApplications;
     } catch (error) {
       logger.error(error, "Error retrieving applications by clinicId");
       throw error;
     }
   }
-
   toJson() {
     return {
       applicationId: this.applicationId,
