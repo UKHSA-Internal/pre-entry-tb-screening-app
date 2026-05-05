@@ -100,7 +100,7 @@ export class DashboardApplication extends IDashboardApplication {
       const invalidApplications: typeof applications = [];
 
       for (const app of applications) {
-        if (!app.countryOfIssue || !app.passportNumber) {
+        if (!app.applicantId) {
           invalidApplications.push(app);
         } else {
           validApplications.push(app);
@@ -114,7 +114,7 @@ export class DashboardApplication extends IDashboardApplication {
             count: invalidApplications.length,
             applicationIds: invalidApplications.map((a) => a.applicationId),
           },
-          "Skipping applications with missing applicant identifiers",
+          "Skipping applications with missing applicant identifier",
         );
       }
       // Batch load applicants
