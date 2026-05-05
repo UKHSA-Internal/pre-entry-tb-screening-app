@@ -6,6 +6,7 @@ import {
 } from "@/utils/enums";
 
 export interface StatusTagProps {
+  id: string;
   status: StatusTagText;
   textOverride?: string;
   classOverride?: string;
@@ -61,7 +62,7 @@ export default function StatusTag(props: Readonly<StatusTagProps>) {
 
   if (props.taskListWrapper) {
     return (
-      <div className="govuk-task-list__status">
+      <div id={props.id} className="govuk-task-list__status">
         <strong className={tagClass}>{tagText}</strong>
       </div>
     );
