@@ -316,6 +316,7 @@ const ScreeningHistory = () => {
         columnHeaders={["Start date", "Expiry date", "Status", "Action"]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
+        hiddenCaption="Application history information"
       />
     </div>
   );
