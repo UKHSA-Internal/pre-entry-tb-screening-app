@@ -1,6 +1,8 @@
 services:
   localstack:
-    image: localstack/localstack:4.3.0
+    image: ghcr.io/ukhsa-internal/localstack-enterprise:latest
+    # image: ghcr.io/ukhsa-internal/localstack-enterprise:4.8.1-20250922
+    # image: 476114123318.dkr.ecr.eu-central-1.amazonaws.com/localstack-enterprise-ukhsa:4.8.1-20250922
     ports:
       - "127.0.0.1:4566:4566" # LocalStack Gateway
     environment:
@@ -8,6 +10,7 @@ services:
       - DEBUG=${DEBUG:-0}
       - DYNAMODB_IN_MEMORY=1
       - LAMBDA_DOCKER_FLAGS=-e LOCALSTACK_FILE_WATCHER_STRATEGY=polling
+      - USE_SSL=0
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
       interval: 5s
