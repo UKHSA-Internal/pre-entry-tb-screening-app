@@ -190,7 +190,11 @@ describe("Getting Application Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: seededApplications[2].clinicId, createdBy: "hardcoded@user.com" },
+        authorizer: {
+          clinicId: seededApplications[2].clinicId,
+          createdBy: "hardcoded@user.com",
+          superuser: "false",
+        },
       },
       pathParameters: { applicationId: seededApplications[2].applicationId },
     };
@@ -279,7 +283,7 @@ describe("Getting Application Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[1].applicationId },
     };

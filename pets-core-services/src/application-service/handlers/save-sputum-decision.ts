@@ -5,7 +5,7 @@ import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
-import { SputumDecision } from "../models/sputum-decision";
+import { SputumDecision, SputumDecisionDbOps } from "../models/sputum-decision";
 import { YesOrNo } from "../types/enums";
 import { SputumDecisionRequestSchema } from "../types/zod-schema";
 
@@ -38,7 +38,7 @@ export const saveSputumDecisionHandler = async (event: SaveSputumDecisionEvent) 
 
     let sputumDecision: SputumDecision;
     try {
-      sputumDecision = await SputumDecision.createSputumDecision({
+      sputumDecision = await SputumDecisionDbOps.createSputumDecision({
         ...parsed.data,
         createdBy,
         applicationId,

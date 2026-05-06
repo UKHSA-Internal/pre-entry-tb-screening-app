@@ -269,6 +269,15 @@ export const TbCertificateRequestSchema = z.union([
   TbCertificateNotIssuedRequestSchema,
 ]);
 
+export const TbCertificateUpdateRequestSchema = z.object({
+  physicianName: z.string().openapi({
+    description: "Physician's Name",
+  }),
+  comments: z.string().optional().openapi({
+    description: "Physician's comments",
+  }),
+});
+
 export const TbCertificateIssuedResponseSchema = TbCertificateIssuedRequestSchema.extend({
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",

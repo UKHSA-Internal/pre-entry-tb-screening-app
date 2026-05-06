@@ -7,14 +7,19 @@ export type RouteParam = Record<
   string,
   z.ZodOptional<z.ZodString | z.ZodNumber> | z.ZodString | z.ZodNumber | z.ZodNativeEnum<any>
 >;
+type RoleBasedSchema = {
+  base: z.ZodTypeAny;
+  super: z.ZodTypeAny;
+};
 
+export type RequestSchema = z.ZodTypeAny | RoleBasedSchema;
 export type PetsRoute = {
   path: string;
   handler:
     | MiddyfiedHandler<PetsAPIGatewayProxyEvent>
     | ((event: PetsAPIGatewayProxyEvent) => Promise<APIGatewayProxyResult> | APIGatewayProxyResult);
   method: Extract<Method, "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD">;
-  requestBodySchema?: z.ZodTypeAny;
+  requestBodySchema?: RequestSchema;
   queryParams?: RouteParam;
   headers?: RouteParam; // Note: Ensure keys of headers are all lowercase
   responseSchema: z.ZodTypeAny;
@@ -23,6 +28,7 @@ export type PetsRoute = {
 };
 
 export type PetsAPIGatewayProxyEvent = APIGatewayProxyEventBase<{
+  superuser: string;
   clinicId: string;
   createdBy: string;
 }>;

@@ -48,7 +48,7 @@ describe("Generating signed PUT url for DICOM Upload", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: uploadInfo,
