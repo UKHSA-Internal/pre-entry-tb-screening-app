@@ -1,8 +1,7 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
-import { Application } from "../../shared/models/application";
 import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
