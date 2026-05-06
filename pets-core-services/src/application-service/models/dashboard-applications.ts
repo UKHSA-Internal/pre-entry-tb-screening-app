@@ -100,10 +100,10 @@ export class DashboardApplication extends IDashboardApplication {
       const invalidApplications: typeof applications = [];
 
       for (const app of applications) {
-        if (!app.applicantId) {
-          invalidApplications.push(app);
-        } else {
+        if (app.applicantId) {
           validApplications.push(app);
+        } else {
+          invalidApplications.push(app);
         }
       }
 
