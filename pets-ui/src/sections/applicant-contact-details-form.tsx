@@ -46,7 +46,10 @@ const ApplicantContactDetailsForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === TaskStatus.COMPLETE;
 
-  const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxApplicantDetailsType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

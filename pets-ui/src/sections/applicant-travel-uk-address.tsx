@@ -37,7 +37,10 @@ const ApplicantTravelAddressAndContactDetails = () => {
   const applicationData = useAppSelector(selectApplication);
   const [isLoading, setIsLoading] = useState(false);
 
-  const methods = useForm<TravelAddressAndContactDetailsData>({ reValidateMode: "onSubmit" });
+  const methods = useForm<TravelAddressAndContactDetailsData>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

@@ -33,6 +33,7 @@ const CheckApplicantPhoto = () => {
 
   const methods = useForm<CheckApplicantPhotoFormType>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
   });
 
   const {

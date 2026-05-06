@@ -58,6 +58,7 @@ const MedicalScreeningForm = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<MedicalScreeningInitialData>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       completionDate: medicalData.completionDate,
       tbSymptoms: medicalData.tbSymptoms,
