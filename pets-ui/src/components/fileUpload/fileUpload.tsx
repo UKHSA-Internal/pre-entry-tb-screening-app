@@ -16,6 +16,7 @@ export interface FileUploadProps {
   setFileState: Dispatch<SetStateAction<File | undefined>>;
   setFileName: Dispatch<SetStateAction<string | undefined>>;
   existingFileName?: string;
+  removeFieldset?: boolean;
 }
 
 export default function FileUpload(props: Readonly<FileUploadProps>) {
@@ -149,81 +150,89 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
     }
   };
 
+  const fileUploadInner = (
+    <>
+      {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
+      {props.hint && <div className="govuk-hint">{props.hint}</div>}
+      {errorText && (
+        <p className="govuk-error-message">
+          <span className="govuk-visually-hidden">Error:</span> {errorText}
+        </p>
+      )}
+      <div
+        data-module="govuk-file-upload"
+        className="govuk-body file-upload-existing-file"
+        role="application"
+        aria-label="File drop zone"
+        onDrop={handleDrop}
+        onDragOver={preventDragDefaults}
+        onDragEnter={preventDragDefaults}
+        onDragLeave={preventDragDefaults}
+      >
+        <div className="file-upload-blue-bar">
+          {showExistingFileName ? (
+            props.existingFileName
+          ) : (
+            <div aria-live="polite" aria-atomic="true">
+              <span className="govuk-visually-hidden">Selected file: </span>
+              {lastFile?.name}
+            </div>
+          )}
+          {!showExistingFileName && !lastFile && (
+            <span className="file-upload-no-file">No file chosen</span>
+          )}
+        </div>
+        <div className="file-upload-row">
+          <Button
+            id={`choose-file-${props.id}`}
+            class={ButtonClass.SECONDARY}
+            text="Choose file"
+            type={ButtonType.BUTTON}
+            handleClick={(e) => {
+              e.preventDefault();
+              if (fileInputRef.current) {
+                fileInputRef.current.click();
+              }
+            }}
+          />
+          <span className="file-upload-or-drop">or drop file</span>
+        </div>
+        <input
+          ref={(el) => {
+            fileInputRef.current = el;
+            if (typeof rhfRef === "function") rhfRef(el);
+          }}
+          id={props.id}
+          aria-hidden={true}
+          tabIndex={-1}
+          className={inputClass}
+          type="file"
+          accept={
+            props.type === ImageType.Dicom
+              ? ".dcm,application/dicom"
+              : "image/jpeg,image/png,.jpg,.jpeg,.png"
+          }
+          data-testid={props.id}
+          name={name}
+          onBlur={onBlur}
+          {...restInputProps}
+          onChange={onInputChange}
+        />
+      </div>
+    </>
+  );
+
   return (
     <>
       <label className="govuk-visually-hidden" htmlFor={props.id}>
         {`${props.id} file upload`}
       </label>
       <div id={props.id} className={wrapperClass}>
-        <fieldset className="govuk-fieldset">
-          {props.legend && <legend className="govuk-fieldset__legend">{props.legend}</legend>}
-          {props.hint && <div className="govuk-hint">{props.hint}</div>}
-          {errorText && (
-            <p className="govuk-error-message">
-              <span className="govuk-visually-hidden">Error:</span> {errorText}
-            </p>
-          )}
-          <div
-            data-module="govuk-file-upload"
-            className="govuk-body file-upload-existing-file"
-            role="application"
-            aria-label="File drop zone"
-            onDrop={handleDrop}
-            onDragOver={preventDragDefaults}
-            onDragEnter={preventDragDefaults}
-            onDragLeave={preventDragDefaults}
-          >
-            <div className="file-upload-blue-bar">
-              {showExistingFileName ? (
-                props.existingFileName
-              ) : (
-                <div aria-live="polite" aria-atomic="true">
-                  <span className="govuk-visually-hidden">Selected file: </span>
-                  {lastFile?.name}
-                </div>
-              )}
-              {!showExistingFileName && !lastFile && (
-                <span className="file-upload-no-file">No file chosen</span>
-              )}
-            </div>
-            <div className="file-upload-row">
-              <Button
-                id={`choose-file-${props.id}`}
-                class={ButtonClass.SECONDARY}
-                text="Choose file"
-                type={ButtonType.BUTTON}
-                handleClick={(e) => {
-                  e.preventDefault();
-                  if (fileInputRef.current) {
-                    fileInputRef.current.click();
-                  }
-                }}
-              />
-              <span className="file-upload-or-drop">or drop file</span>
-            </div>
-            <input
-              ref={(el) => {
-                fileInputRef.current = el;
-                if (typeof rhfRef === "function") rhfRef(el);
-              }}
-              id={props.id}
-              aria-hidden={true}
-              tabIndex={-1}
-              className={inputClass}
-              type="file"
-              accept={
-                props.type === ImageType.Dicom
-                  ? ".dcm,application/dicom"
-                  : "image/jpeg,image/png,.jpg,.jpeg,.png"
-              }
-              data-testid={props.id}
-              name={name}
-              onBlur={onBlur}
-              {...restInputProps}
-              onChange={onInputChange}
-            />
-          </div>
-        </fieldset>
+        {props.removeFieldset ? (
+          <>{fileUploadInner}</>
+        ) : (
+          <fieldset className="govuk-fieldset">{fileUploadInner}</fieldset>
+        )}
       </div>
     </>
   );
