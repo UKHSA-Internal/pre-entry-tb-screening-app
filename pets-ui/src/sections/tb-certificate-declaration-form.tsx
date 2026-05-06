@@ -55,7 +55,10 @@ const TbCertificateDeclarationForm = () => {
   );
   const expiryFormatted = formatDateForDisplay(expiryDate);
 
-  const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTbCertificateType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

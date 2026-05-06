@@ -27,7 +27,10 @@ const TbCertificateNotIssuedForm = () => {
   const navigate = useNavigate();
   const tbCertificateData = useAppSelector(selectTbCertificate);
 
-  const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTbCertificateType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

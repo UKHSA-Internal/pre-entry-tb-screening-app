@@ -29,7 +29,10 @@ const ApplicantTravelVisaCategory = () => {
   const applicationData = useAppSelector(selectApplication);
   const [isLoading, setIsLoading] = useState(false);
 
-  const methods = useForm<TravelVisaCategoryData>({ reValidateMode: "onSubmit" });
+  const methods = useForm<TravelVisaCategoryData>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },
