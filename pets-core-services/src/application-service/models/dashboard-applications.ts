@@ -96,11 +96,32 @@ export class DashboardApplication extends IDashboardApplication {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const applications = (allItems || []).map((item) => DashboardApplication.fromDynamo(item));
 
+      const validApplications: typeof applications = [];
+      const invalidApplications: typeof applications = [];
+
+      for (const app of applications) {
+        if (!app.applicantId) {
+          invalidApplications.push(app);
+        } else {
+          validApplications.push(app);
+        }
+      }
+
+      // log stale/invalid apps
+      if (invalidApplications.length) {
+        logger.error(
+          {
+            count: invalidApplications.length,
+            applicationIds: invalidApplications.map((a) => a.applicationId),
+          },
+          "Skipping applications with missing applicant identifier",
+        );
+      }
       // Batch load applicants
       const applicantMap = await DynamoBatchLoader.batchLoad({
         tableName: process.env.APPLICANT_SERVICE_DATABASE_NAME!,
         client: docClient,
-        keys: applications.map((app) => ({
+        keys: validApplications.map((app) => ({
           pk: app.applicantId,
           sk: "APPLICANT#DETAILS",
         })),
@@ -108,24 +129,38 @@ export class DashboardApplication extends IDashboardApplication {
         mapKey: (item) => ApplicantBase.getPassportId(item.countryOfIssue, item.passportNumber),
       });
 
-      // Add applicantName
-      const enrichedApplications = applications.map((app) => {
-        const applicant = applicantMap.get(app.applicantId) as Applicant;
-        return new DashboardApplication({
-          ...app,
-          applicantName: applicant.fullName,
-          passportNumber: applicant.passportNumber,
-          countryOfIssue: applicant.countryOfIssue,
-        });
-      });
+      // Enrich with applicant details
 
+      const enrichedApplications: DashboardApplication[] = [];
+      for (const app of applications) {
+        const applicant = applicantMap.get(app.applicantId) as Applicant;
+
+        if (!applicant) {
+          logger.error(
+            {
+              applicationId: app.applicationId,
+              applicantId: app.applicantId,
+            },
+            "Skipping application - applicant not found",
+          );
+          continue;
+        }
+
+        enrichedApplications.push(
+          new DashboardApplication({
+            ...app,
+            applicantName: applicant.fullName,
+            passportNumber: applicant.passportNumber,
+            countryOfIssue: applicant.countryOfIssue,
+          }),
+        );
+      }
       return enrichedApplications;
     } catch (error) {
       logger.error(error, "Error retrieving applications by clinicId");
       throw error;
     }
   }
-
   toJson() {
     return {
       applicationId: this.applicationId,

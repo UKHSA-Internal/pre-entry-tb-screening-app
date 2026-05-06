@@ -53,7 +53,7 @@ describe("Test for Saving Sputum Details into DB", () => {
       },
     };
     const updatedApplication = seededApplications[0];
-    updatedApplication.applicationStatus = ApplicationStatus.sputumResultsInProgress;
+    updatedApplication.applicationStatus = ApplicationStatus.sputumInProgress;
     updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
     const updateSpy = vi
       .spyOn(Application, "updateApplication")
@@ -70,7 +70,7 @@ describe("Test for Saving Sputum Details into DB", () => {
     });
     expect(updateSpy).toHaveBeenCalledWith({
       applicationId: seededApplications[0].applicationId,
-      applicationStatus: ApplicationStatus.sputumResultsInProgress,
+      applicationStatus: ApplicationStatus.sputumInProgress,
       applicationStatusGroup: ApplicationStatusGroup.incomplete,
       updatedBy: "user1",
     });
