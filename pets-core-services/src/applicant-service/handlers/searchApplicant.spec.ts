@@ -41,7 +41,7 @@ describe("Test for Getting Applicant", () => {
         {
           applicationId: "generated-app-id-2",
           dateCreated: expect.any(String),
-          applicationStatus: "In Progress",
+          applicationStatus: "Travel Information In Progress",
         },
       ],
     };
@@ -86,7 +86,7 @@ describe("Test for Getting Applicant", () => {
         {
           applicationId: "generated-app-id-2",
           dateCreated: expect.any(String),
-          applicationStatus: "In Progress",
+          applicationStatus: "Travel Information In Progress",
         },
       ],
     };
