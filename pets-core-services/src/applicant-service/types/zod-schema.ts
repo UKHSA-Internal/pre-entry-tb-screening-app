@@ -8,6 +8,11 @@ import { AllowedSex } from "./enums";
 
 extendZodWithOpenApi(z);
 
+export const withRole = <T extends z.ZodTypeAny>(schema: T, role: string, refId: string) =>
+  schema.openapi(refId, {
+    description: `Requires role: ${role}`,
+  });
+
 export const ApplicantBaseSchema = z.object({
   fullName: z.string().optional().openapi({
     description: "Full name of Applicant",
@@ -110,36 +115,78 @@ export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
   }),
 });
 
-export const ApplicantUpdateRequestSchema = z.object({
-  passportNumber: z.string().openapi({
-    description: "PassportNumber of Applicant",
-  }),
-  countryOfIssue: z.nativeEnum(CountryCode).openapi({
-    description: "Passport Issue Country",
-  }),
-  applicantHomeAddress1: z.string().optional().openapi({
-    description: "First line of Applicant's Address",
-  }),
-  applicantHomeAddress2: z.string().optional().openapi({
-    description: "Second line of Applicant's Address",
-  }),
-  applicantHomeAddress3: z.string().optional().openapi({
-    description: "Third line of Applicant's Address",
-  }),
-  townOrCity: z.string().optional(),
-  provinceOrState: z.string().optional(),
-  postcode: z.string().optional(),
-  country: z.nativeEnum(CountryCode).optional().openapi({
-    description: "Country of Applican't Address",
-  }),
-});
+export const ApplicantUpdateRequestSchema = z
+  .object({
+    passportNumber: z.string().openapi({
+      description: "PassportNumber of Applicant",
+    }),
+    countryOfIssue: z.nativeEnum(CountryCode).openapi({
+      description: "Passport Issue Country",
+    }),
+    applicantHomeAddress1: z.string().optional().openapi({
+      description: "First line of Applicant's Address",
+    }),
+    applicantHomeAddress2: z.string().optional().openapi({
+      description: "Second line of Applicant's Address",
+    }),
+    applicantHomeAddress3: z.string().optional().openapi({
+      description: "Third line of Applicant's Address",
+    }),
+    townOrCity: z.string().optional(),
+    provinceOrState: z.string().optional(),
+    postcode: z.string().optional(),
+    country: z.nativeEnum(CountryCode).optional().openapi({
+      description: "Country of Applican't Address",
+    }),
+  })
+  .strict();
 
-export const SuperuserApplicantSchema = ApplicantBaseSchema;
+export const SuperuserApplicantSchema = ApplicantUpdateRequestSchema.extend({
+  fullName: withRole(
+    z.string().optional().openapi({
+      description: "Full name of Applicant",
+    }),
+    "application.update",
+    "ApplicantFullName",
+  ),
+  countryOfNationality: withRole(
+    z.nativeEnum(CountryCode).optional().openapi({
+      description: "Applicant's nationality",
+    }),
+    "application.update",
+    "ApplicantNationality",
+  ),
+  issueDate: withRole(
+    z.string().date().optional().openapi({
+      description: "Passport Issue Date in ISO Format",
+    }),
+    "application.update",
+    "ApplicantPassportIssueDate",
+  ),
+  expiryDate: withRole(
+    z.string().date().optional().openapi({
+      description: "Passport Expiry Date in ISO Format",
+    }),
+    "application.update",
+    "ApplicantPassportExpiryDate",
+  ),
+  dateOfBirth: withRole(
+    z.string().date().optional().openapi({
+      description: "Date of Birth in ISO Format",
+    }),
+    "application.update",
+    "ApplicantDateOfBirth",
+  ),
+  sex: withRole(
+    z.nativeEnum(AllowedSex).optional().openapi({
+      description: "Applicant's Sex Information",
+    }),
+    "application.update",
+    "ApplicantSex",
+  ),
+}).strict();
 
-export const getApplicantUpdateSchema = (isSuperuser: boolean) =>
-  isSuperuser ? SuperuserApplicantSchema.strict() : ApplicantUpdateRequestSchema.strict();
-
-export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend({
+export const ApplicantUpdateResponseSchema = SuperuserApplicantSchema.extend({
   applicationId: z.string().openapi({
     description: "Unique Application ID for applicant",
   }),

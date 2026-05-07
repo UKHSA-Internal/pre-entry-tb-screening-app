@@ -37,7 +37,7 @@ export const updateSputumDecisionHandler = async (event: UpdateSputumDecisionEve
       ...sputumDecision.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error updating travel information");
+    logger.error(err, "Error updating Sputum Decision");
     return HttpErrors.serverError("Something went wrong");
   }
 };

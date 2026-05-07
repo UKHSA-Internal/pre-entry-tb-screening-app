@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
+import { withRole } from "../../applicant-service/types/zod-schema";
 import { CountryCode } from "../../shared/country";
 import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import {
@@ -270,13 +271,21 @@ export const TbCertificateRequestSchema = z.union([
 ]);
 
 export const TbCertificateUpdateRequestSchema = z.object({
-  physicianName: z.string().openapi({
-    description: "Physician's Name",
-  }),
-  comments: z.string().optional().openapi({
-    description: "Physician's comments",
-  }),
-});
+  physicianName: withRole(
+    z.string().openapi({
+      description: "Physician's Name",
+    }),
+    "application.update",
+    "PhysicianName",
+  ),
+  comments: withRole(
+    z.string().optional().openapi({
+      description: "Physician's comments",
+    }),
+    "application.update",
+    "PhysicianComments",
+  ),
+}).strict();
 
 export const TbCertificateUpdateResponseSchema = z.object({
   applicationId: z.string().openapi({
@@ -497,7 +506,13 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
 });
 
-export const SputumDecisionUpdateResponseSchema = SputumDecisionRequestSchema.extend({
+export const SputumDecisionRequestUpdateSchema = z.object({
+  sputumRequired: withRole(z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),,
+    "application.update",
+    "SputumDecision",),
+}).strict();
+
+export const SputumDecisionUpdateResponseSchema = SputumDecisionRequestUpdateSchema.extend({
   applicationId: z.string().openapi({ description: "ID of application" }),
   dateUpdated: z.string().date().openapi({ description: "Updated Date in UTC timezone" }),
 });

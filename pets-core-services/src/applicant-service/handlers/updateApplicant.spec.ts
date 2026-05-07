@@ -90,6 +90,29 @@ describe("Test for Updating Applicant into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
   });
+  test("Updating an Applicant Successfully as a Superuser", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "true" },
+      parsedBody: applicantDetails,
+      superuser: true,
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      parsedBody: newApplicantDetails,
+    };
+    await postApplicantHandler(eventPOST);
+
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
+  });
   test("Updating an Applicant - using support clinicId", async () => {
     // Arrange
     const event: PutApplicantEvent = {
