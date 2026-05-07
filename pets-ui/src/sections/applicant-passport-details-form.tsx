@@ -49,7 +49,10 @@ const ApplicantPassportDetailsForm = () => {
   const isComplete = applicantData.status === TaskStatus.COMPLETE;
   const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
 
-  const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxApplicantDetailsType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     control,
     handleSubmit,

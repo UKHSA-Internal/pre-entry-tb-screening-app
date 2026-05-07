@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useFormContext, useFormState } from "react-hook-form";
 
 import Button from "@/components/button/button";
-import { ButtonClass, ImageType } from "@/utils/enums";
+import { ButtonClass, ButtonType, ImageType } from "@/utils/enums";
 import validateFiles from "@/utils/validateFiles";
 
 export interface FileUploadProps {
@@ -191,6 +191,7 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
                 id={`choose-file-${props.id}`}
                 class={ButtonClass.SECONDARY}
                 text="Choose file"
+                type={ButtonType.BUTTON}
                 handleClick={(e) => {
                   e.preventDefault();
                   if (fileInputRef.current) {
@@ -210,7 +211,11 @@ export default function FileUpload(props: Readonly<FileUploadProps>) {
               tabIndex={-1}
               className={inputClass}
               type="file"
-              accept={props.type === ImageType.Dicom ? ".dcm" : ""}
+              accept={
+                props.type === ImageType.Dicom
+                  ? ".dcm,application/dicom"
+                  : "image/jpeg,image/png,.jpg,.jpeg,.png"
+              }
               data-testid={props.id}
               name={name}
               onBlur={onBlur}
