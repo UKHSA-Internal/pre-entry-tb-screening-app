@@ -242,6 +242,7 @@ const Dashboard = () => {
         ]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
+        hiddenCaption="Screenings in progress"
       />
       {filteredApplicationsData.length > pageSize && (
         <Pagination

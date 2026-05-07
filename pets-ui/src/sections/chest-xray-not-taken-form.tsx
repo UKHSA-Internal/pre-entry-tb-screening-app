@@ -42,6 +42,7 @@ const ChestXrayNotTakenForm = () => {
 
   const methods = useForm<FormFields>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
   });
   const {
     handleSubmit,

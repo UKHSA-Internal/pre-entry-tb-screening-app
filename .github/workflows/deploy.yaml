@@ -464,6 +464,7 @@ jobs:
     name: Virtuoso tests
     uses: ./.github/workflows/run-virtuoso-ukhsa-ukprd.yaml
     needs: build-and-deploy-ui
+    if: inputs.environment != 'prod'
     with:
       plan_id: "5"
       plan_name: "CI/CD_PETS"

@@ -21,7 +21,10 @@ export default function ConsentQuestionPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const methods = useForm<{ consent: YesOrNo }>({ reValidateMode: "onSubmit" });
+  const methods = useForm<{ consent: YesOrNo }>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

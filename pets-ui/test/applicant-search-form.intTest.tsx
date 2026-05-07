@@ -402,4 +402,98 @@ describe("ApplicantSearchForm", () => {
     expect(mock.history).toHaveLength(1);
     expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
   });
+
+  test("navigates to error page if sorting applications throws an error", async () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
+    );
+    const user = userEvent.setup();
+
+    mock.onGet("/applicant/search").reply(200, {
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a63",
+          applicationStatus: "Certificate Available",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "invalid-date",
+        },
+      ],
+    });
+
+    await user.type(screen.getByTestId("passport-number"), "12345");
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
+
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+  });
+
+  test("skips application if getApplication returns 403", async () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
+    );
+    const user = userEvent.setup();
+
+    mock.onGet("/applicant/search").reply(200, {
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a66",
+          applicationStatus: "Certificate Available",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "2026-01-01",
+        },
+      ],
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a66").reply(403);
+
+    await user.type(screen.getByTestId("passport-number"), "12345");
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
+
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/screening-history");
+    });
+  });
+
+  test("navigates to error page if getApplication throws a non-403 error", async () => {
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <ApplicantSearchForm />
+      </ApplicantPhotoProvider>,
+    );
+    const user = userEvent.setup();
+
+    mock.onGet("/applicant/search").reply(200, {
+      applications: [
+        {
+          applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a67",
+          applicationStatus: "Certificate Available",
+          clinicId: "UK/LHR/00/",
+          dateCreated: "2026-01-01",
+        },
+      ],
+    });
+
+    mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a67").reply(500);
+
+    await user.type(screen.getByTestId("passport-number"), "12345");
+    const countryDropdown = screen.getByRole("combobox");
+    await user.selectOptions(countryDropdown, "AUS");
+
+    await user.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(useNavigateMock).toHaveBeenLastCalledWith("/sorry-there-is-problem-with-service");
+    });
+  });
 });
