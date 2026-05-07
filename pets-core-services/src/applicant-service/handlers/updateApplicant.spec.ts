@@ -51,8 +51,9 @@ describe("Test for Updating Applicant into DB", () => {
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[0].applicationId },
+      pathParameters: { applicationId: seededApplications[0].applicationId, superuser: "false" },
       parsedBody: applicantDetails,
+      superuser: false,
     };
 
     // Act
@@ -70,8 +71,9 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId },
+      pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "false" },
       parsedBody: applicantDetails,
+      superuser: false,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
@@ -94,6 +96,8 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: applicantDetails,
+      superuser: false,
+
       requestContext: {
         ...mockAPIGwEvent.requestContext,
         authorizer: {
@@ -117,7 +121,7 @@ describe("Test for Updating Applicant into DB", () => {
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
   });
-  test("Aplicant does not exist error", async () => {
+  test("Applicant does not exist error", async () => {
     // Arrange
     const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...applicantDetails,
@@ -126,6 +130,7 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "nonexisting-application-id" },
       parsedBody,
+      superuser: false,
     };
 
     // Act
@@ -143,6 +148,7 @@ describe("Test for Updating Applicant into DB", () => {
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       parsedBody: applicantDetails,
+      superuser: false,
     };
 
     // Act
@@ -156,6 +162,7 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      superuser: false,
     };
 
     // Act
@@ -177,6 +184,7 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
+      superuser: false,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {

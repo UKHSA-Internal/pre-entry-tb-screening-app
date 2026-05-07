@@ -132,7 +132,6 @@ export class TbCertificateDetailsUpdate {
       physicianName: this.physicianName,
       comments: this.comments,
       dateUpdated: this.dateUpdated,
-      updatedBy: this.updatedBy,
     };
   }
 }

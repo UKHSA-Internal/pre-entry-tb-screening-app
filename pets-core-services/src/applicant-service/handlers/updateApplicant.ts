@@ -13,7 +13,7 @@ export type ApplicantSuper = z.infer<typeof SuperuserApplicantSchema>;
 
 export type PutApplicantEvent = PetsAPIGatewayProxyEvent & {
   superuser: boolean;
-  parsedBody: ApplicantBase | ApplicantSuper;
+  parsedBody?: ApplicantBase | ApplicantSuper;
 };
 export const updateApplicantHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {

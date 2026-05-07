@@ -278,7 +278,24 @@ export const TbCertificateUpdateRequestSchema = z.object({
   }),
 });
 
+export const TbCertificateUpdateResponseSchema = z.object({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+  physicianName: z.string().openapi({
+    description: "Physician's Name",
+  }),
+  comments: z.string().optional().openapi({
+    description: "Physician's comments",
+  }),
+});
 export const TbCertificateIssuedResponseSchema = TbCertificateIssuedRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -478,6 +495,11 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   applicationId: z.string().openapi({ description: "ID of application" }),
   dateCreated: z.string().date().openapi({ description: "Creation Date in UTC timezone" }),
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
+});
+
+export const SputumDecisionUpdateResponseSchema = SputumDecisionRequestSchema.extend({
+  applicationId: z.string().openapi({ description: "ID of application" }),
+  dateUpdated: z.string().date().openapi({ description: "Updated Date in UTC timezone" }),
 });
 
 export const ApplicationBaseSchema = z.object({
