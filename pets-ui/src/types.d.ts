@@ -41,8 +41,11 @@ type ReceivedApplicationAttributesType = {
   status: BackendTaskStatus;
 };
 
-type ReduxClinicDetailsType = {
+type ReduxUserDetailsType = {
+  jobTitle: string;
   clinicId: string;
+  name: string;
+  isSuperUser: boolean;
 };
 
 // Application types
