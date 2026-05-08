@@ -141,101 +141,105 @@ const ApplicantContactDetailsForm = () => {
 
         <Heading level={1} size="l" title="Visa applicant contact information" />
 
-        <Heading level={2} size="m" title="Home address" style={{ marginBottom: 9 }} />
-        <div className="govuk-hint" id={"home-address-hint"}>
-          Enter the visa applicant&apos;s address in their home country
-        </div>
+        <fieldset className="govuk-fieldset" aria-describedby="home-address-hint">
+          <legend style={{ paddingLeft: 0 }}>
+            <Heading level={2} size="m" title="Home address" style={{ marginBottom: 9 }} />
+          </legend>
+          <div className="govuk-hint" id="home-address-hint">
+            Enter the visa applicant&apos;s address in their home country
+          </div>
 
-        <div ref={addressLine1Ref}>
-          <FreeText
-            id="address-1"
-            label="Address line 1"
-            errorMessage={errors?.applicantHomeAddress1?.message ?? ""}
-            formValue="applicantHomeAddress1"
-            required="Enter the first line of the applicant's home address"
-            patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation"
-            defaultValue={applicantData.applicantHomeAddress1}
-          />
-        </div>
+          <div ref={addressLine1Ref}>
+            <FreeText
+              id="address-1"
+              label="Address line 1"
+              errorMessage={errors?.applicantHomeAddress1?.message ?? ""}
+              formValue="applicantHomeAddress1"
+              required="Enter the first line of the applicant's home address"
+              patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+              patternError="Home address must contain only letters, numbers, spaces and punctuation"
+              defaultValue={applicantData.applicantHomeAddress1}
+            />
+          </div>
 
-        <div ref={addressLine2Ref}>
-          <FreeText
-            id="address-2"
-            label="Address line 2 (optional)"
-            errorMessage={errors?.applicantHomeAddress2?.message ?? ""}
-            formValue="applicantHomeAddress2"
-            required={false}
-            patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation"
-            defaultValue={applicantData.applicantHomeAddress2}
-          />
-        </div>
+          <div ref={addressLine2Ref}>
+            <FreeText
+              id="address-2"
+              label="Address line 2 (optional)"
+              errorMessage={errors?.applicantHomeAddress2?.message ?? ""}
+              formValue="applicantHomeAddress2"
+              required={false}
+              patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+              patternError="Home address must contain only letters, numbers, spaces and punctuation"
+              defaultValue={applicantData.applicantHomeAddress2}
+            />
+          </div>
 
-        <div ref={addressLine3Ref}>
-          <FreeText
-            id="address-3"
-            label="Address line 3 (optional)"
-            errorMessage={errors?.applicantHomeAddress3?.message ?? ""}
-            formValue="applicantHomeAddress3"
-            required={false}
-            patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
-            patternError="Home address must contain only letters, numbers, spaces and punctuation"
-            defaultValue={applicantData.applicantHomeAddress3}
-          />
-        </div>
+          <div ref={addressLine3Ref}>
+            <FreeText
+              id="address-3"
+              label="Address line 3 (optional)"
+              errorMessage={errors?.applicantHomeAddress3?.message ?? ""}
+              formValue="applicantHomeAddress3"
+              required={false}
+              patternValue={formRegex.lettersNumbersSpacesAndPunctuation}
+              patternError="Home address must contain only letters, numbers, spaces and punctuation"
+              defaultValue={applicantData.applicantHomeAddress3}
+            />
+          </div>
 
-        <div ref={townRef}>
-          <FreeText
-            id="town-or-city"
-            label="Town or city"
-            errorMessage={errors?.townOrCity?.message ?? ""}
-            formValue="townOrCity"
-            required="Enter the town or city of the applicant's home address"
-            patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Town name must contain only letters, spaces and punctuation"
-            defaultValue={applicantData.townOrCity}
-          />
-        </div>
+          <div ref={townRef}>
+            <FreeText
+              id="town-or-city"
+              label="Town or city"
+              errorMessage={errors?.townOrCity?.message ?? ""}
+              formValue="townOrCity"
+              required="Enter the town or city of the applicant's home address"
+              patternValue={formRegex.lettersSpacesAndPunctuation}
+              patternError="Town name must contain only letters, spaces and punctuation"
+              defaultValue={applicantData.townOrCity}
+            />
+          </div>
 
-        <div ref={provinceRef}>
-          <FreeText
-            id="province-or-state"
-            label="Province or state"
-            errorMessage={errors?.provinceOrState?.message ?? ""}
-            formValue="provinceOrState"
-            required="Enter the province or state of the applicant's home address"
-            patternValue={formRegex.lettersSpacesAndPunctuation}
-            patternError="Province or state name must contain only letters, spaces and punctuation"
-            defaultValue={applicantData.provinceOrState}
-          />
-        </div>
+          <div ref={provinceRef}>
+            <FreeText
+              id="province-or-state"
+              label="Province or state"
+              errorMessage={errors?.provinceOrState?.message ?? ""}
+              formValue="provinceOrState"
+              required="Enter the province or state of the applicant's home address"
+              patternValue={formRegex.lettersSpacesAndPunctuation}
+              patternError="Province or state name must contain only letters, spaces and punctuation"
+              defaultValue={applicantData.provinceOrState}
+            />
+          </div>
 
-        <div ref={postcodeRef}>
-          <FreeText
-            id="postcode"
-            label="Postal code (optional)"
-            errorMessage={errors?.postcode?.message ?? ""}
-            formValue="postcode"
-            required={false}
-            patternValue={formRegex.lettersNumbersAndSpaces}
-            patternError="Postcode must contain only letters, numbers and spaces"
-            defaultValue={applicantData.postcode}
-          />
-        </div>
+          <div ref={postcodeRef}>
+            <FreeText
+              id="postcode"
+              label="Postal code (optional)"
+              errorMessage={errors?.postcode?.message ?? ""}
+              formValue="postcode"
+              required={false}
+              patternValue={formRegex.lettersNumbersAndSpaces}
+              patternError="Postcode must contain only letters, numbers and spaces"
+              defaultValue={applicantData.postcode}
+            />
+          </div>
 
-        <div ref={addressCountryRef}>
-          <Dropdown
-            id="address-country"
-            label="Country"
-            options={countryList}
-            errorMessage={errors?.country?.message ?? ""}
-            formValue="country"
-            placeholder="Select country"
-            required="Enter the country of the applicant's home address"
-            defaultValue={applicantData.country}
-          />
-        </div>
+          <div ref={addressCountryRef}>
+            <Dropdown
+              id="address-country"
+              label="Country"
+              options={countryList}
+              errorMessage={errors?.country?.message ?? ""}
+              formValue="country"
+              placeholder="Select country"
+              required="Enter the country of the applicant's home address"
+              defaultValue={applicantData.country}
+            />
+          </div>
+        </fieldset>
 
         <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
