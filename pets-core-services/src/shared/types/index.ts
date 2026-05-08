@@ -7,12 +7,8 @@ export type RouteParam = Record<
   string,
   z.ZodOptional<z.ZodString | z.ZodNumber> | z.ZodString | z.ZodNumber | z.ZodNativeEnum<any>
 >;
-type RoleBasedSchema = {
-  base: z.ZodTypeAny;
-  super: z.ZodTypeAny;
-};
 
-export type RequestSchema = z.ZodTypeAny | RoleBasedSchema;
+export type RequestSchema = z.ZodTypeAny;
 export type PetsRoute = {
   path: string;
   handler:

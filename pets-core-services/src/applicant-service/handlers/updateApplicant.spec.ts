@@ -53,7 +53,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId, superuser: "false" },
       parsedBody: applicantDetails,
-      superuser: false,
     };
 
     // Act
@@ -73,7 +72,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "false" },
       parsedBody: applicantDetails,
-      superuser: false,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
@@ -96,7 +94,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "true" },
       parsedBody: applicantDetails,
-      superuser: true,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
@@ -119,7 +116,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: applicantDetails,
-      superuser: false,
 
       requestContext: {
         ...mockAPIGwEvent.requestContext,
@@ -153,7 +149,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: "nonexisting-application-id" },
       parsedBody,
-      superuser: false,
     };
 
     // Act
@@ -171,7 +166,6 @@ describe("Test for Updating Applicant into DB", () => {
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       parsedBody: applicantDetails,
-      superuser: false,
     };
 
     // Act
@@ -185,7 +179,6 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      superuser: false,
     };
 
     // Act
@@ -207,7 +200,6 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
-      superuser: false,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {

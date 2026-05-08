@@ -6,15 +6,16 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { TbCertificateDbOps, TbCertificateDetailsUpdate } from "../models/tb-certificate";
 import { TbCertificateUpdateRequestSchema } from "../types/zod-schema";
 
-export type TbCertificateRequestSchema = z.infer<typeof TbCertificateUpdateRequestSchema>;
+export type TbCertificateUpdateRequestSchema = z.infer<typeof TbCertificateUpdateRequestSchema>;
 
 export type UpdateTbCertificateEvent = PetsAPIGatewayProxyEvent & {
-  parsedBody?: TbCertificateRequestSchema;
+  parsedBody?: TbCertificateUpdateRequestSchema;
 };
 
 export const updateTbCertificateHandler = async (event: UpdateTbCertificateEvent) => {
   try {
     const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
+    const { createdBy, superuser } = event.requestContext.authorizer;
 
     logger.info({ applicationId }, "Update Travel Information handler triggered");
 
@@ -26,9 +27,24 @@ export const updateTbCertificateHandler = async (event: UpdateTbCertificateEvent
       return HttpErrors.badRequest("Request event missing body");
     }
 
-    const { createdBy } = event.requestContext.authorizer;
+    let validatedBody;
+    const validated = TbCertificateUpdateRequestSchema.safeParse(parsedBody);
+
+    if (superuser === "true") {
+      if (!validated.success) {
+        logger.error(
+          { error: validated.error.flatten() },
+          "Update TB Certificate Details Request validation failed",
+        );
+        return HttpErrors.validationError("Validation Failed");
+      }
+      validatedBody = validated.data;
+    } else {
+      logger.error("TB Certificate Details Update Request is not allowed");
+      return HttpErrors.unauthorized("Unauthorized");
+    }
     const tbCertificate: TbCertificateDetailsUpdate = await TbCertificateDbOps.updateTbCertificate({
-      ...parsedBody,
+      ...validatedBody,
       updatedBy: createdBy,
       applicationId,
     });

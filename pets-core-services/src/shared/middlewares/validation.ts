@@ -6,15 +6,8 @@ import { HttpErrors } from "../httpResponses";
 import { logger } from "../logger";
 import { RouteParam } from "../types";
 
-type RoleBasedSchema = {
-  base: z.ZodTypeAny;
-  super: z.ZodTypeAny;
-};
-
-export type RequestSchema = z.ZodTypeAny | RoleBasedSchema;
-
 export type ValidateRequestType = {
-  requestSchema?: RequestSchema;
+  requestSchema?: z.ZodTypeAny;
   queryStringParametersSchema?: RouteParam;
   headersSchema?: RouteParam;
 };
@@ -33,41 +26,15 @@ export const validateRequest = ({
       try {
         if (requestSchema) {
           logger.info("Validating Request Body");
-          const superuser = event.requestContext?.authorizer?.superuser === "true";
-
-          let schema: z.ZodTypeAny;
-
-          if (
-            typeof requestSchema === "object" &&
-            requestSchema !== null &&
-            "base" in requestSchema &&
-            "super" in requestSchema
-          ) {
-            const roleSchema = requestSchema as unknown as {
-              base: z.ZodTypeAny;
-              super: z.ZodTypeAny;
-            };
-
-            schema = superuser ? roleSchema.super : roleSchema.base;
-          } else {
-            schema = requestSchema;
-          }
-
-          const rawBody = JSON.parse(event.body ?? "{}");
-
-          const parsedResult = schema.safeParse(rawBody);
+          const { body } = event;
+          const parsedResult = requestSchema.safeParse(JSON.parse(body ?? "{}"));
 
           if (parsedResult.error) {
             logger.error("Failed Validation");
-            return HttpErrors.badRequest({
-              message: "Request Body failed validation",
-              validationError: parsedResult.error.flatten().fieldErrors,
-              validationErrorVerbose: parsedResult.error,
-            });
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          Object.assign(request.event, { parsedBody: parsedResult.data, superuser });
+          Object.assign(request.event, { parsedBody: parsedResult.data });
         }
 
         if (
