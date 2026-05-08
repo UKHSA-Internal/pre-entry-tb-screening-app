@@ -192,6 +192,16 @@ export const postSputumRequirement = async (
   return { status: result.status, statusText: result.statusText };
 };
 
+export const putSputumRequirement = async (
+  applicationId: string,
+  sputumRequirement: { sputumRequired: string },
+) => {
+  const result = await petsApi.put(`/application/${applicationId}/sputum-decision`, {
+    sputumRequired: sputumRequirement.sputumRequired,
+  });
+  return { status: result.status, statusText: result.statusText };
+};
+
 export const postTbCerificateDetails = async (
   applicationId: string,
   tbCertificateDetails: PostedTbCertificateType | PostedTbCertificateNotIssuedType,
