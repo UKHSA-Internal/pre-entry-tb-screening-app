@@ -2,7 +2,9 @@ import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
 import { SputumDetails, SputumDetailsDbOps } from "../models/sputum-details";
 import { SputumRequestSchema } from "../types/zod-schema";
 
@@ -47,6 +49,18 @@ export const saveSputumDetailsHandler = async (event: SaveSputumDetailsEvent) =>
       throw error;
     }
 
+    // Update details in APPLICATION#ROOT record as well
+    const applicationStatus =
+      sputumDetails.status === TaskStatus.completed
+        ? ApplicationStatus.certificateInProgress
+        : ApplicationStatus.sputumResultsInProgress;
+
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: applicationStatus,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
     return HttpResponses.ok({ ...sputumDetails.toJson() });
   } catch (err) {
     logger.error(err, "Error saving Sputum Details");

@@ -58,6 +58,7 @@ const MedicalScreeningForm = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<MedicalScreeningInitialData>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       completionDate: medicalData.completionDate,
       tbSymptoms: medicalData.tbSymptoms,
@@ -235,6 +236,7 @@ const MedicalScreeningForm = () => {
             required={false}
             rows={4}
             defaultValue={medicalData.otherSymptomsDetail}
+            hiddenLabel="Further details about other symptoms (optional)"
           />
         </div>
 
@@ -261,6 +263,7 @@ const MedicalScreeningForm = () => {
             required={false}
             rows={4}
             defaultValue={medicalData.previousTbDetail}
+            hiddenLabel="Further details about previous TB history (optional)"
           />
         </div>
 
@@ -288,6 +291,7 @@ const MedicalScreeningForm = () => {
             required={false}
             rows={4}
             defaultValue={medicalData.closeContactWithTbDetail}
+            hiddenLabel="Further details about close contact with TB (optional)"
           />
         </div>
 

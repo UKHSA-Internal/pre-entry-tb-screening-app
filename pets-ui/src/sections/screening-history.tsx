@@ -42,7 +42,12 @@ import { clearTravelDetails, setTravelDetailsFromApiResponse } from "@/redux/tra
 import { ReduxApplicationDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { AdditionalStatusTagTexts, ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
-import { convertDateStrToObj, formatDateForDisplay, isDateInThePast } from "@/utils/helpers";
+import {
+  convertDateStrToObj,
+  formatDateForDisplay,
+  inProgressStatuses,
+  isDateInThePast,
+} from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
 
 const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): string => {
@@ -95,10 +100,11 @@ const ScreeningHistory = () => {
 
     try {
       const applicationRes = await getApplication(applicationId);
-      const remappedApplicationStatus =
-        applicationRes.data.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS
-          ? ApplicationStatus.IN_PROGRESS
-          : applicationRes.data.applicationStatus;
+      const remappedApplicationStatus = inProgressStatuses.includes(
+        applicationRes.data.applicationStatus,
+      )
+        ? ApplicationStatus.IN_PROGRESS
+        : applicationRes.data.applicationStatus;
       dispatch(
         setApplicationDetails({
           applicationId: applicationId,
@@ -233,6 +239,7 @@ const ScreeningHistory = () => {
         cells: [
           getApplicationExpiryDate(application),
           <StatusTag
+            id={`application-${application.applicationId.slice(0, 8)}-state`}
             key={`application-${application.applicationId.slice(0, 8)}-state`}
             status={application.applicationStatus}
             textOverride={textOverride}
@@ -309,6 +316,7 @@ const ScreeningHistory = () => {
         columnHeaders={["Start date", "Expiry date", "Status", "Action"]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
+        hiddenCaption="Application history information"
       />
     </div>
   );

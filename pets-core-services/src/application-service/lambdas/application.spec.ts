@@ -81,7 +81,7 @@ vi.mock("../models/dashboard-applications", () => ({
           countryOfIssue: CountryCode.IND,
           clinicId: "clinic-123",
           dateCreated: new Date(),
-          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatus: ApplicationStatus.travelInfoInProgress,
           applicationStatusGroup: ApplicationStatusGroup.incomplete,
         }),
       },

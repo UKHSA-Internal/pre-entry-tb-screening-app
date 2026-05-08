@@ -2,6 +2,8 @@ import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededRadiologicalOutcome } from "../fixtures/radiological-outcome";
 import { RadiologicalOutcome } from "../models/radiological-outcome";
@@ -27,6 +29,12 @@ describe("Test for Saving Radiological Outcome into DB", () => {
       parsedBody: newRadiologicalOutcomeDetails,
     };
 
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.sputumDecisionInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveRadiologicalOutcomeHandler(event);
 
@@ -36,6 +44,12 @@ describe("Test for Saving Radiological Outcome into DB", () => {
       applicationId: seededApplications[0].applicationId,
       ...newRadiologicalOutcomeDetails,
       dateCreated: expect.any(String),
+    });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.sputumDecisionInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
     });
   });
 
@@ -96,6 +110,24 @@ describe("Test for Saving Radiological Outcome into DB", () => {
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Request event missing body",
+    });
+  });
+
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveRadiologicalOutcomeEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newRadiologicalOutcomeDetails,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveRadiologicalOutcomeHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
     });
   });
 

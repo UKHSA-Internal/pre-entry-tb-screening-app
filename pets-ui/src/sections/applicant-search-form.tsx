@@ -35,6 +35,7 @@ import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { inProgressStatuses } from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
 import { formRegex } from "@/utils/records";
 
@@ -43,7 +44,10 @@ import { getApplicants, getApplication } from "../api/api";
 const ApplicantSearchForm = () => {
   const userClinicData = useAppSelector(selectUserClinic);
   const navigate = useNavigate();
-  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ApplicantSearchFormType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const dispatch = useAppDispatch();
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
@@ -85,7 +89,7 @@ const ApplicantSearchForm = () => {
         if (!uuidValidate(application.applicationId)) {
           throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
         }
-        if (application.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS) {
+        if (inProgressStatuses.includes(application.applicationStatus)) {
           application.applicationStatus = ApplicationStatus.IN_PROGRESS;
         }
       }

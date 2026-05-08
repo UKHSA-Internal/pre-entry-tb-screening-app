@@ -30,7 +30,14 @@ export enum ApplicationStatus {
   CERTIFICATE_NOT_ISSUED = "Certificate Not Issued",
   CERTIFICATE_AVAILABLE = "Certificate Available",
   CANCELLED = "Cancelled",
+  TRAVEL_IN_PROGRESS = "Travel Information In Progress",
+  MEDICAL_SCREENING_IN_PROGRESS = "Medical Screening In Progress",
+  CHEST_XRAY_IN_PROGRESS = "Chest Xray In Progress",
+  RADIOLOGICAL_OUTCOME_IN_PROGRESS = "Radiological Outcome In Progress",
+  SPUTUM_DECISION_IN_PROGRESS = "Sputum Decision In Progress",
   SPUTUM_IN_PROGRESS = "Sputum In Progress",
+  SPUTUM_RESULTS_IN_PROGRESS = "Sputum Results In Progress",
+  CERTIFICATE_IN_PROGRESS = "Certificate In Progress",
 }
 
 export enum BackendTaskStatus {

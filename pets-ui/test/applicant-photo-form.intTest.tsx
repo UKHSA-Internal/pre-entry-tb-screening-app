@@ -177,10 +177,10 @@ describe("ApplicantPhotoForm", () => {
 
     renderWithProviders(<ApplicantPhotoForm />);
 
-    const file = new File(["dummy content"], "photo.pdf", { type: "image/pdf" });
+    const file = new File(["dummy content"], "photo.pdf", { type: "application/pdf" });
     const input: HTMLInputElement = screen.getByTestId("applicant-photo");
 
-    await userEvent.upload(input, file);
+    await userEvent.upload(input, file, { applyAccept: false });
     const continueButton = screen.getByRole("button", { name: /Continue/i });
     await user.click(continueButton);
 
@@ -196,10 +196,10 @@ describe("ApplicantPhotoForm", () => {
 
     renderWithProviders(<ApplicantPhotoForm />);
 
-    const invalidFile = new File(["dummy content"], "photo.pdf", { type: "image/pdf" });
+    const invalidFile = new File(["dummy content"], "photo.pdf", { type: "application/pdf" });
     const input: HTMLInputElement = screen.getByTestId("applicant-photo");
 
-    await userEvent.upload(input, invalidFile);
+    await userEvent.upload(input, invalidFile, { applyAccept: false });
     const continueButton = screen.getByRole("button", { name: /Continue/i });
     await user.click(continueButton);
 

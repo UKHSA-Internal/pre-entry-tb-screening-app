@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
 import { ChestXRay } from "../models/chest-xray";
@@ -46,7 +48,12 @@ describe("Test for Saving Chest X-ray into DB", () => {
       pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: newChestXray,
     };
-
+    const updatedApplication = seededApplications[3];
+    updatedApplication.applicationStatus = ApplicationStatus.radiologicalOutcomeInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveChestXRayHandler(event);
 
@@ -57,6 +64,12 @@ describe("Test for Saving Chest X-ray into DB", () => {
       ...newChestXray,
       dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
+    });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[3].applicationId,
+      applicationStatus: ApplicationStatus.radiologicalOutcomeInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
     });
   });
 
@@ -227,7 +240,23 @@ describe("Test for Saving Chest X-ray into DB", () => {
       message: "Request event missing body",
     });
   });
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXray,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveChestXRayHandler(event);
 
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+  });
   test("Any error returns a 500 response", async () => {
     // Arrange;
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {

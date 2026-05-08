@@ -414,7 +414,6 @@ jobs:
     name: Copy migration script to S3 bucket
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    if: inputs.environment == 'dev'
 
     env:
       MIGRATION_SCRIPT_S3_BUCKET: ${{ vars.MIGRATION_SCRIPT_S3_BUCKET }}
@@ -465,6 +464,7 @@ jobs:
     name: Virtuoso tests
     uses: ./.github/workflows/run-virtuoso-ukhsa-ukprd.yaml
     needs: build-and-deploy-ui
+    if: inputs.environment != 'prod'
     with:
       plan_id: "5"
       plan_name: "CI/CD_PETS"

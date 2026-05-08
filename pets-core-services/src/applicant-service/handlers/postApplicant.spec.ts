@@ -1,7 +1,9 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
@@ -51,13 +53,24 @@ describe("Test for Posting Applicant into DB", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: newApplicantDetails,
     };
-
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.travelInfoInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await postApplicantHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(201);
     expect(JSON.parse(response.body)).toMatchObject(newApplicantDetails);
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.travelInfoInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
+    });
   });
 
   test("Saving a new Applicant Successfully: Support ClinicId", async () => {
@@ -139,6 +152,24 @@ describe("Test for Posting Applicant into DB", () => {
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Request event missing body",
+    });
+  });
+
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newApplicantDetails,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await postApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
     });
   });
 
