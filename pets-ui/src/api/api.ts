@@ -21,6 +21,7 @@ import {
   ReceivedApplicationDetailsType,
   ReceivedApplicationInProgressType,
   ReceivedApplicationListType,
+  UpdateTbCertificateType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
@@ -207,6 +208,17 @@ export const postTbCerificateDetails = async (
   tbCertificateDetails: PostedTbCertificateType | PostedTbCertificateNotIssuedType,
 ) => {
   const result = await petsApi.post(
+    `/application/${applicationId}/tb-certificate`,
+    tbCertificateDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const putTbCerificateDetails = async (
+  applicationId: string,
+  tbCertificateDetails: UpdateTbCertificateType,
+) => {
+  const result = await petsApi.put(
     `/application/${applicationId}/tb-certificate`,
     tbCertificateDetails,
   );

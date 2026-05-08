@@ -420,6 +420,11 @@ type PostedTbCertificateNotIssuedType = {
   referenceNumber: string;
 };
 
+type UpdateTbCertificateType = {
+  comments?: string;
+  physicianName: string;
+};
+
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &
   ReceivedApplicationAttributesType;
 
