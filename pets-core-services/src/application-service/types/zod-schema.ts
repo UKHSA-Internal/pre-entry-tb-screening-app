@@ -270,22 +270,24 @@ export const TbCertificateRequestSchema = z.union([
   TbCertificateNotIssuedRequestSchema,
 ]);
 
-export const TbCertificateUpdateRequestSchema = z.object({
-  physicianName: withRole(
-    z.string().openapi({
-      description: "Physician's Name",
-    }),
-    "application.update",
-    "PhysicianName",
-  ),
-  comments: withRole(
-    z.string().optional().openapi({
-      description: "Physician's comments",
-    }),
-    "application.update",
-    "PhysicianComments",
-  ),
-}).strict();
+export const TbCertificateUpdateRequestSchema = z
+  .object({
+    physicianName: withRole(
+      z.string().openapi({
+        description: "Physician's Name",
+      }),
+      "application.update",
+      "PhysicianName",
+    ),
+    comments: withRole(
+      z.string().optional().openapi({
+        description: "Physician's comments",
+      }),
+      "application.update",
+      "PhysicianComments",
+    ),
+  })
+  .strict();
 
 export const TbCertificateUpdateResponseSchema = z.object({
   applicationId: z.string().openapi({
@@ -506,11 +508,15 @@ export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
 });
 
-export const SputumDecisionRequestUpdateSchema = z.object({
-  sputumRequired: withRole(z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),,
-    "application.update",
-    "SputumDecision",),
-}).strict();
+export const SputumDecisionRequestUpdateSchema = z
+  .object({
+    sputumRequired: withRole(
+      z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
+      "application.update",
+      "SputumDecision",
+    ),
+  })
+  .strict();
 
 export const SputumDecisionUpdateResponseSchema = SputumDecisionRequestUpdateSchema.extend({
   applicationId: z.string().openapi({ description: "ID of application" }),
