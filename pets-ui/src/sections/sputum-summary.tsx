@@ -21,7 +21,7 @@ import {
   setSputumStatus,
   setSputumVersion,
 } from "@/redux/sputumSlice";
-import { selectApplication, selectSputum } from "@/redux/store";
+import { selectApplication, selectSputum, selectUserDetails } from "@/redux/store";
 import { ButtonClass, PositiveOrNegative, TaskStatus } from "@/utils/enums";
 import { formatDateForDisplay } from "@/utils/helpers";
 import { areAllSamplesComplete, buildSamplePayload } from "@/utils/sputumHelpers";
@@ -29,6 +29,7 @@ import { areAllSamplesComplete, buildSamplePayload } from "@/utils/sputumHelpers
 const SputumSummary = () => {
   const sputumData = useAppSelector(selectSputum);
   const applicationData = useAppSelector(selectApplication);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -267,6 +268,7 @@ const SputumSummary = () => {
         taskStatus={getSampleStatus(1)}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={generateSampleSummaryData(1)}
+        isSuperUser={userData.isSuperUser}
       />
 
       <Heading level={2} size="m" title="Sputum sample 2" />
@@ -274,6 +276,7 @@ const SputumSummary = () => {
         taskStatus={getSampleStatus(2)}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={generateSampleSummaryData(2)}
+        isSuperUser={userData.isSuperUser}
       />
 
       <Heading level={2} size="m" title="Sputum sample 3" />
@@ -281,6 +284,7 @@ const SputumSummary = () => {
         taskStatus={getSampleStatus(3)}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={generateSampleSummaryData(3)}
+        isSuperUser={userData.isSuperUser}
       />
 
       <Heading title="Now send the sputum collection details and results" level={2} size="m" />
