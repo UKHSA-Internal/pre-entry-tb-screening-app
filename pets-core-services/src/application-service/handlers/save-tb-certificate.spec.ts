@@ -1,6 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { YesOrNo } from "../types/enums";
 import { SaveTbCertificateEvent, saveTbCertificateHandler } from "./save-tb-certificate";
@@ -24,7 +26,12 @@ describe("Test for Saving TB Certificate into DB", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: newTbCertificate,
     };
-
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.certificateAvailable;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveTbCertificateHandler(event);
 
@@ -35,6 +42,13 @@ describe("Test for Saving TB Certificate into DB", () => {
       ...newTbCertificate,
       dateCreated: expect.any(String),
     });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.certificateAvailable,
+      applicationStatusGroup: ApplicationStatusGroup.complete,
+      expiryDate: new Date("2025-06-01"),
+      updatedBy: "hardcoded@user.com",
+    });
   });
 
   test("Duplicate post throws a 409 error", async () => {
@@ -44,7 +58,6 @@ describe("Test for Saving TB Certificate into DB", () => {
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: newTbCertificate,
     };
-
     // Act
     const response = await saveTbCertificateHandler(event);
 
@@ -68,7 +81,23 @@ describe("Test for Saving TB Certificate into DB", () => {
       message: "Request event missing body",
     });
   });
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveTbCertificateEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newTbCertificate,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveTbCertificateHandler(event);
 
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+  });
   test("Any error returns a 500 response", async () => {
     // Arrange;
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {

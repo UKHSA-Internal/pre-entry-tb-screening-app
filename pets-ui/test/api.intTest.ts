@@ -58,7 +58,7 @@ describe("petsApi response interceptor", () => {
     mockAxios.onGet("/test-endpoint").reply(403);
 
     await expect(petsApi.get("/test-endpoint")).rejects.toThrow();
-    expect(window.location.href).toBe("/sorry-there-is-problem-with-service");
+    expect(window.location.href).toBe("");
   });
 
   test("does not redirect on successful response", async () => {

@@ -124,7 +124,7 @@ describe("Tests for Application Model", () => {
     });
   });
 
-  test("Change application status to 'Cancelled'", async () => {
+  test("Update application status to 'Cancelled'", async () => {
     const dateCreated = "2025-02-07";
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";
@@ -171,7 +171,7 @@ describe("Tests for Application Model", () => {
     });
   });
 
-  test("Change application status related to TB Certificate details", async () => {
+  test("Update application status related to TB Certificate details", async () => {
     const dateCreated = "2025-02-07";
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";

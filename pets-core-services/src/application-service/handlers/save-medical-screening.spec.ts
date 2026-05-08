@@ -1,6 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
 import { seededApplications } from "../../shared/fixtures/application";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededMedicalScreening } from "../fixtures/medical-screening";
 import {
@@ -34,6 +36,12 @@ describe("Test for Saving Medical Screening into DB", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: newMedicalScreeningDetails,
     };
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.sputumDecisionInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
 
     // Act
     const response = await saveMedicalScreeningHandler(event);
@@ -47,6 +55,12 @@ describe("Test for Saving Medical Screening into DB", () => {
         newMedicalScreeningDetails.dateOfMedicalScreening,
       ).toISOString(),
       dateCreated: expect.any(String),
+    });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[0].applicationId,
+      applicationStatus: ApplicationStatus.sputumDecisionInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
     });
   });
 
@@ -87,7 +101,23 @@ describe("Test for Saving Medical Screening into DB", () => {
       message: "Request event missing body",
     });
   });
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveMedicalScreeningEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: newMedicalScreeningDetails,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveMedicalScreeningHandler(event);
 
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+  });
   test("Any error returns a 500 response", async () => {
     // Arrange;
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {
