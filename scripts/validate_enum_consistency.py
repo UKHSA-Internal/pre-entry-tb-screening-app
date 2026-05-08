@@ -3,7 +3,7 @@
 
 import re
 import sys
-from typing import Dict, Set
+from typing import Dict
 
 
 def extract_ts_enums(filepath: str) -> Dict[str, Dict[str, str]]:
@@ -97,7 +97,7 @@ def validate_consistency(ts_enums: Dict, py_enums: Dict) -> bool:
 
 def main():
     ts_file = 'pets-core-services/src/shared/types/enum.ts'
-    py_file = 'scripts/applicant_migration/src/migration_script.py'
+    py_file = 'scripts/db_migrations/src/migrations.py'
 
     try:
         ts_enums = extract_ts_enums(ts_file)
