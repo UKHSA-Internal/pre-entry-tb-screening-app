@@ -6,7 +6,7 @@ import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import List from "@/components/list/list";
 import StartButton from "@/components/startButton/startButton";
-import { clearClinicDetails } from "@/redux/clinicSlice";
+import { clearUserDetails } from "@/redux/userSlice";
 import { clearNavigationHistory } from "@/utils/useNavigationHistory";
 
 export default function HomePage() {
@@ -14,7 +14,7 @@ export default function HomePage() {
 
   useEffect(() => {
     clearNavigationHistory();
-    clearClinicDetails();
+    clearUserDetails();
   }, []);
 
   const initializeSignIn = () => {

@@ -35,7 +35,7 @@ import {
   setSputumDetailsFromApiResponse,
   setSputumStatus,
 } from "@/redux/sputumSlice";
-import { selectApplicationsInProgress, selectUserClinic } from "@/redux/store";
+import { selectApplicationsInProgress, selectUserDetails } from "@/redux/store";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -75,7 +75,7 @@ const getLinkText = (status: ApplicationStatus) => {
 };
 
 const Dashboard = () => {
-  const userClinicData = useAppSelector(selectUserClinic);
+  const userData = useAppSelector(selectUserDetails);
   const applicationsInProgressData = useAppSelector(selectApplicationsInProgress);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -198,7 +198,7 @@ const Dashboard = () => {
   };
 
   const filteredApplicationsData = applicationsInProgressData.filter(
-    (app) => app.clinicId == userClinicData.clinicId,
+    (app) => app.clinicId == userData.clinicId,
   );
 
   const applicationTableInfo = filteredApplicationsData
