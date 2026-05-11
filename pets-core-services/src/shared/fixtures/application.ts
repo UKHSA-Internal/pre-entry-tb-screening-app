@@ -20,8 +20,8 @@ export const seededApplications: IApplication[] = [
     clinicId: "Apollo Clinic",
     createdBy: "appollo-clinic-user@email",
     dateCreated: new Date(),
-    applicationStatus: ApplicationStatus.inProgress,
-    applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    applicationStatus: ApplicationStatus.certificateAvailable,
+    applicationStatusGroup: ApplicationStatusGroup.complete,
   },
   {
     applicationId: "cbdcc218-316e-4ae1-835f-ccde4c17a7e2",
@@ -30,7 +30,7 @@ export const seededApplications: IApplication[] = [
     clinicId: "test-clinic-id-3",
     createdBy: "clinic-three-user@email",
     dateCreated: new Date(),
-    applicationStatus: ApplicationStatus.inProgress,
+    applicationStatus: ApplicationStatus.certificateNotIssued,
     applicationStatusGroup: ApplicationStatusGroup.incomplete,
   },
   {
