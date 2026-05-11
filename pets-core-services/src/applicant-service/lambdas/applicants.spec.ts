@@ -289,6 +289,10 @@ describe("Test for Applicant Lambda", () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
       resource: "/applicant/register/{applicationId}",
       path: `/applicant/register/${seededApplications[0].applicationId}`,
       httpMethod: "POST",
@@ -338,6 +342,7 @@ describe("Test for Applicant Lambda", () => {
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
           clinicId: "invalid-clinic-id",
+          superuser: "false",
         },
       },
       httpMethod: "PUT",
@@ -374,6 +379,7 @@ describe("Test for Applicant Lambda", () => {
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
           clinicId: "",
+          superuser: "false",
         },
       },
       httpMethod: "PUT",

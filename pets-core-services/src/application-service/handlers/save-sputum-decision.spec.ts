@@ -3,9 +3,8 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
-import { ApplicationStatus, ApplicationStatusGroup, TaskStatus } from "../../shared/types/enum";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { seededSputumDecision } from "../fixtures/sputum-decision";
 import { SputumDecisionDbOps } from "../models/sputum-decision";
 import { YesOrNo } from "../types/enums";
 import { SaveSputumDecisionEvent, saveSputumDecisionHandler } from "./save-sputum-decision";
@@ -49,15 +48,13 @@ describe("Test for Sputum Decision into DB", () => {
 
   test("Duplicate post throws a 409 error", async () => {
     // Arrange
-    const existingSputumDecision = {
-      ...seededSputumDecision[0],
-      status: TaskStatus.completed,
-      dateCreated: "2025-05-05",
-    };
+
     const event: SaveSputumDecisionEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[1].applicationId },
-      parsedBody: existingSputumDecision,
+      parsedBody: {
+        sputumRequired: YesOrNo.Yes,
+      },
     };
 
     // Act
@@ -165,7 +162,9 @@ describe("Test for Sputum Decision into DB", () => {
     });
     const event: SaveSputumDecisionEvent = {
       ...mockAPIGwEvent,
-      parsedBody: { ...seededSputumDecision[1] },
+      parsedBody: {
+        sputumRequired: YesOrNo.Yes,
+      },
     };
 
     // Act

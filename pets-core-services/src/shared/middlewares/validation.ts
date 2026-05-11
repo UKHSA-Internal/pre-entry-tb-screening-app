@@ -31,6 +31,11 @@ export const validateRequest = ({
 
           if (parsedResult.error) {
             logger.error("Failed Validation");
+            return HttpErrors.badRequest({
+              message: "Request Body failed validation",
+              validationError: parsedResult.error.flatten().fieldErrors,
+              validationErrorVerbose: parsedResult.error,
+            });
           }
 
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

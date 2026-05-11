@@ -70,8 +70,12 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "false" },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
@@ -92,7 +96,11 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId, superuser: "true" },
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
     };
     // Create an applicant
@@ -122,6 +130,7 @@ describe("Test for Updating Applicant into DB", () => {
         authorizer: {
           ...mockAPIGwEvent.requestContext.authorizer,
           clinicId: process.env.VITE_SUPPORT_CLINIC_ID as string,
+          superuser: "false",
         },
       },
     };
@@ -147,6 +156,10 @@ describe("Test for Updating Applicant into DB", () => {
     };
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
       pathParameters: { applicationId: "nonexisting-application-id" },
       parsedBody,
     };
@@ -165,6 +178,10 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
       parsedBody: applicantDetails,
     };
 
@@ -179,6 +196,10 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
     };
 
     // Act
@@ -198,6 +219,10 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
     };

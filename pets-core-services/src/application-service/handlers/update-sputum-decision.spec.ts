@@ -3,7 +3,6 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { seededSputumDecision } from "../fixtures/sputum-decision";
 import { SputumDecisionDbOps } from "../models/sputum-decision";
 import { YesOrNo } from "../types/enums";
 import { UpdateSputumDecisionEvent, updateSputumDecisionHandler } from "./update-sputum-decision";
@@ -17,6 +16,10 @@ describe("Test for Updating Sputum Decision into DB", () => {
     // Arrange
     const event: UpdateSputumDecisionEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
+      },
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: updateSputumDecisionDetails,
     };
@@ -56,8 +59,13 @@ describe("Test for Updating Sputum Decision into DB", () => {
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {
       throw new Error("Malformed URI");
     });
+
     const event: UpdateSputumDecisionEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
+      },
     };
 
     // Act
@@ -79,7 +87,13 @@ describe("Test for Updating Sputum Decision into DB", () => {
     });
     const event: UpdateSputumDecisionEvent = {
       ...mockAPIGwEvent,
-      parsedBody: { ...seededSputumDecision[1] },
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
+      },
+      parsedBody: {
+        sputumRequired: YesOrNo.Yes,
+      },
     };
 
     // Act
