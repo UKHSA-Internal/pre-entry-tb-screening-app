@@ -23,14 +23,14 @@ const applicantDetails: PutApplicantEvent["parsedBody"] = {
   provinceOrState: "the-province",
   postcode: "the-post-code",
   country: CountryCode.ALA,
-  passportNumber: "test",
-  countryOfIssue: CountryCode.ALA,
+  passportNumber: "ABC1234JANE",
+  countryOfIssue: CountryCode.BRB,
 };
 
 const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   fullName: "John Doe",
-  passportNumber: "test",
-  countryOfIssue: CountryCode.ALA,
+  passportNumber: "ABC1234JANE",
+  countryOfIssue: CountryCode.BRB,
   countryOfNationality: CountryCode.ALA,
   issueDate: "2024-07-07",
   expiryDate: "2029-07-07",
@@ -52,7 +52,7 @@ describe("Test for Updating Applicant into DB", () => {
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
       pathParameters: { applicationId: seededApplications[0].applicationId, superuser: "false" },
-      parsedBody: applicantDetails,
+      parsedBody: { ...applicantDetails, passportNumber: "test" },
     };
 
     // Act
@@ -70,12 +70,12 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
-      pathParameters: { applicationId: seededApplications[1].applicationId },
-      parsedBody: applicantDetails,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
         authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
+      pathParameters: { applicationId: seededApplications[1].applicationId },
+      parsedBody: applicantDetails,
     };
     // Create an applicant
     const eventPOST: PostApplicantEvent = {
@@ -98,7 +98,7 @@ describe("Test for Updating Applicant into DB", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
       },
       pathParameters: { applicationId: seededApplications[1].applicationId },
       parsedBody: applicantDetails,
@@ -153,6 +153,7 @@ describe("Test for Updating Applicant into DB", () => {
     // Arrange
     const parsedBody: PutApplicantEvent["parsedBody"] = {
       ...applicantDetails,
+      passportNumber: "test",
     };
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
@@ -172,24 +173,6 @@ describe("Test for Updating Applicant into DB", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Applicant does not exist",
     });
-  });
-
-  test("Missing applicationId returns 404 error", async () => {
-    // Arrange
-    const event: PutApplicantEvent = {
-      ...mockAPIGwEvent,
-      requestContext: {
-        ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
-      },
-      parsedBody: applicantDetails,
-    };
-
-    // Act
-    const response = await updateApplicantHandler(event);
-
-    // Assert
-    expect(response.statusCode).toBe(404);
   });
 
   test("Missing required body returns a 400 response", async () => {

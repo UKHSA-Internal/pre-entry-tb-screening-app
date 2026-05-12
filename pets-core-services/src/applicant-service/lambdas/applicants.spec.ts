@@ -25,14 +25,14 @@ const applicantDetails: PutApplicantEvent["parsedBody"] = {
   provinceOrState: "the-province",
   postcode: "the-post-code",
   country: CountryCode.ALA,
-  passportNumber: "test",
-  countryOfIssue: CountryCode.ALA,
+  passportNumber: "Test01",
+  countryOfIssue: CountryCode.IND,
 };
 
 const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   fullName: "John Doe",
-  passportNumber: "test",
-  countryOfIssue: CountryCode.ALA,
+  passportNumber: "Test01",
+  countryOfIssue: CountryCode.IND,
   countryOfNationality: CountryCode.ALA,
   issueDate: "2024-07-07",
   expiryDate: "2029-07-07",
@@ -306,6 +306,10 @@ describe("Test for Applicant Lambda", () => {
 
     const updateEvent: PetsAPIGatewayProxyEvent = {
       ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
       resource: "/applicant/update/{applicationId}",
       path: `/applicant/update/${seededApplications[0].applicationId}`,
       httpMethod: "PUT",
@@ -318,6 +322,7 @@ describe("Test for Applicant Lambda", () => {
     // Assert
     expect(updateResponse.statusCode).toBe(200);
   });
+
   test("Updating an Applicant from  other clinic throws  validation error", async () => {
     // Arrange;
     const event: PetsAPIGatewayProxyEvent = {
