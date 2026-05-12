@@ -9,7 +9,7 @@ describe("errorHandler middleware", () => {
   it("should return 500 with a generic message when a handler throws", async () => {
     const throwingHandler = middy()
       .use(errorHandler())
-      .handler(async () => {
+      .handler(() => {
         throw new Error("Internal database connection failed at /var/task/db.js:42");
       });
 
@@ -25,7 +25,7 @@ describe("errorHandler middleware", () => {
     const sensitiveMessage = "Secret token: eyJhbGciOiJSUzI1NiJ9.sensitive";
     const throwingHandler = middy()
       .use(errorHandler())
-      .handler(async () => {
+      .handler(() => {
         throw new Error(sensitiveMessage);
       });
 
@@ -40,7 +40,7 @@ describe("errorHandler middleware", () => {
   it("should not expose stack traces in the response", async () => {
     const throwingHandler = middy()
       .use(errorHandler())
-      .handler(async () => {
+      .handler(() => {
         const err = new Error("Something broke");
         // Ensure a stack trace exists on the error
         Error.captureStackTrace(err);
@@ -58,7 +58,7 @@ describe("errorHandler middleware", () => {
   it("should not expose internal module paths in the response", async () => {
     const throwingHandler = middy()
       .use(errorHandler())
-      .handler(async () => {
+      .handler(() => {
         throw new Error("ENOENT: no such file or directory, open '/var/task/config/secrets.json'");
       });
 
@@ -74,7 +74,7 @@ describe("errorHandler middleware", () => {
   it("should pass through the response if no error is thrown", async () => {
     const successHandler = middy()
       .use(errorHandler())
-      .handler(async () => ({
+      .handler(() => ({
         statusCode: 200,
         body: JSON.stringify({ ok: true }),
         headers: {},
