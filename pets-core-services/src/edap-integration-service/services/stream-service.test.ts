@@ -7,7 +7,7 @@ import {
   SendMessageCommandOutput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import { DynamoDBStreamEvent } from "aws-lambda";
+import { DynamoDBRecord, DynamoDBStreamEvent } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -53,10 +53,22 @@ describe("init", () => {
         // @ts-expect-error ignore
         event.Records[0].eventName = "OTHER?";
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
-        expect(loggerMock).toHaveBeenNthCalledWith(2, "event name was not of correct type");
+        expect(loggerMock).toHaveBeenNthCalledWith(1, "event name was not of correct type");
       });
     });
-  });
+    describe("when fetching data stream and there is no NewImage", () => {
+      test("should log 'No NewImage' and return empty object", () => {
+        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const recordWithoutNewImage: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "INSERT",
+          dynamodb: {},
+        };
+        const result = StreamService.getClinicDataStream(recordWithoutNewImage);
+        expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
+        expect(result).toEqual({});
+      });
+    });  });
 
   describe("SQService", () => {
     const client = mockClient(SQSClient);
