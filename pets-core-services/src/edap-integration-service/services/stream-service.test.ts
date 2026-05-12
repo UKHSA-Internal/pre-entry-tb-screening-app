@@ -68,7 +68,8 @@ describe("init", () => {
         expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
         expect(result).toEqual({});
       });
-    });  });
+    });
+  });
 
   describe("SQService", () => {
     const client = mockClient(SQSClient);
