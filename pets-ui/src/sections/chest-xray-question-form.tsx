@@ -3,7 +3,6 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
 import ErrorSummary from "@/components/errorSummary/errorSummary";
-import Heading from "@/components/heading/heading";
 import Radio from "@/components/radio/radio";
 import SubmitButton from "@/components/submitButton/submitButton";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -61,7 +60,7 @@ const ChestXrayQuestionForm = () => {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errors?.chestXrayTaken && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
-        <Heading level={1} size="l" title="Is an X-ray required?" />{" "}
+
         <div ref={chestXrayTakenRef}>
           <Radio
             id="chest-xray-taken"
@@ -72,9 +71,13 @@ const ChestXrayQuestionForm = () => {
             formValue="chestXrayTaken"
             defaultValue={medicalData.chestXrayTaken || YesOrNo.NULL}
             required="Select yes if an X-ray is required"
-            divStyle={{ marginTop: 40 }}
+            heading="Is an X-ray required?"
+            headingLevel={1}
+            headingSize="l"
+            headingStyle={{ marginBottom: 30 }}
           />
         </div>
+
         <SubmitButton id="Continue" class={ButtonClass.DEFAULT} text="Continue" />
       </form>
     </FormProvider>

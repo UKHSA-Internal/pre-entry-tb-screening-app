@@ -10,7 +10,6 @@ export enum ApplicationStatus {
   inProgress = "In Progress",
   sputumDecisionInProgress = "Sputum Decision In Progress",
   sputumInProgress = "Sputum In Progress",
-  sputumResultsInProgress = "Sputum Results In Progress",
   travelInfoInProgress = "Travel Information In Progress",
   medicalScreeningInProgress = "Medical Screening In Progress",
   chestXrayInProgress = "Chest Xray In Progress",
