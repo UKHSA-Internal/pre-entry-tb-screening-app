@@ -48,13 +48,12 @@ const edapIntegrationHandler: Handler = async (
       newRecord = StreamService.getClinicDataStream(record);
 
       const stringifiedRecord = JSON.stringify(newRecord);
-      logger.info(`stringifiedRecord: ${stringifiedRecord}`);
       await sqService.sendDbStreamMessage(stringifiedRecord);
 
       logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
     } catch (error) {
       logger.error({ error }, "ERROR");
-      logger.info({ newRecord }, "ERROR records");
+      logger.error({ newRecord }, "ERROR in the record");
       batchItemFailures.push({
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
@@ -65,6 +64,12 @@ const edapIntegrationHandler: Handler = async (
         throw new Error("Record can't be sent in the SQS/DLQ message");
       }
     }
+  }
+
+  if (batchItemFailures.length > 0) {
+    logger.error(`Errors: ${batchItemFailures.length}`);
+  } else {
+    logger.info("All processed successfully");
   }
 
   return { batchItemFailures };
