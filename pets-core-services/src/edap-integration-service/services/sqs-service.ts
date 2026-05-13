@@ -26,7 +26,7 @@ class SQService {
    * @param messageBody
    */
   public sendDbStreamMessage(messageBody: string) {
-    logger.info(`Message Body to be sent: ${messageBody}`);
+    logger.info("[SQS] Sending message");
     return this.sendMessage(
       messageBody,
       process.env.EDAP_INTEGRATION_QUEUE_NAME as string,
@@ -50,7 +50,7 @@ class SQService {
    * @param messageBody
    */
   public sendToDLQ(messageBody: string) {
-    logger.info(`Message Body to be sent to DLQ: ${messageBody}`);
+    logger.info("[DLQ] Sending message");
 
     return this.sendMessage(
       messageBody,
@@ -77,8 +77,6 @@ class SQService {
     // Get the queue URL for the provided queue name
 
     const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${queueOwnerAWSAccountId}/${queueName}`;
-
-    logger.info(`Queue URL: ${queueUrl}`);
 
     const params: SendMessageCommandInput = {
       QueueUrl: queueUrl,
