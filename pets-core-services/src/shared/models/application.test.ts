@@ -42,7 +42,7 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       applicationId,
-      applicationStatus: ApplicationStatus.inProgress,
+      applicationStatus: ApplicationStatus.travelInfoInProgress,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -51,7 +51,7 @@ describe("Tests for Application Model", () => {
       Item: {
         clinicId,
         createdBy,
-        applicationStatus: "In Progress",
+        applicationStatus: "Travel Information In Progress",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#ROOT",
       },

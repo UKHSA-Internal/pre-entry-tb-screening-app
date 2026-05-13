@@ -202,7 +202,7 @@ const ApplicantReview = () => {
       key: "Country",
       value: getCountryName(applicantData.country),
       link: `/visa-applicant-contact-information?from=check-visa-applicant-details#${attributeToComponentId.country}`,
-      hiddenLabel: "country",
+      hiddenLabel: "home address country",
     },
     {
       key: "Photo",

@@ -239,6 +239,7 @@ const ScreeningHistory = () => {
         cells: [
           getApplicationExpiryDate(application),
           <StatusTag
+            id={`application-${application.applicationId.slice(0, 8)}-state`}
             key={`application-${application.applicationId.slice(0, 8)}-state`}
             status={application.applicationStatus}
             textOverride={textOverride}
@@ -315,6 +316,7 @@ const ScreeningHistory = () => {
         columnHeaders={["Start date", "Expiry date", "Status", "Action"]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
+        hiddenCaption="Application history information"
       />
     </div>
   );

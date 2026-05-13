@@ -60,16 +60,12 @@ describe("Tests for Applications Model", () => {
       ]),
     );
 
-    const result = await DashboardApplication.getByClinicId(clinicId, 100);
-
-    expect(result).toHaveLength(1);
-
-    expect(result[0].applicantName).toBe("John Doe");
-
     // Act
     const applications = await DashboardApplication.getByClinicId(clinicId, 100);
 
     // Assert
+    expect(applications).toHaveLength(1);
+
     expect(applications).toMatchObject([
       {
         applicantId: "COUNTRY#IND#PASSPORT#Test",
@@ -85,6 +81,76 @@ describe("Tests for Applications Model", () => {
     ]);
   });
 
+  test("Getting all in progress applications -Skip invalid applications with missing applicantId", async () => {
+    // Mock DynamoDB query response
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          applicationId: applicationId,
+          clinicId: clinicId,
+          dateCreated: new Date("2025-02-07"),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        },
+      ],
+    } as unknown as QueryCommandOutput);
+
+    //  Mock batch loader
+    vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
+      new Map([
+        [
+          applicantId,
+          {
+            applicantId: "COUNTRY#IND#PASSPORT#Test",
+            fullName: "John Doe",
+            passportNumber: passportNumber,
+            countryOfIssue: countryOfIssue,
+          },
+        ],
+      ]),
+    );
+
+    // Act
+    const applications = await DashboardApplication.getByClinicId(clinicId, 100);
+    //Assert
+    expect(applications).toHaveLength(0);
+  });
+
+  test("Getting all in progress applications -Skip invalid applications with missing applicantId", async () => {
+    // Mock DynamoDB query response
+    ddbMock.on(QueryCommand).resolves({
+      Items: [
+        {
+          applicationId: applicationId,
+          applicantId: applicantId,
+          clinicId: clinicId,
+          dateCreated: new Date("2025-02-07"),
+          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatusGroup: ApplicationStatusGroup.incomplete,
+        },
+      ],
+    } as unknown as QueryCommandOutput);
+
+    //  Mock batch loader
+    vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
+      new Map([
+        [
+          "incorrect-id",
+          {
+            applicantId: "incorrect-id",
+            fullName: "John Doe",
+            passportNumber: passportNumber,
+            countryOfIssue: countryOfIssue,
+          },
+        ],
+      ]),
+    );
+
+    // Act
+    const applications = await DashboardApplication.getByClinicId(clinicId, 100);
+    //Assert
+    expect(applications).toHaveLength(0);
+  });
   test("should pass correct params to DynamoDB", async () => {
     ddbMock.on(QueryCommand).resolves({ Items: [] });
 

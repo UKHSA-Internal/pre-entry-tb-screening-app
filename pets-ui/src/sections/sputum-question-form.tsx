@@ -24,6 +24,7 @@ const SputumQuestionForm = () => {
 
   const methods = useForm<SputumDecisionFormData>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
   });
   const {
     handleSubmit,

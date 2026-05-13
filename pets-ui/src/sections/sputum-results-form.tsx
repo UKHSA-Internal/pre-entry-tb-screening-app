@@ -108,6 +108,7 @@ const SputumResultsForm = () => {
 
   const methods = useForm<SputumResultsFormType>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       sample1SmearResult:
         sputumData.sample1.smearResults.smearResult == PositiveOrNegative.NOT_YET_ENTERED

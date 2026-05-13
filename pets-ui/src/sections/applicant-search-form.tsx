@@ -44,7 +44,10 @@ import { getApplicants, getApplication } from "../api/api";
 const ApplicantSearchForm = () => {
   const userClinicData = useAppSelector(selectUserClinic);
   const navigate = useNavigate();
-  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ApplicantSearchFormType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const dispatch = useAppDispatch();
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 

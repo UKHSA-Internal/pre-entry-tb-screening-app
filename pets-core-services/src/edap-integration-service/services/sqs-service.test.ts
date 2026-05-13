@@ -59,6 +59,13 @@ describe("SQService", () => {
     expect(accountId).toBe("222222222222");
   });
 
+  it("uses EDAP account ID for preprod environment", () => {
+    process.env.ENVIRONMENT = "preprod";
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const accountId = (service as any).getAWSAccountIdForEDAP();
+    expect(accountId).toBe("222222222222");
+  });
+
   it("sends message to integration queue (standard)", async () => {
     await service.sendDbStreamMessage("hello");
 
