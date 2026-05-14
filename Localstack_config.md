@@ -22,5 +22,7 @@ If you keep your PAT and GH name in env vars, and you want to run back-end test,
 echo $GITHUB_PAT | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin && pnpm test
 ```
 
+If you're on macOS (especially if the CPU architecture is *arm64*, the new M1, M2... processors), enabling *rosetta* emulator is required. There's also a setting in Rancher Desktop (container manager app, if you use it) to use Apple Virtualization framework, which enables *Rosetta* support.
+
 More about it can be found here: <https://docs.github.com/en/packages/working-with-a-github-packages-registry/>
 working-with-the-container-registry#authenticating-to-the-container-registry
