@@ -10,7 +10,7 @@ import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXray, ChestXrayDbOps } from "../models/chest-xray";
 import { ImageType, YesOrNo } from "../types/enums";
 import { ApplicationNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
@@ -53,9 +53,9 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       }
     }
 
-    let chestXray: ChestXRay;
+    let chestXray: ChestXray;
     try {
-      chestXray = await ChestXRay.createChestXray({
+      chestXray = await ChestXrayDbOps.createChestXray({
         ...parsedBody,
         createdBy,
         applicationId,
@@ -153,6 +153,8 @@ const validateObjectKey = async (value: string, expectedKeyParameters: KeyParame
 
   logger.info("Comparing Object Key with expected");
   if (value !== expectedObjectKey) {
+    logger.info(value);
+    logger.info(expectedObjectKey);
     logger.error(`${fileName} object key is invalid`);
     throw new InvalidObjectKey(`${fileName} object key is invalid`);
   }

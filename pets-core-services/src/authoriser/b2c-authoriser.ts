@@ -84,7 +84,7 @@ const generatePolicy = (
   const validRoles = b2cRolesLowerCase.filter(filterPredicate);
 
   // derive flag from valid roles
-  const superUser = validRoles.includes(Roles.ApplicationUpdate);
+  const superuser = validRoles.includes(Roles.ApplicationUpdate);
 
   const statements: Statement[] = validRoles.map((role) => ({
     Action: "execute-api:Invoke",
@@ -104,7 +104,7 @@ const generatePolicy = (
   const context = {
     clinicId,
     createdBy,
-    superUser: String(superUser),
+    superuser: String(superuser),
   };
 
   const authResponse: APIGatewayAuthorizerResult = {

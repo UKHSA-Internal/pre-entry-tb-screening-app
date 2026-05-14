@@ -7,7 +7,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicantPhoto } from "../fixtures/applicant-photo";
 import { ImageHelper } from "../helpers/image-helper";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXrayDbOps } from "../models/chest-xray";
 import { getApplicationHandler } from "./get-application";
 
 // Mock generateImageObjectkey
@@ -301,7 +301,7 @@ describe("Getting Application Handler", () => {
 
     // // Mock the chest xray model
     const detailsSpy = vi
-      .spyOn(ChestXRay, "getByApplicationId")
+      .spyOn(ChestXrayDbOps, "getByApplicationId")
       .mockRejectedValue(new Error("DB failure"));
     // Act
     const response = await getApplicationHandler(event);
