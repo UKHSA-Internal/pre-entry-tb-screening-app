@@ -45,6 +45,29 @@ const newApplicantDetails: PostApplicantEvent["parsedBody"] = {
   country: CountryCode.KOR,
 };
 
+const applicantDetailsMultiApp: PostApplicantEvent["parsedBody"] = {
+  fullName: "Kathy Jones",
+  passportNumber: "Test2",
+  countryOfNationality: CountryCode.ARG,
+  countryOfIssue: CountryCode.ARG,
+  issueDate: "2025-01-01",
+  expiryDate: "2030-01-01",
+  dateOfBirth: "2000-02-07",
+  sex: AllowedSex.Female,
+  applicantHomeAddress1: "23 Long street",
+  applicantHomeAddress2: "River Valley",
+  applicantHomeAddress3: "Southumberland",
+  townOrCity: "JohannesBurg",
+  provinceOrState: "",
+  country: CountryCode.ARG,
+  postcode: "1234",
+};
+
+const newApplicantDetailsMultiApp: PutApplicantEvent["parsedBody"] = {
+  passportNumber: "Test2",
+  countryOfIssue: CountryCode.ARG,
+  applicantHomeAddress1: "45 Long street",
+};
 describe("Test for Updating Applicant into DB", () => {
   test("Handling error while updating non-existent Applicant", async () => {
     // Arrange
@@ -66,7 +89,7 @@ describe("Test for Updating Applicant into DB", () => {
     });
   });
 
-  test("Updating an Applicant Successfully", async () => {
+  test("Updating an Applicant Successfully-first in progress application", async () => {
     // Arrange
     const event: PutApplicantEvent = {
       ...mockAPIGwEvent,
@@ -91,6 +114,77 @@ describe("Test for Updating Applicant into DB", () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject(applicantDetails);
+  });
+  test("Updating an Applicant Successfully-multi application-limited fields to update", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
+      pathParameters: { applicationId: seededApplications[6].applicationId },
+      parsedBody: newApplicantDetailsMultiApp,
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[6].applicationId },
+      parsedBody: applicantDetailsMultiApp,
+    };
+    await postApplicantHandler(eventPOST);
+
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({
+      fullName: "Kathy Jones",
+      passportNumber: "Test2",
+      countryOfNationality: CountryCode.ARG,
+      countryOfIssue: CountryCode.ARG,
+      issueDate: "2025-01-01",
+      expiryDate: "2030-01-01",
+      dateOfBirth: "2000-02-07",
+      sex: AllowedSex.Female,
+      applicantHomeAddress1: "45 Long street",
+      applicantHomeAddress2: "River Valley",
+      applicantHomeAddress3: "Southumberland",
+      townOrCity: "JohannesBurg",
+      provinceOrState: "",
+      country: CountryCode.ARG,
+      postcode: "1234",
+    });
+  });
+
+  test("Validation Error -Updating an Applicant-multi application-limited fields to update", async () => {
+    // Arrange
+    const event: PutApplicantEvent = {
+      ...mockAPIGwEvent,
+      requestContext: {
+        ...mockAPIGwEvent.requestContext,
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
+      },
+      pathParameters: { applicationId: seededApplications[6].applicationId },
+      parsedBody: { ...newApplicantDetailsMultiApp, fullName: "test" },
+    };
+    // Create an applicant
+    const eventPOST: PostApplicantEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[6].applicationId },
+      parsedBody: applicantDetailsMultiApp,
+    };
+    await postApplicantHandler(eventPOST);
+
+    // Act
+    const response = await updateApplicantHandler(event);
+
+    // Assert
+    expect(response.statusCode).toBe(422);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Validation Failed",
+    });
   });
   test("Updating an Applicant Successfully as a Superuser", async () => {
     // Arrange

@@ -3,53 +3,56 @@ import { describe, expect, test, vi } from "vitest";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
-import { SputumDecisionDbOps } from "../models/sputum-decision";
-import { YesOrNo } from "../types/enums";
-import { UpdateSputumDecisionEvent, updateSputumDecisionHandler } from "./update-sputum-decision";
+import { TbCertificateDbOps } from "../models/tb-certificate";
+import {
+  UpdateTbCertificateEvent,
+  updateTbCertificateHandler,
+} from "./update-tb-certificate-details";
 
-const updateSputumDecisionDetails: UpdateSputumDecisionEvent["parsedBody"] = {
-  sputumRequired: YesOrNo.No,
+const updateTbCertificateDetails: UpdateTbCertificateEvent["parsedBody"] = {
+  physicianName: "Dr.Annelie Botha",
+  comments: "comments",
 };
 
-describe("Test for Updating Sputum Decision into DB", () => {
-  test("Updating a Sputum Decision Successfully", async () => {
+describe("Test for Updating Tb Certificate Details into DB", () => {
+  test("Updating TB Certificate details Successfully as superuser", async () => {
     // Arrange
-    const event: UpdateSputumDecisionEvent = {
+    const event: UpdateTbCertificateEvent = {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
         authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
       },
       pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: updateSputumDecisionDetails,
+      parsedBody: updateTbCertificateDetails,
     };
 
     // Act
-    const response = await updateSputumDecisionHandler(event);
+    const response = await updateTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[0].applicationId,
-      ...updateSputumDecisionDetails,
+      ...updateTbCertificateDetails,
       dateUpdated: expect.any(String),
     });
   });
 
-  test("Updating a Sputum Decision- Unauthorized Update", async () => {
+  test("Updating TB Certificate details- Unauthorized Update", async () => {
     // Arrange
-    const event: UpdateSputumDecisionEvent = {
+    const event: UpdateTbCertificateEvent = {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
         authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[0].applicationId },
-      parsedBody: updateSputumDecisionDetails,
+      parsedBody: updateTbCertificateDetails,
     };
 
     // Act
-    const response = await updateSputumDecisionHandler(event);
+    const response = await updateTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(401);
@@ -60,12 +63,12 @@ describe("Test for Updating Sputum Decision into DB", () => {
   test("Missing required body returns a 400 response", async () => {
     // Arrange
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
-    const event: UpdateSputumDecisionEvent = {
+    const event: UpdateTbCertificateEvent = {
       ...mockAPIGwEvent,
     };
 
     // Act
-    const response = await updateSputumDecisionHandler(event);
+    const response = await updateTbCertificateHandler(event);
 
     // Assert
     expect(errorLoggerMock).toHaveBeenCalledWith("Event missing parsed body");
@@ -81,7 +84,7 @@ describe("Test for Updating Sputum Decision into DB", () => {
       throw new Error("Malformed URI");
     });
 
-    const event: UpdateSputumDecisionEvent = {
+    const event: UpdateTbCertificateEvent = {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
@@ -90,7 +93,7 @@ describe("Test for Updating Sputum Decision into DB", () => {
     };
 
     // Act
-    const response = await updateSputumDecisionHandler(event);
+    const response = await updateTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toBe(500);
@@ -99,32 +102,31 @@ describe("Test for Updating Sputum Decision into DB", () => {
     });
   });
 
-  test("Handling error while updating sputum decision", async () => {
+  test("Handling error while updating tb certificate details", async () => {
     // Arrange;
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const errorMessage = "Couldn't update it";
-    vi.spyOn(SputumDecisionDbOps, "updateSputumDecision").mockImplementation(() => {
+    vi.spyOn(TbCertificateDbOps, "updateTbCertificate").mockImplementation(() => {
       throw new Error(errorMessage);
     });
-    const event: UpdateSputumDecisionEvent = {
+    const event: UpdateTbCertificateEvent = {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
         authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "true" },
       },
-      parsedBody: {
-        sputumRequired: YesOrNo.Yes,
-      },
+      pathParameters: { applicationId: seededApplications[0].applicationId },
+      parsedBody: updateTbCertificateDetails,
     };
 
     // Act
-    const response = await updateSputumDecisionHandler(event);
+    const response = await updateTbCertificateHandler(event);
 
     // Assert
     expect(response.statusCode).toEqual(500);
     expect(errorLoggerMock).toHaveBeenCalledWith(
       Error(errorMessage),
-      "Error updating Sputum Decision",
+      "Error updating tb certificate details",
     );
   });
 });

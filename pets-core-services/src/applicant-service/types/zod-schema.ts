@@ -99,9 +99,6 @@ export const ApplicantSearchResponseSchema = ApplicantRegisterRequestSchema.exte
   }),
 });
 export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "Unique Application ID for applicant",
-  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -139,9 +136,6 @@ export const MultiAppUpdateApplicantRequestSchema = z
   .strict();
 
 export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "Unique Application ID for applicant",
-  }),
   dateUpdated: z.string().date().optional().openapi({
     description: "Date of Birth in ISO Format",
   }),

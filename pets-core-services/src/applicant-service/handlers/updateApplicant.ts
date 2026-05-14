@@ -85,8 +85,11 @@ export const updateApplicantHandler = async (event: PetsAPIGatewayProxyEvent) =>
     const validated = schema.safeParse(parsedBody);
 
     if (!validated.success) {
-      logger.error({ error: validated.error.flatten() }, "Validation failed");
-      return HttpErrors.validationError("Update Applicant Request validation failed");
+      logger.error(
+        { error: validated.error.flatten() },
+        "Update Applicant Request validation failed",
+      );
+      return HttpErrors.validationError("Validation Failed");
     }
 
     const validatedBody = validated.data;

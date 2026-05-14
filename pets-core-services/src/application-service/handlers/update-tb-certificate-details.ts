@@ -53,7 +53,7 @@ export const updateTbCertificateHandler = async (event: UpdateTbCertificateEvent
       ...tbCertificate.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error updating travel information");
+    logger.error(err, "Error updating tb certificate details");
     return HttpErrors.serverError("Something went wrong");
   }
 };
