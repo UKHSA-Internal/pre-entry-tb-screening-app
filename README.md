@@ -223,6 +223,8 @@ See individual folder READMEs for more information
 
 Alternatively, for slow PCs, you can start only the UI without the backend with this command `pnpm start:ui`.
 
+Also, to be able to use *localstack* (to run back-end), you will have to create GitHub PAT. More about it in [Localstack_config.md](./Localstack_config.md) file.
+
 ### Debugging Core Services Locally
 
 For core services, we rely on localstack for emulating AWS services. For debugging Lambda functions, you can access detailed logs directly from the docker container where the Lambda is running. This can be done using:

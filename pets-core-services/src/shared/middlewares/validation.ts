@@ -30,11 +30,10 @@ export const validateRequest = ({
           const parsedResult = requestSchema.safeParse(JSON.parse(body ?? "{}"));
 
           if (parsedResult.error) {
-            logger.error("Failed Validation");
+            logger.error({ validationError: parsedResult.error }, "Failed Validation");
             return HttpErrors.badRequest({
               message: "Request Body failed validation",
               validationError: parsedResult.error.flatten().fieldErrors,
-              validationErrorVerbose: parsedResult.error,
             });
           }
 
