@@ -357,6 +357,31 @@ export const ChestXRayResponseSchema = ChestXRayRequestSchema.extend({
   }),
 });
 
+export const ChestXRayUpdateRequestSchema = z
+  .object({
+    posteroAnteriorXrayFileName: z.string().optional().openapi({
+      description: "File name for the Postero Anterior X-Ray",
+    }),
+
+    apicalLordoticXrayFileName: z.string().optional().openapi({
+      description: "File name for the Apical Lordotic X-Ray",
+    }),
+
+    lateralDecubitusXrayFileName: z.string().optional().openapi({
+      description: "File name for the Lateral Decubitus X-Ray",
+    }),
+  })
+  .strict();
+
+export const ChestXRayUpdateResponseSchema = ChestXRayUpdateRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+});
+
 export const ImageUploadUrlRequestSchema = z.object({
   fileName: z.string().openapi({
     description: "Name of file on S3",

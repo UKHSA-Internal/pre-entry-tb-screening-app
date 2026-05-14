@@ -9,7 +9,7 @@ import { Application } from "../../shared/models/application";
 import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXrayDbOps } from "../models/chest-xray";
 import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
@@ -125,7 +125,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Arrange;
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const errorMessage = "Couldn't save it";
-    const chestXrayMock = vi.spyOn(ChestXRay, "createChestXray").mockImplementation(() => {
+    const chestXrayMock = vi.spyOn(ChestXrayDbOps, "createChestXray").mockImplementation(() => {
       throw new Error(errorMessage);
     });
     const existingChestXray = seededChestXray[0];

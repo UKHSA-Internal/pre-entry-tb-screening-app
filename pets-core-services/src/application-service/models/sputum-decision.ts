@@ -99,10 +99,6 @@ export class SputumDecisionDbOps {
 
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  // private constructor(details: ISputumDecision) {
-  //   super(details);
-  // }
-
   static todbItem(sputumDecision: SputumDecision) {
     const dbItem = {
       ...sputumDecision,

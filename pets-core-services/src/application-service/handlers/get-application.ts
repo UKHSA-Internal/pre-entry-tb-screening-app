@@ -4,7 +4,7 @@ import { ApplicantDbOps } from "../../shared/models/applicant";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { ApplicantPhoto } from "../models/applicant-photo";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXrayDbOps } from "../models/chest-xray";
 import { MedicalScreeningDbOps } from "../models/medical-screening";
 import { RadiologicalOutcome } from "../models/radiological-outcome";
 import { SputumDecisionDbOps } from "../models/sputum-decision";
@@ -40,7 +40,7 @@ export const getApplicationHandler = async (event: PetsAPIGatewayProxyEvent) => 
     );
     const travelInformation = await TravelInformationDbOps.getByApplicationId(applicationId);
     const medicalScreening = await MedicalScreeningDbOps.getByApplicationId(applicationId);
-    const chestXray = await ChestXRay.getByApplicationId(applicationId);
+    const chestXray = await ChestXrayDbOps.getByApplicationId(applicationId);
     const sputumDecision = await SputumDecisionDbOps.getByApplicationId(applicationId);
     const sputumDetails = await SputumDetailsDbOps.getByApplicationId(applicationId);
     const tbCertificate = await TbCertificateDbOps.getByApplicationId(applicationId);

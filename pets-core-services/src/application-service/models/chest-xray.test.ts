@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
-import { ChestXRay, NewChestXRay } from "./chest-xray";
+import { ChestXrayDbOps, NewChestXray } from "./chest-xray";
 
 describe("Test for Chest X-Ray Db Ops Class", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -13,10 +13,10 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     ddbMock.reset();
   });
 
-  const newChestXray: NewChestXRay = {
+  const newChestXray: NewChestXray = {
     applicationId: "test-application-id",
     createdBy: "test-chest-xray-creator",
-    dateXrayTaken: "2025-05-05",
+    dateXrayTaken: new Date("2025-05-05"),
     posteroAnteriorXrayFileName: "posterior-anterior.dicom",
     posteroAnteriorXray: "saved/bucket/path/for/posterior/anterior",
     apicalLordoticXrayFileName: "apical-lordotic.dicom",
@@ -33,7 +33,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const chestXray = await ChestXRay.createChestXray(newChestXray);
+    const chestXray = await ChestXrayDbOps.createChestXray(newChestXray);
 
     // Assert
     expect(chestXray).toMatchObject({
@@ -72,7 +72,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     });
 
     // Act
-    const chestXray = await ChestXRay.getByApplicationId(newChestXray.applicationId);
+    const chestXray = await ChestXrayDbOps.getByApplicationId(newChestXray.applicationId);
 
     // Assert
     expect(chestXray).toMatchObject({
@@ -86,7 +86,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     ddbMock.on(GetCommand).rejects(Error("DB error"));
 
     // Act / Assert
-    await expect(ChestXRay.getByApplicationId(newChestXray.applicationId)).rejects.toThrow(
+    await expect(ChestXrayDbOps.getByApplicationId(newChestXray.applicationId)).rejects.toThrow(
       "DB error",
     );
     expect(errorLoggerMock).toHaveBeenCalledWith(Error("DB error"), "Error retrieving Chest X-ray");

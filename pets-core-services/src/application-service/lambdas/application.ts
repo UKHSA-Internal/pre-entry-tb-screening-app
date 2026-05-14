@@ -17,6 +17,7 @@ import { saveSputumDecisionHandler } from "../handlers/save-sputum-decision";
 import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler as createTravelInformationHandler } from "../handlers/save-travel-information";
+import { updateChestXRayHandler } from "../handlers/update-chest-ray";
 import { updateSputumDecisionHandler } from "../handlers/update-sputum-decision";
 import { updateTbCertificateHandler } from "../handlers/update-tb-certificate-details";
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
@@ -27,6 +28,8 @@ import {
   CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
+  ChestXRayUpdateRequestSchema,
+  ChestXRayUpdateResponseSchema,
   CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
   DashboardApplicationsSchema,
@@ -148,6 +151,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: ChestXRayResponseSchema.openapi({
       description: "Saved Chest Xray of an Applicant",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/chest-xray",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateClinicAndApplication)
+      .handler(updateChestXRayHandler),
+    requestBodySchema: ChestXRayUpdateRequestSchema.openapi({
+      description: "Chest Xray of an Applicant",
+    }),
+    responseSchema: ChestXRayUpdateResponseSchema.openapi({
+      description: "Updated Chest Xray of an Applicant",
     }),
   },
   {
