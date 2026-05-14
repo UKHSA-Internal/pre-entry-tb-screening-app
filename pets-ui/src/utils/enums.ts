@@ -36,7 +36,6 @@ export enum ApplicationStatus {
   RADIOLOGICAL_OUTCOME_IN_PROGRESS = "Radiological Outcome In Progress",
   SPUTUM_DECISION_IN_PROGRESS = "Sputum Decision In Progress",
   SPUTUM_IN_PROGRESS = "Sputum In Progress",
-  SPUTUM_RESULTS_IN_PROGRESS = "Sputum Results In Progress",
   CERTIFICATE_IN_PROGRESS = "Certificate In Progress",
 }
 

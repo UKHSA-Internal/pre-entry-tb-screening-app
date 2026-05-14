@@ -65,7 +65,6 @@ const getLinkText = (status: ApplicationStatus) => {
     case ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS:
       return "Continue: make a sputum decision";
     case ApplicationStatus.SPUTUM_IN_PROGRESS:
-    case ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS:
       return "Continue: sputum results";
     case ApplicationStatus.CERTIFICATE_IN_PROGRESS:
       return "Continue: TB certificate outcome";

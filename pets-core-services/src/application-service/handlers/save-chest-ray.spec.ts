@@ -160,7 +160,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "postero-anterior.dcm object key is invalid",
+      message: "Image validation failed: invalid object key",
     });
   });
 
@@ -184,7 +184,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "postero-anterior.dcm image does not exist",
+      message: "Image validation failed: image not found",
     });
   });
 

@@ -4,8 +4,7 @@ on:
   pull_request:
     paths:
       - "pets-core-services/src/shared/types/enum.ts"
-      - "scripts/applicant_migration/src/migration_script.py"
-      - "scripts/application_updates/src/update_application.py"
+      - "scripts/db_migrations/src/migrations.py"
       - ".github/workflows/validate-enums.yml"
 
 jobs:

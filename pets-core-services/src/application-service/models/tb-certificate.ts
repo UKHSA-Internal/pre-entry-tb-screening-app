@@ -62,7 +62,7 @@ export type ITbCertificateDetailsUpdate = {
   updatedBy: string;
 
   comments?: string;
-  physicianName: string;
+  physicianName?: string;
 };
 
 export type NewTbCertificateIssuedDetails = Omit<
@@ -116,7 +116,7 @@ export class TbCertificateDetailsUpdate {
   updatedBy: string;
 
   comments?: string;
-  physicianName: string;
+  physicianName?: string;
 
   constructor(details: ITbCertificateDetailsUpdate) {
     this.applicationId = details.applicationId;

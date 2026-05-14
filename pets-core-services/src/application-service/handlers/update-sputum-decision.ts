@@ -19,16 +19,29 @@ export const updateSputumDecisionHandler = async (event: UpdateSputumDecisionEve
     logger.info({ applicationId }, "Update Travel Information handler triggered");
 
     const { parsedBody } = event;
+    const { createdBy, superuser } = event.requestContext.authorizer;
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
 
       return HttpErrors.badRequest("Request event missing body");
     }
+    let validatedBody;
+    const validated = SputumDecisionRequestSchema.safeParse(parsedBody);
 
-    const { createdBy } = event.requestContext.authorizer;
+    if (superuser === "true") {
+      if (!validated.success) {
+        logger.error({ error: validated.error.flatten() }, "Validation failed");
+        return HttpErrors.validationError("Update Sputum Decision Request validation failed");
+      }
+      validatedBody = validated.data;
+    } else {
+      logger.error("Sputum Decision Request Update is not allowed");
+      return HttpErrors.unauthorized("Unauthorized");
+    }
+
     const sputumDecision: SputumDecisionUpdate = await SputumDecisionDbOps.updateSputumDecision({
-      ...parsedBody,
+      ...validatedBody,
       updatedBy: createdBy,
       applicationId,
     });
@@ -37,7 +50,7 @@ export const updateSputumDecisionHandler = async (event: UpdateSputumDecisionEve
       ...sputumDecision.toJson(),
     });
   } catch (err) {
-    logger.error(err, "Error updating travel information");
+    logger.error(err, "Error updating Sputum Decision");
     return HttpErrors.serverError("Something went wrong");
   }
 };

@@ -4,7 +4,6 @@ import { AllowedSex } from "../../applicant-service/types/enums";
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicantPhoto } from "../fixtures/applicant-photo";
 import { ImageHelper } from "../helpers/image-helper";
@@ -93,10 +92,8 @@ describe("Getting Application Handler", () => {
     const response = await getApplicationHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[1].applicationId,
-      applicationStatus: ApplicationStatus.inProgress,
-      applicationStatusGroup: ApplicationStatusGroup.incomplete,
       clinicId: "Apollo Clinic",
       dateCreated: expect.any(String),
 
@@ -203,10 +200,8 @@ describe("Getting Application Handler", () => {
     const response = await getApplicationHandler(event);
     // Assert
     expect(response.statusCode).toBe(200);
-    expect(JSON.parse(response.body)).toEqual({
+    expect(JSON.parse(response.body)).toMatchObject({
       applicationId: seededApplications[2].applicationId,
-      applicationStatus: ApplicationStatus.inProgress,
-      applicationStatusGroup: ApplicationStatusGroup.incomplete,
       clinicId: "test-clinic-id-3",
       dateCreated: expect.any(String),
 

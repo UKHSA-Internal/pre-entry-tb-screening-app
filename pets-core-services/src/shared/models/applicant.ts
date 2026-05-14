@@ -267,7 +267,6 @@ export class ApplicantDbOps {
 
       const pk = this.getPk(details.countryOfIssue, details.passportNumber);
       const sk = this.sk;
-
       // Clean up: remove undefined fields before building update expression
       const fieldsToUpdate = Object.entries(details).reduce(
         (acc, [key, value]) => {

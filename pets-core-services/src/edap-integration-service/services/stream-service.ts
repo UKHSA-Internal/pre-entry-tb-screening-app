@@ -13,7 +13,6 @@ class StreamService {
    * @param event
    */
   public static getClinicDataStream(record: DynamoDBRecord) {
-    logger.info(`record: ${JSON.stringify(record)}`);
     const dbrecord: StreamRecord["NewImage"] = {};
 
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
@@ -23,11 +22,10 @@ class StreamService {
         try {
           return unmarshall(newImage);
         } catch (error) {
-          logger.error({ error }, "unmarshall error");
-          logger.error({ record }, "error in record");
+          logger.error({ error }, `unmarshall error for the record: ${JSON.stringify(newImage)}`);
         }
       } else {
-        logger.info(record);
+        logger.info("No 'NewImage'");
       }
     } else {
       logger.info("event name was not of correct type");
