@@ -46,7 +46,7 @@ describe("integrationHandler", () => {
 
     sampleEvent = {
       Records: [sampleRecord],
-    } as DynamoDBStreamEvent;
+    };
   });
 
   test("processes a record successfully", async () => {

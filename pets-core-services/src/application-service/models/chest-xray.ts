@@ -71,7 +71,7 @@ export class ChestXRay extends IChestXRay {
         status: TaskStatus.completed,
       };
 
-      const chestXray = new ChestXRay(updatedDetails as IChestXRay);
+      const chestXray = new ChestXRay(updatedDetails);
 
       const dbItem = chestXray.todbItem();
       const params: PutCommandInput = {

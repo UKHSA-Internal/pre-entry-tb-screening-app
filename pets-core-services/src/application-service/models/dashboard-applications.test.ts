@@ -1,4 +1,4 @@
-import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -44,7 +44,7 @@ describe("Tests for Applications Model", () => {
           applicationStatusGroup: ApplicationStatusGroup.incomplete,
         },
       ],
-    } as unknown as QueryCommandOutput);
+    });
 
     //  Mock batch loader
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
@@ -94,7 +94,7 @@ describe("Tests for Applications Model", () => {
           applicationStatusGroup: ApplicationStatusGroup.incomplete,
         },
       ],
-    } as unknown as QueryCommandOutput);
+    });
 
     //  Mock batch loader
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
@@ -130,7 +130,7 @@ describe("Tests for Applications Model", () => {
           applicationStatusGroup: ApplicationStatusGroup.incomplete,
         },
       ],
-    } as unknown as QueryCommandOutput);
+    });
 
     //  Mock batch loader
     vi.spyOn(DynamoBatchLoader, "batchLoad").mockResolvedValue(
