@@ -57,7 +57,7 @@ const ChestXraySummary = () => {
       value: formatDateForDisplay(chestXrayData.dateXrayTaken),
       link: `/upload-chest-x-ray-images#${attributeToComponentId.dateXrayTaken}`,
       hiddenLabel: "date of X-ray",
-      enableForSuperUser: true,
+      enableForSuperUser: false,
     },
     {
       key: "Chest X-ray images",

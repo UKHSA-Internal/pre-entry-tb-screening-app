@@ -6,17 +6,19 @@ import { getDashboardApplications } from "@/api/api";
 import Container from "@/components/container/container";
 import Heading from "@/components/heading/heading";
 import LinkLabel from "@/components/linkLabel/LinkLabel";
+import NotificationBanner from "@/components/notificationBanner/notificationBanner";
 import Spinner from "@/components/spinner/spinner";
 import { clearApplicantDetails } from "@/redux/applicantSlice";
 import { setApplicationsInProgress } from "@/redux/applicationsInProgressSlice";
 import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
 import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
+import { selectUserDetails } from "@/redux/store";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
 import { setUserDetails } from "@/redux/userSlice";
@@ -27,6 +29,7 @@ import { getUserProperties } from "@/utils/userProperties";
 export default function TaskChoicePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const userData = useAppSelector(selectUserDetails);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -86,6 +89,13 @@ export default function TaskChoicePage() {
       useTwoThirdsColumn={false}
     >
       {isLoading && <Spinner />}
+      {userData.isSuperUser && (
+        <NotificationBanner
+          bannerTitle="Important"
+          bannerHeading="You are signed in as a super user"
+          bannerText="You have access to addidtional administrative feature. Changes might affect all users"
+        />
+      )}
       <Heading level={1} size="l" title="What do you need to do?" />
       <div className="dfe-grid-container">
         <div className="dfe-card">

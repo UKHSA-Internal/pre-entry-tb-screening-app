@@ -264,6 +264,12 @@ type PostedChestXrayDetailsType = {
   dateXrayTaken: string;
 };
 
+type UpdatedChestXrayDetailsType = {
+  posteroAnteriorXrayFileName?: string;
+  apicalLordoticXrayFileName?: string;
+  lateralDecubitusXrayFileName?: string;
+};
+
 type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
 
 // Radiological outcome types

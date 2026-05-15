@@ -21,6 +21,7 @@ import {
   ReceivedApplicationDetailsType,
   ReceivedApplicationInProgressType,
   ReceivedApplicationListType,
+  UpdatedChestXrayDetailsType,
   UpdateTbCertificateType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
@@ -167,6 +168,14 @@ export const postChestXrayDetails = async (
     `/application/${applicationId}/chest-xray?requireValidation=Yes`,
     chestXrayDetails,
   );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const putChestXrayDetails = async (
+  applicationId: string,
+  chestXrayDetails: UpdatedChestXrayDetailsType,
+) => {
+  const result = await petsApi.put(`/application/${applicationId}/chest-xray`, chestXrayDetails);
   return { status: result.status, statusText: result.statusText };
 };
 

@@ -57,6 +57,9 @@ export default function Header() {
           className="govuk-header__content"
           style={{ display: "flex", justifyContent: "flex-end" }}
         >
+          <span className="govuk-body-s" style={{ margin: 0, color: "white" }}>
+            <strong> {accounts[0]?.name}</strong>
+          </span>
           {accounts.length > 0 ? (
             <LinkLabel
               title="Sign out"

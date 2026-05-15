@@ -2,12 +2,14 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Controller, FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
+import { putChestXrayDetails } from "@/api/api";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
 import ErrorSummary from "@/components/errorSummary/errorSummary";
 import FileUpload from "@/components/fileUpload/fileUpload";
 import Heading from "@/components/heading/heading";
 import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
+import Summary from "@/components/summary/summary";
 import {
   setApicalLordoticXrayFile,
   setApicalLordoticXrayFileName,
@@ -18,11 +20,16 @@ import {
   setPosteroAnteriorXrayFileName,
 } from "@/redux/chestXraySlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplication, selectChestXray, selectMedicalScreening } from "@/redux/store";
+import {
+  selectApplication,
+  selectChestXray,
+  selectMedicalScreening,
+  selectUserDetails,
+} from "@/redux/store";
 import { DateType, ReduxChestXrayDetailsType } from "@/types";
-import { ButtonClass, ImageType } from "@/utils/enums";
+import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import { sendGoogleAnalyticsFormErrorEvent } from "@/utils/google-analytics-utils";
-import { validateXrayDate } from "@/utils/helpers";
+import { formatDateForDisplay, validateXrayDate } from "@/utils/helpers";
 import uploadFile from "@/utils/uploadFile";
 
 const DicomUploadModule = (
@@ -58,6 +65,9 @@ const ChestXrayForm = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const applicationData = useAppSelector(selectApplication);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
+  const userData = useAppSelector(selectUserDetails);
+  const isComplete = chestXrayData.status === TaskStatus.COMPLETE;
+  const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : chestXrayData.status;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -91,6 +101,24 @@ const ChestXrayForm = () => {
   const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
     setIsLoading(true);
 
+    if (
+      userData.isSuperUser &&
+      chestXrayData.status === TaskStatus.COMPLETE &&
+      applicationData.applicationId
+    ) {
+      try {
+        await putChestXrayDetails(applicationData.applicationId, {
+          posteroAnteriorXrayFileName: chestXrayData.posteroAnteriorXrayFileName,
+          lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName,
+          apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName,
+        });
+
+        navigate("/chest-xray-summary");
+      } catch (error) {
+        console.error(error);
+        navigate("/sorry-there-is-problem-with-service");
+      }
+    }
     if (PAFile && PAFileName) {
       const bucketPath = await uploadFile(
         PAFile,
@@ -155,36 +183,52 @@ const ChestXrayForm = () => {
           <div>
             {!!errorsToShow?.length && <ErrorSummary errorsToShow={errorsToShow} errors={errors} />}
             <Heading level={1} size="l" title="Upload chest X-ray images" />
-
-            <div ref={dateXrayTakenRef}>
-              <Controller
-                name="dateXrayTaken"
-                control={control}
-                defaultValue={{
-                  day: chestXrayData.dateXrayTaken.day,
-                  month: chestXrayData.dateXrayTaken.month,
-                  year: chestXrayData.dateXrayTaken.year,
-                }}
-                rules={{
-                  validate: (value: DateType) =>
-                    validateXrayDate(value, medicalScreeningData.completionDate),
-                }}
-                render={({ field: { value, onChange } }) => (
-                  <DateTextInput
-                    heading="When was the X-ray taken?"
-                    headingLevel={2}
-                    headingSize="m"
-                    hint="For example, 31 3 2025"
-                    value={value}
-                    setDateValue={onChange}
-                    id={"date-xray-taken"}
-                    autocomplete={false}
-                    showTodayYesterdayLinks
-                    errorMessage={errors?.dateXrayTaken?.message ?? ""}
-                  />
-                )}
+            {isComplete && userData.isSuperUser && (
+              <Summary
+                taskStatus={summaryStatus}
+                applicationStatus={applicationData.applicationStatus}
+                summaryElements={[
+                  {
+                    key: "Date of X-ray",
+                    value: formatDateForDisplay(chestXrayData.dateXrayTaken),
+                    hiddenLabel: "date of X-ray",
+                    enableForSuperUser: true,
+                  },
+                ]}
+                isSuperUser={userData.isSuperUser}
               />
-            </div>
+            )}
+            {!userData.isSuperUser && (
+              <div ref={dateXrayTakenRef}>
+                <Controller
+                  name="dateXrayTaken"
+                  control={control}
+                  defaultValue={{
+                    day: chestXrayData.dateXrayTaken.day,
+                    month: chestXrayData.dateXrayTaken.month,
+                    year: chestXrayData.dateXrayTaken.year,
+                  }}
+                  rules={{
+                    validate: (value: DateType) =>
+                      validateXrayDate(value, medicalScreeningData.completionDate),
+                  }}
+                  render={({ field: { value, onChange } }) => (
+                    <DateTextInput
+                      heading="When was the X-ray taken?"
+                      headingLevel={2}
+                      headingSize="m"
+                      hint="For example, 31 3 2025"
+                      value={value}
+                      setDateValue={onChange}
+                      id={"date-xray-taken"}
+                      autocomplete={false}
+                      showTodayYesterdayLinks
+                      errorMessage={errors?.dateXrayTaken?.message ?? ""}
+                    />
+                  )}
+                />
+              </div>
+            )}
 
             <Heading level={2} size="m" title="Upload X-ray images" />
             <p className="govuk-body">Upload a file</p>
