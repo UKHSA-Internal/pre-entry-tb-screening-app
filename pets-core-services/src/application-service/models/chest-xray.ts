@@ -7,6 +7,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
+import { buildUpdateExpression } from "../../shared/helpers/buildUpdateExpression";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
@@ -141,7 +142,7 @@ export class ChestXrayDbOps {
         status: TaskStatus.completed,
       };
 
-      const chestXray = new ChestXray(chestXrayDetails as IChestXray);
+      const chestXray = new ChestXray(chestXrayDetails);
 
       const dbItem = ChestXrayDbOps.todbItem(chestXray);
 
@@ -168,37 +169,13 @@ export class ChestXrayDbOps {
       logger.info("Update Chest Xray Details to DB");
       const pk = ChestXrayDbOps.getPk(details.applicationId);
       const sk = ChestXrayDbOps.sk;
-
-      // Clean up: remove undefined fields before building update expression
-      const fieldsToUpdate = Object.entries(details).reduce(
-        (acc, [key, value]) => {
-          if (value !== undefined) acc[key] = value;
-          return acc;
-        },
-        {} as Record<string, any>,
-      );
-
-      // Add audit fields
-      fieldsToUpdate["dateUpdated"] = new Date().toISOString();
-
-      // Build the UpdateExpression dynamically
-      const updateParts: string[] = [];
-      const ExpressionAttributeNames: Record<string, string> = {};
-      const ExpressionAttributeValues: Record<string, any> = {};
-
-      for (const [key, value] of Object.entries(fieldsToUpdate)) {
-        const nameKey = `#${key}`;
-        const valueKey = `:${key}`;
-        updateParts.push(`${nameKey} = ${valueKey}`);
-        ExpressionAttributeNames[nameKey] = key;
-        ExpressionAttributeValues[valueKey] = value;
-      }
-      const updateExpression = "SET " + updateParts.join(", ");
+      const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
+        buildUpdateExpression(details);
 
       const params: UpdateCommandInput = {
         TableName: ChestXrayDbOps.getTableName(),
         Key: { pk, sk },
-        UpdateExpression: updateExpression,
+        UpdateExpression,
         ExpressionAttributeNames,
         ExpressionAttributeValues,
         ReturnValues: "ALL_NEW", // Return updated item
