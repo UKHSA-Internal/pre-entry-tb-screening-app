@@ -53,7 +53,7 @@ describe("Authorizer Lambda", () => {
       context: {
         clinicId: "Apollo Clinic",
         createdBy: "johndoe@email.com",
-        superUser: "false",
+        superuser: "false",
       },
       policyDocument: {
         Statement: [
@@ -141,7 +141,7 @@ describe("Authorizer Lambda", () => {
       context: {
         clinicId: "Apollo Clinic",
         createdBy: "johndoe@email.com",
-        superUser: "false",
+        superuser: "false",
       },
       policyDocument: {
         Statement: [],

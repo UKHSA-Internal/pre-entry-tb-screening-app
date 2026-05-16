@@ -127,11 +127,11 @@ describe("Tests for Sputum Decision  Model", () => {
     vi.setSystemTime(expectedDateTime);
 
     // Act
-    const updatedTBCertDetails =
+    const updatedSputumDecision =
       await SputumDecisionDbOps.updateSputumDecision(updateSputumDecision);
 
     // Assert
-    expect(updatedTBCertDetails).toMatchObject({
+    expect(updatedSputumDecision).toMatchObject({
       ...updateSputumDecision,
       dateUpdated: new Date(expectedDateTime),
     });

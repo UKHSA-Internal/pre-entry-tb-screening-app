@@ -1,10 +1,10 @@
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
-import { ChestXrayDbOps, NewChestXray } from "./chest-xray";
+import { ChestXrayDbOps, NewChestXray, NewChestXrayUpdate } from "./chest-xray";
 
 describe("Test for Chest X-Ray Db Ops Class", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -23,6 +23,14 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     apicalLordoticXray: "saved/bucket/path/for/apical/lordotic",
     lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
     lateralDecubitusXray: "saved/bucket/path/for/lateral/decubitus",
+  };
+
+  const updatedChestXray: NewChestXrayUpdate = {
+    applicationId: "test-application-id",
+    updatedBy: "test-chest-xray-creator",
+    posteroAnteriorXrayFileName: "posterior-anterior.dicom",
+    apicalLordoticXrayFileName: "apical-lordotic.dicom",
+    lateralDecubitusXrayFileName: "lateral-decubitus.dicom",
   };
 
   test("Creating new X-ray record for Chest X-ray taken", async () => {
@@ -59,6 +67,36 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     });
   });
 
+  test("Updating  X-ray record details  for Chest X-ray taken", async () => {
+    // Arrange
+    const pk = "APPLICATION#test-application-id";
+    const sk = "APPLICATION#CHEST#XRAY";
+    // Arrange
+    ddbMock.on(UpdateCommand).resolves({
+      Attributes: {
+        ...updatedChestXray,
+        dateUpdated: "2025-03-04T00:00:00.000Z",
+      },
+    });
+    vi.useFakeTimers();
+    const expectedDateTime = "2025-03-04";
+    vi.setSystemTime(expectedDateTime);
+
+    // Act
+    const updatedChestXrayDetails = await ChestXrayDbOps.updateChestXray(updatedChestXray);
+
+    // Assert
+    expect(updatedChestXrayDetails).toMatchObject({
+      ...updatedChestXray,
+      dateUpdated: new Date(expectedDateTime),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(ddbMock.commandCalls(UpdateCommand)[0].firstArg.input).toMatchObject({
+      Key: { pk, sk },
+      TableName: "test-application-details",
+    });
+  });
   test("Getting taken X-ray by application ID", async () => {
     const dateCreated = "2025-02-07";
 
@@ -81,7 +119,7 @@ describe("Test for Chest X-Ray Db Ops Class", () => {
     });
   });
 
-  test("Handling error while getting Chest X-ray by applicationId", async () => {
+  test("Handling error while getting Chest X-ray details  by applicationId", async () => {
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     ddbMock.on(GetCommand).rejects(Error("DB error"));
 

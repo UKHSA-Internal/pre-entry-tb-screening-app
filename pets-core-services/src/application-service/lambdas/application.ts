@@ -17,7 +17,7 @@ import { saveSputumDecisionHandler } from "../handlers/save-sputum-decision";
 import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler as createTravelInformationHandler } from "../handlers/save-travel-information";
-import { updateChestXRayHandler } from "../handlers/update-chest-ray";
+import { updateChestXRayHandler } from "../handlers/update-chest-xray";
 import { updateSputumDecisionHandler } from "../handlers/update-sputum-decision";
 import { updateTbCertificateHandler } from "../handlers/update-tb-certificate-details";
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
