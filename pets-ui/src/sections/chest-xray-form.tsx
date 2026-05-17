@@ -198,7 +198,7 @@ const ChestXrayForm = () => {
                 isSuperUser={userData.isSuperUser}
               />
             )}
-            {!userData.isSuperUser && (
+            {(!isComplete || !userData.isSuperUser) && (
               <div ref={dateXrayTakenRef}>
                 <Controller
                   name="dateXrayTaken"
