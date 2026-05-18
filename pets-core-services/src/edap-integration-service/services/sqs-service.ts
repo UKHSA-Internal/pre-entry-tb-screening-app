@@ -1,9 +1,12 @@
+import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import {
   MessageAttributeValue,
   SendMessageCommand,
   SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -25,7 +28,7 @@ class SQService {
    * Send a message to EDAP integration queue
    * @param messageBody
    */
-  public sendDbStreamMessage(messageBody: string) {
+  public sendDbStreamMessage(messageBody: DynamoDBRecord) {
     logger.info("[SQS] Sending message");
     return this.sendMessage(
       messageBody,
@@ -49,7 +52,7 @@ class SQService {
    * Send a message to DLQ
    * @param messageBody
    */
-  public sendToDLQ(messageBody: string) {
+  public sendToDLQ(messageBody: DynamoDBRecord) {
     logger.info("[DLQ] Sending message");
 
     return this.sendMessage(
@@ -66,7 +69,7 @@ class SQService {
    * @param queueName - The queue name
    */
   private async sendMessage(
-    messageBody: string,
+    messageBody: DynamoDBRecord,
     queueName: string,
     queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
@@ -80,14 +83,18 @@ class SQService {
 
     const params: SendMessageCommandInput = {
       QueueUrl: queueUrl,
-      MessageBody: messageBody,
+      MessageBody: JSON.stringify(messageBody),
     };
 
     if (isFifo) {
-      // Add FIFO-specific fields
-      params.MessageGroupId = "default"; // can customize if you want different groups
-      params.MessageDeduplicationId = Date.now().toString(); // or use a UUID
+      const dynamoDB = messageBody.dynamodb;
+      const newImage = dynamoDB?.NewImage;
+      const data = newImage ? unmarshall(newImage as Record<string, AttributeValue>) : undefined;
+
+      params.MessageGroupId = `${data?.pk ?? dynamoDB?.ApproximateCreationDateTime}_${data?.sk ?? Date.now().toString()}`;
+      params.MessageDeduplicationId = Date.now().toString();
     }
+
     if (messageAttributes) {
       Object.assign(params, { MessageAttributes: messageAttributes });
     }
