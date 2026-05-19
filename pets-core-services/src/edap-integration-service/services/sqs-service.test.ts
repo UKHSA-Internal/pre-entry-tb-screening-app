@@ -102,8 +102,9 @@ describe("SQService", () => {
 
   it("adds FIFO parameters when queue ends with .fifo", async () => {
     process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+    const fifoMessage = { pk: "unique-pk", sk: "test-sk" };
 
-    await service.sendDbStreamMessage(dbRecord);
+    await service.sendDbStreamMessage(fifoMessage);
 
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
@@ -151,19 +152,14 @@ describe("SQService", () => {
     expect(cmd.input.QueueUrl).toContain("sqs-edap-integration-dlq");
   });
 
-  it("uses ApproximateCreationDateTime as MessageGroupId fallback for FIFO queue without NewImage", async () => {
+  it("uses timestamp as MessageGroupId sk fallback for FIFO queue when sk is absent", async () => {
     process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
-    const recordWithoutNewImage: DynamoDBRecord = {
-      ...dbRecord,
-      dynamodb: {
-        ApproximateCreationDateTime: 1234567890,
-      },
-    };
+    const messageWithoutSk = { pk: "unique-pk" };
 
-    await service.sendDbStreamMessage(recordWithoutNewImage);
+    await service.sendDbStreamMessage(messageWithoutSk);
 
     const cmd = sendSpy.mock.calls[0][0];
-    expect(cmd.input.MessageGroupId).toMatch(/^1234567890_\d+$/);
+    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+$/);
     expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
 });
