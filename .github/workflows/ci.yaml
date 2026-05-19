@@ -84,6 +84,13 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Start Local Environment
         run: |
           pnpm start & sleep 120

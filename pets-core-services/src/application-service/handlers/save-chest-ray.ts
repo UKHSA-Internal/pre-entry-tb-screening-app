@@ -94,11 +94,11 @@ async function validateImages(images: ChestXRayImages, applicationId: string, cl
     }
     if (error instanceof InvalidObjectKey) {
       logger.error(error, "Object key does not match expected");
-      return error.message;
+      return "Image validation failed: invalid object key";
     }
     if (error instanceof ObjectNotFound) {
       logger.error(error, "Object not found in S3");
-      return error.message;
+      return "Image validation failed: image not found";
     }
     throw error;
   }
