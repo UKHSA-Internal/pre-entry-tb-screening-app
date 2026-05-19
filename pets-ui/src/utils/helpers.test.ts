@@ -361,14 +361,62 @@ describe("spreadIfNotEmpty", () => {
 });
 
 describe("logError", () => {
-  test("should call console.error twice", () => {
-    const consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  let consoleMock: ReturnType<typeof vi.spyOn<typeof console, "error">>;
 
+  beforeEach(() => {
+    consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    consoleMock.mockRestore();
+  });
+
+  test("should call console.error twice", () => {
     const error = new Error("dummy error");
     const info = { componentStack: "info" };
     logError(error, info);
 
     expect(consoleMock).toHaveBeenCalledTimes(2);
+  });
+
+  test("should log the error object as the second argument of the first call", () => {
+    const error = new Error("dummy error");
+    const info = { componentStack: "info" };
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenNthCalledWith(1, "Error: + ", error);
+  });
+
+  test("should log serialised info in the second call", () => {
+    const error = new Error("dummy error");
+    const info = { componentStack: "info" };
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenNthCalledWith(2, `Info: + ${JSON.stringify(info)}`);
+  });
+
+  test("should handle non-Error values (e.g. a string)", () => {
+    const error = "something went wrong";
+    const info = { componentStack: "info" };
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenNthCalledWith(1, "Error: + ", error);
+  });
+
+  test("should handle null componentStack", () => {
+    const error = new Error("dummy error");
+    const info = { componentStack: null };
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenNthCalledWith(2, `Info: + ${JSON.stringify(info)}`);
+  });
+
+  test("should handle undefined componentStack", () => {
+    const error = new Error("dummy error");
+    const info = {};
+    logError(error, info);
+
+    expect(consoleMock).toHaveBeenNthCalledWith(2, `Info: + ${JSON.stringify(info)}`);
   });
 });
 

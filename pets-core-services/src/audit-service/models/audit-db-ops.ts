@@ -99,7 +99,7 @@ export class AuditDbOps {
         updatedBy: email ?? "",
         eventType: record.eventName,
         // Application (App/API) - Application, API (for IOM) or Console
-        source: source ? source : SourceType.app,
+        source: source || SourceType.app,
         // applicant-details / application-details
         sourceTable: tableName,
         changeDetails: oldImage
