@@ -115,7 +115,7 @@ describe("init", () => {
         test("should successfully add the records to the queue", () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
           const sendMessagePromises: Array<Promise<any | SendMessageCommandOutput>> = [];
-          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
+          sendMessagePromises.push(sqService.sendDbStreamMessage(processedEvent as DynamoDBRecord));
           return Promise.all(sendMessagePromises).catch((error: any) => {
             expect(error).toBeInstanceOf(Error);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -133,7 +133,7 @@ describe("init", () => {
             }),
           );
 
-          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
+          sendMessagePromises.push(sqService.sendDbStreamMessage(processedEvent as DynamoDBRecord));
 
           expect.assertions(0);
           return Promise.all(sendMessagePromises).catch((error: any) => {

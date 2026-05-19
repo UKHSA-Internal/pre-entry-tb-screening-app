@@ -1,7 +1,25 @@
 import { SendMessageCommand, SendMessageCommandOutput, SQSClient } from "@aws-sdk/client-sqs";
+import { DynamoDBRecord } from "aws-lambda";
 import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
 import { SQService } from "./sqs-service";
+
+const dbRecord: DynamoDBRecord = {
+  awsRegion: "eu-west-1",
+  dynamodb: {
+    NewImage: {
+      pk: { S: "unique-pk" },
+      sk: { S: "test-sk" },
+      dateCreated: { S: "2025-05-05" },
+    },
+  },
+  eventID: "event-id",
+  eventName: "INSERT",
+  eventSource: "event-source",
+  eventSourceARN: "ARN::sth",
+  eventVersion: "v.1.0",
+  userIdentity: "user-identity",
+};
 
 vi.mock("../../shared/logger", () => ({
   logger: {
@@ -67,7 +85,7 @@ describe("SQService", () => {
   });
 
   it("sends message to integration queue (standard)", async () => {
-    await service.sendDbStreamMessage("hello");
+    await service.sendDbStreamMessage(dbRecord);
 
     expect(sendSpy).toHaveBeenCalledTimes(1);
     const cmd = sendSpy.mock.calls[0][0];
@@ -76,24 +94,24 @@ describe("SQService", () => {
     expect(input.QueueUrl).toBe(
       "https://sqs.eu-west-2.amazonaws.com/111111111111/sqs-edap-integration",
     );
-    expect(input.MessageBody).toBe("hello");
+    expect(input.MessageBody).toEqual(JSON.stringify(dbRecord));
     expect(input.MessageGroupId).toBeUndefined();
   });
 
   it("adds FIFO parameters when queue ends with .fifo", async () => {
     process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
 
-    await service.sendDbStreamMessage("fifo-test");
+    await service.sendDbStreamMessage(dbRecord);
 
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
 
-    expect(input.MessageGroupId).toBe("default");
+    expect(input.MessageGroupId).toBe("unique-pk_test-sk");
     expect(input.MessageDeduplicationId).toBeDefined();
   });
 
   it("sends message to DLQ with correct URL", async () => {
-    await service.sendToDLQ("dlq-message");
+    await service.sendToDLQ(dbRecord);
 
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
@@ -101,6 +119,6 @@ describe("SQService", () => {
     expect(input.QueueUrl).toBe(
       "https://sqs.eu-west-2.amazonaws.com/111111111111/sqs-edap-integration-dlq",
     );
-    expect(input.MessageBody).toBe("dlq-message");
+    expect(input.MessageBody).toContain("unique-pk");
   });
 });
