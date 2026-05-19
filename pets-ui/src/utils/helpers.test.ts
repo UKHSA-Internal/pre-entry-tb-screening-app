@@ -1,3 +1,5 @@
+import type { MockInstance } from "vitest";
+
 import { ReduxApplicationDetailsType } from "@/types";
 
 import { ApplicationStatus } from "./enums";
@@ -361,7 +363,7 @@ describe("spreadIfNotEmpty", () => {
 });
 
 describe("logError", () => {
-  let consoleMock: ReturnType<typeof vi.spyOn<typeof console, "error">>;
+  let consoleMock: MockInstance<typeof console.error>;
 
   beforeEach(() => {
     consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
