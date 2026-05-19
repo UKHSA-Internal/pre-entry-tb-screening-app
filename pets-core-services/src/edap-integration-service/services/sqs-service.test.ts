@@ -2,6 +2,7 @@ import { SendMessageCommand, SendMessageCommandOutput, SQSClient } from "@aws-sd
 import { DynamoDBRecord } from "aws-lambda";
 import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 
+import { logger } from "../../shared/logger";
 import { SQService } from "./sqs-service";
 
 const dbRecord: DynamoDBRecord = {
@@ -24,6 +25,7 @@ const dbRecord: DynamoDBRecord = {
 vi.mock("../../shared/logger", () => ({
   logger: {
     info: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -120,5 +122,48 @@ describe("SQService", () => {
       "https://sqs.eu-west-2.amazonaws.com/111111111111/sqs-edap-integration-dlq",
     );
     expect(input.MessageBody).toContain("unique-pk");
+  });
+
+  it("uses AWS_ACCOUNT_ID for uat environment", () => {
+    process.env.ENVIRONMENT = "uat";
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const accountId = (service as any).getAWSAccountIdForEDAP();
+    expect(accountId).toBe("111111111111");
+  });
+
+  it("logs info when sending to integration queue", async () => {
+    await service.sendDbStreamMessage(dbRecord);
+    expect(logger.info).toHaveBeenCalledWith("[SQS] Sending message");
+  });
+
+  it("logs info when sending to DLQ", async () => {
+    await service.sendToDLQ(dbRecord);
+    expect(logger.info).toHaveBeenCalledWith("[DLQ] Sending message");
+  });
+
+  it("DLQ always uses AWS_ACCOUNT_ID even in prod environment", async () => {
+    process.env.ENVIRONMENT = "prod";
+    await service.sendToDLQ(dbRecord);
+
+    const cmd = sendSpy.mock.calls[0][0];
+    // DLQ hardcodes AWS_ACCOUNT_ID (111111111111), not EDAP account (222222222222)
+    expect(cmd.input.QueueUrl).toContain("111111111111");
+    expect(cmd.input.QueueUrl).toContain("sqs-edap-integration-dlq");
+  });
+
+  it("uses ApproximateCreationDateTime as MessageGroupId fallback for FIFO queue without NewImage", async () => {
+    process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+    const recordWithoutNewImage: DynamoDBRecord = {
+      ...dbRecord,
+      dynamodb: {
+        ApproximateCreationDateTime: 1234567890,
+      },
+    };
+
+    await service.sendDbStreamMessage(recordWithoutNewImage);
+
+    const cmd = sendSpy.mock.calls[0][0];
+    expect(cmd.input.MessageGroupId).toMatch(/^1234567890_\d+$/);
+    expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
 });
