@@ -45,7 +45,7 @@ describe("handler Function", () => {
         console.error(e);
       }
 
-      expect(sendDbStreamMessage).toHaveBeenCalledWith(JSON.stringify(result));
+      expect(sendDbStreamMessage).toHaveBeenCalledWith(result);
       expect(sendDbStreamMessage).toHaveBeenCalledTimes(1);
     });
   });
