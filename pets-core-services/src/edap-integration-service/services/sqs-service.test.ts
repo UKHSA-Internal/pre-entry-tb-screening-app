@@ -162,4 +162,16 @@ describe("SQService", () => {
     expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+$/);
     expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
+
+  it("rejects when SQS client throws during sendDbStreamMessage", async () => {
+    sendSpy.mockRejectedValueOnce(new Error("SQS network error"));
+
+    await expect(service.sendDbStreamMessage(dbRecord)).rejects.toThrow("SQS network error");
+  });
+
+  it("rejects when SQS client throws during sendToDLQ", async () => {
+    sendSpy.mockRejectedValueOnce(new Error("DLQ network error"));
+
+    await expect(service.sendToDLQ(dbRecord)).rejects.toThrow("DLQ network error");
+  });
 });

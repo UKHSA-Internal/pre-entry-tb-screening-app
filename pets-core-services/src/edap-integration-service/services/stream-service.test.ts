@@ -94,6 +94,34 @@ describe("init", () => {
       });
     });
 
+    describe("when fetching data stream and the eventName is REMOVE", () => {
+      test("should log 'event name was not of correct type'", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithRemove: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "REMOVE",
+        };
+        StreamService.getClinicDataStream(recordWithRemove);
+        expect(loggerMock).toHaveBeenCalledWith("event name was not of correct type");
+        loggerMock.mockRestore();
+      });
+    });
+
+    describe("when fetching data stream and the dynamodb property is undefined", () => {
+      test("should log 'No NewImage' and return undefined", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithoutDynamoDB: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "INSERT",
+          dynamodb: undefined,
+        };
+        const result = StreamService.getClinicDataStream(recordWithoutDynamoDB);
+        expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
+        expect(result).toBeUndefined();
+        loggerMock.mockRestore();
+      });
+    });
+
     describe("when unmarshall throws an error for the record", () => {
       test("should log the error and return empty object", () => {
         const loggerErrorMock = vi.spyOn(logger, "error").mockImplementation(() => null);
