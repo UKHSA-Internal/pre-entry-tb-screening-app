@@ -84,27 +84,28 @@ const ApplicantSearchForm = () => {
     let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
     try {
       applicantRes = await getApplicants(passportDetails);
-      for (const application of applicantRes.data.applications) {
-        const applicationId = application.applicationId;
-        if (!uuidValidate(application.applicationId)) {
-          throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+      if (applicantRes.status == 200) {
+        if (!applicantRes.data || Object.keys(applicantRes.data).length === 0) {
+          await fetchClinic(dispatch);
+          navigate("/no-visa-applicant-found");
+          return;
         }
-        if (inProgressStatuses.includes(application.applicationStatus)) {
-          application.applicationStatus = ApplicationStatus.IN_PROGRESS;
+        for (const application of applicantRes.data.applications) {
+          const applicationId = application.applicationId;
+          if (!uuidValidate(application.applicationId)) {
+            throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+          }
+          if (inProgressStatuses.includes(application.applicationStatus)) {
+            application.applicationStatus = ApplicationStatus.IN_PROGRESS;
+          }
         }
+        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+        dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
       }
-      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
-      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
     } catch (error) {
-      if (axios.isAxiosError(error) && error.status == 404) {
-        await fetchClinic(dispatch);
-        navigate("/no-visa-applicant-found");
-        return;
-      } else {
-        console.error(error);
-        navigate("/sorry-there-is-problem-with-service");
-        return;
-      }
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
     }
 
     try {
