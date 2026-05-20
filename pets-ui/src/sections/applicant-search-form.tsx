@@ -85,7 +85,7 @@ const ApplicantSearchForm = () => {
     try {
       applicantRes = await getApplicants(passportDetails);
       if (applicantRes.status == 200) {
-        if (!applicantRes.data) {
+        if (!applicantRes.data || Object.keys(applicantRes.data).length === 0) {
           await fetchClinic(dispatch);
           navigate("/no-visa-applicant-found");
           return;
