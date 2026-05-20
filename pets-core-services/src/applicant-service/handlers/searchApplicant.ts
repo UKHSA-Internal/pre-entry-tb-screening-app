@@ -36,7 +36,10 @@ export const searchApplicantHandler = async (event: SearchApplicantEvent) => {
 
     // Fetch an applicant
     const applicant = await ApplicantDbOps.findByPassportId(countryOfIssue, passportNumber);
-    if (!applicant) return HttpErrors.notFound("Applicant does not exist");
+    if (!applicant) {
+      logger.info("Applicant does not exist");
+      return HttpResponses.ok({});
+    }
 
     // Fetch the applications created for the applicant
 
