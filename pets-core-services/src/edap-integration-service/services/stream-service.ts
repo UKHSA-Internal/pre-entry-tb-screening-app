@@ -30,8 +30,6 @@ class StreamService {
     } else {
       logger.error("event name was not of correct type");
     }
-
-    return;
   }
 }
 
