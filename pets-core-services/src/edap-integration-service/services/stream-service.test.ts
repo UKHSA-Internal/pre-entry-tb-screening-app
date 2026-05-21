@@ -59,7 +59,7 @@ describe("init", () => {
 
     describe("when fetching data stream and the eventName is other than INSERT or MODIFY", () => {
       test("should create appropriate message about it", () => {
-        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
         // @ts-expect-error ignore
         event.Records[0].eventName = "OTHER?";
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
@@ -68,7 +68,7 @@ describe("init", () => {
     });
     describe("when fetching data stream and there is no NewImage", () => {
       test("should log 'No NewImage' and return empty object", () => {
-        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
         const recordWithoutNewImage: DynamoDBRecord = {
           ...event.Records[0],
           eventName: "INSERT",
@@ -76,13 +76,13 @@ describe("init", () => {
         };
         const result = StreamService.getClinicDataStream(recordWithoutNewImage);
         expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
-        expect(result).toEqual({});
+        expect(result).toBeUndefined();
       });
     });
 
     describe("when fetching data stream with MODIFY event and no NewImage", () => {
       test("should log 'No NewImage' and return empty object", () => {
-        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
         const recordWithoutNewImage: DynamoDBRecord = {
           ...event.Records[0],
           eventName: "MODIFY",
@@ -90,13 +90,42 @@ describe("init", () => {
         };
         const result = StreamService.getClinicDataStream(recordWithoutNewImage);
         expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
-        expect(result).toEqual({});
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe("when fetching data stream and the eventName is REMOVE", () => {
+      test("should log 'event name was not of correct type'", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithRemove: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "REMOVE",
+        };
+        StreamService.getClinicDataStream(recordWithRemove);
+        expect(loggerMock).toHaveBeenCalledWith("event name was not of correct type");
+        loggerMock.mockRestore();
+      });
+    });
+
+    describe("when fetching data stream and the dynamodb property is undefined", () => {
+      test("should log 'No NewImage' and return undefined", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithoutDynamoDB: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "INSERT",
+          dynamodb: undefined,
+        };
+        const result = StreamService.getClinicDataStream(recordWithoutDynamoDB);
+        expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
+        expect(result).toBeUndefined();
+        loggerMock.mockRestore();
       });
     });
 
     describe("when unmarshall throws an error for the record", () => {
       test("should log the error and return empty object", () => {
         const loggerErrorMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        loggerErrorMock.mockClear();
         vi.mocked(dynamoUtils.unmarshall).mockImplementationOnce(() => {
           throw new Error("Invalid DynamoDB data");
         });
@@ -112,7 +141,7 @@ describe("init", () => {
         const [firstArg, secondArg] = loggerErrorMock.mock.calls[0] as [{ error: unknown }, string];
         expect(firstArg.error).toBeInstanceOf(Error);
         expect(secondArg).toContain("unmarshall error");
-        expect(result).toEqual({});
+        expect(result).toBeUndefined();
       });
     });
   });

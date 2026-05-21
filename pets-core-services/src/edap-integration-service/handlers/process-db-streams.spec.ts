@@ -40,13 +40,17 @@ describe("integrationHandler", () => {
       eventSource: "aws:dynamodb",
       awsRegion: "us-east-1",
       dynamodb: {
-        applicationId: "123",
+        NewImage: {
+          pk: { S: "pk-one" },
+          sk: { S: "sk-one" },
+          applicationId: { S: "123" },
+        },
       },
-    } as unknown as DynamoDBRecord;
+    };
 
     sampleEvent = {
       Records: [sampleRecord],
-    } as DynamoDBStreamEvent;
+    };
   });
 
   test("processes a record successfully", async () => {
@@ -77,7 +81,7 @@ describe("integrationHandler", () => {
     expect(result.batchItemFailures).toHaveLength(1);
     expect(sendToDLQMock).toHaveBeenCalledTimes(1);
     // newRecord is {} (its initial value) because getClinicDataStream threw before assignment completed
-    expect(sendToDLQMock).toHaveBeenCalledWith({});
+    expect(sendToDLQMock).toHaveBeenCalledWith(sampleRecord);
     expect(logger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "ERROR");
     expect(logger.error).toHaveBeenCalledWith({ newRecord: {} }, "ERROR in the record");
     expect(logger.error).toHaveBeenCalledWith("Errors: 1");
@@ -113,7 +117,7 @@ describe("integrationHandler", () => {
     });
     expect(result.batchItemFailures).toHaveLength(1);
     // newRecord = processedData because getClinicDataStream succeeded before sendDbStreamMessage threw
-    expect(sendToDLQMock).toHaveBeenCalledWith(processedData);
+    expect(sendToDLQMock).toHaveBeenCalledWith(sampleRecord);
     expect(logger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "ERROR");
     expect(logger.error).toHaveBeenCalledWith("Errors: 1");
   });
