@@ -5,6 +5,7 @@ description = "Clinic data loader and tests for UKHSA internal use."
 authors = ["UKHSA"]
 requires-python = ">=3.9,<3.10"
 dependencies = [
+    "Pygments>=2.20.0",
     "boto3>=1.42.67",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
