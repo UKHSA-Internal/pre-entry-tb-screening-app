@@ -316,7 +316,7 @@ describe("ApplicantSearchForm", () => {
     );
     const user = userEvent.setup();
 
-    mock.onGet("/applicant/search").reply(404);
+    mock.onGet("/applicant/search").reply(200);
 
     await user.type(screen.getByTestId("passport-number"), "12345");
     const countryDropdown = screen.getByRole("combobox");
