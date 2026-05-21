@@ -118,7 +118,10 @@ const CheckApplicantPhoto = () => {
             errorMessage={(errors?.confirmPhoto?.message as string) ?? ""}
             formValue="confirmPhoto"
             required="Select if you want to add this photo"
-            divStyle={{ marginTop: 40 }}
+            heading="Is this photo correct?"
+            headingLevel={2}
+            headingSize="m"
+            headingStyle={{ marginTop: 10 }}
           />
 
           <p className="govuk-body">
