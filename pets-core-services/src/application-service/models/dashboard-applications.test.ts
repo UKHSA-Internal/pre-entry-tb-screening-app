@@ -1,15 +1,14 @@
-import { QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
 import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { DynamoBatchLoader } from "../helpers/dynamo-batch-util";
 import { DashboardApplication } from "./dashboard-applications";
 
 describe("Tests for Applications Model", () => {
-  const ddbMock = mockClient(awsClients.dynamoDBDocClient);
+  const ddbMock = mockClient(DynamoDBDocumentClient);
   //  Mock logger
   vi.mock("../logger", () => ({
     logger: {
