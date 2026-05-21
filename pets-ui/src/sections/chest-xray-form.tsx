@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Controller, FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 
 import { putChestXrayDetails } from "@/api/api";
 import DateTextInput from "@/components/dateTextInput/dateTextInput";
@@ -70,6 +70,8 @@ const ChestXrayForm = () => {
   const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : chestXrayData.status;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromParam = searchParams.get("from");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -98,8 +100,45 @@ const ChestXrayForm = () => {
     }
   }, [errorsToShow]);
 
-  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (chestXrayData) => {
+  const onSubmit: SubmitHandler<ReduxChestXrayDetailsType> = async (data) => {
     setIsLoading(true);
+
+    let PABucketPath: string | undefined = undefined;
+    let ALBucketPath: string | undefined = undefined;
+    let LDBucketPath: string | undefined = undefined;
+
+    if (PAFile && PAFileName) {
+      PABucketPath = await uploadFile(
+        PAFile,
+        "postero-anterior.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
+      dispatch(setPosteroAnteriorXrayFile(PABucketPath));
+      dispatch(setPosteroAnteriorXrayFileName(PAFileName));
+    }
+
+    if (ALFile && ALFileName) {
+      ALBucketPath = await uploadFile(
+        ALFile,
+        "apical-lordotic.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
+      dispatch(setApicalLordoticXrayFile(ALBucketPath));
+      dispatch(setApicalLordoticXrayFileName(ALFileName));
+    }
+
+    if (LDFile && LDFileName) {
+      LDBucketPath = await uploadFile(
+        LDFile,
+        "lateral-decubitus.dcm",
+        applicationData.applicationId,
+        ImageType.Dicom,
+      );
+      dispatch(setLateralDecubitusXrayFile(LDBucketPath));
+      dispatch(setLateralDecubitusXrayFileName(LDFileName));
+    }
 
     if (
       userData.isSuperUser &&
@@ -108,52 +147,24 @@ const ChestXrayForm = () => {
     ) {
       try {
         await putChestXrayDetails(applicationData.applicationId, {
-          posteroAnteriorXrayFileName: chestXrayData.posteroAnteriorXrayFileName,
-          lateralDecubitusXrayFileName: chestXrayData.lateralDecubitusXrayFileName,
-          apicalLordoticXrayFileName: chestXrayData.apicalLordoticXrayFileName,
+          posteroAnteriorXrayFileName: PAFileName,
+          apicalLordoticXrayFileName: ALFileName,
+          lateralDecubitusXrayFileName: LDFileName,
         });
 
-        navigate("/chest-xray-summary");
+        if (fromParam === "/check-chest-x-ray-images") {
+          navigate("/check-chest-x-ray-images");
+        } else {
+          navigate("/tb-certificate-summary");
+        }
       } catch (error) {
         console.error(error);
         navigate("/sorry-there-is-problem-with-service");
       }
+    } else {
+      dispatch(setDateXrayTaken(data.dateXrayTaken));
+      navigate("/check-chest-x-ray-images");
     }
-    if (PAFile && PAFileName) {
-      const bucketPath = await uploadFile(
-        PAFile,
-        "postero-anterior.dcm",
-        applicationData.applicationId,
-        ImageType.Dicom,
-      );
-      dispatch(setPosteroAnteriorXrayFile(bucketPath));
-      dispatch(setPosteroAnteriorXrayFileName(PAFileName));
-    }
-
-    if (ALFile && ALFileName) {
-      const bucketPath = await uploadFile(
-        ALFile,
-        "apical-lordotic.dcm",
-        applicationData.applicationId,
-        ImageType.Dicom,
-      );
-      dispatch(setApicalLordoticXrayFile(bucketPath));
-      dispatch(setApicalLordoticXrayFileName(ALFileName));
-    }
-
-    if (LDFile && LDFileName) {
-      const bucketPath = await uploadFile(
-        LDFile,
-        "lateral-decubitus.dcm",
-        applicationData.applicationId,
-        ImageType.Dicom,
-      );
-      dispatch(setLateralDecubitusXrayFile(bucketPath));
-      dispatch(setLateralDecubitusXrayFileName(LDFileName));
-    }
-
-    dispatch(setDateXrayTaken(chestXrayData.dateXrayTaken));
-    navigate("/check-chest-x-ray-images");
   };
 
   const location = useLocation();
