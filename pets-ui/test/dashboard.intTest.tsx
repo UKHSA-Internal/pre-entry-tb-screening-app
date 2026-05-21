@@ -235,7 +235,12 @@ describe("Dashboard", () => {
   it("table data displays correctly", () => {
     const preloadedState = {
       applicationsInProgress: applicationsInProgressSlice,
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -515,7 +520,12 @@ describe("Dashboard", () => {
           applicationStatus: ApplicationStatus.IN_PROGRESS,
         },
       ],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     const { store } = renderWithProviders(
@@ -554,6 +564,7 @@ describe("Dashboard", () => {
 
     mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
       applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+      clinicId: "my-clinic",
       applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
@@ -657,11 +668,23 @@ describe("Dashboard", () => {
       },
     });
 
+    mock.onGet("/clinics/my-clinic").reply(200, {
+      clinic: {
+        clinicId: "my-clinic",
+        name: "",
+        country: "",
+        city: "",
+        startDate: "",
+        createdBy: "",
+      },
+    });
+
     await user.click(screen.getByRole("link", { name: "Continue with screening" }));
 
     expect(mock.history[0].url).toEqual("/applicant/search");
     expect(mock.history[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
-    expect(mock.history).toHaveLength(2);
+    expect(mock.history[2].url).toEqual("/clinics/my-clinic");
+    expect(mock.history).toHaveLength(3);
 
     expect(store.getState().application).toMatchObject({
       applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
@@ -824,7 +847,7 @@ describe("Dashboard", () => {
       certificateNumber: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
       clinic: {
         city: "",
-        clinicId: "",
+        clinicId: "my-clinic",
         country: "",
         createdBy: "",
         name: "",
