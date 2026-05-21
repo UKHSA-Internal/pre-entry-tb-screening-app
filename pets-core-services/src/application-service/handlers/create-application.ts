@@ -15,7 +15,6 @@ export type SaveApplicationEvent = PetsAPIGatewayProxyEvent & {
 
 export const createApplicationHandler = async (event: SaveApplicationEvent) => {
   logger.info("Create application handler triggered");
-
   const { clinicId, createdBy } = event.requestContext.authorizer;
   const { parsedBody } = event;
 
