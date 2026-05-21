@@ -22,7 +22,24 @@ An electronic data capture system designed to address inconsistencies and fraud 
 
 ### Architecture
 
-This is currently available [here](.docs/architecture.pdf).
+See [docs/architecture/README.md](./docs/architecture/README.md) for a full system overview and component diagram. The original architecture diagram is also available as [docs/architecture.pdf](./docs/architecture.pdf).
+
+## Documentation
+
+| Topic | Link |
+|---|---|
+| Getting started (new developers) | [docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md) |
+| Architecture overview | [docs/architecture/README.md](./docs/architecture/README.md) |
+| Backend services (all 7) | [docs/backend-services/README.md](./docs/backend-services/README.md) |
+| API endpoint reference | [docs/api-reference/README.md](./docs/api-reference/README.md) |
+| Database schema & migrations | [docs/database/schema.md](./docs/database/schema.md) |
+| Deployment guide | [docs/deployment/README.md](./docs/deployment/README.md) |
+| Operational runbooks | [docs/operations/runbooks.md](./docs/operations/runbooks.md) |
+| Security guide | [docs/operations/security.md](./docs/operations/security.md) |
+| Troubleshooting | [docs/troubleshooting.md](./docs/troubleshooting.md) |
+| Contributing guidelines | [CONTRIBUTING.md](./CONTRIBUTING.md) |
+| AWS access | [docs/aws-access.md](./docs/aws-access.md) |
+| LocalStack configuration | [Localstack_config.md](./Localstack_config.md) |
 
 ### Monorepo Organization
 
@@ -64,6 +81,9 @@ Additional configs specific to a core service are defined in their directory
 
 ## Getting Started
 
+> For a comprehensive step-by-step setup guide, see [docs/GETTING-STARTED.md](./docs/GETTING-STARTED.md).
+> For common setup problems, see [docs/troubleshooting.md](./docs/troubleshooting.md).
+
 ### Supported Platforms
 
 - Mac
@@ -100,7 +120,7 @@ Additional configs specific to a core service are defined in their directory
 
   If Docker is installed, this command will return the installed Docker Engine version. If it is already installed, you can skip the next steps.
 
-  - Install Docker via Docker Desktop using the installation [guide](https://docs.docker.com/engine/install/). Please note this is blocked on Accenture laptops.
+  - Install Docker via Docker Desktop using the installation [guide](https://docs.docker.com/engine/install/). (Please note this is blocked on Accenture laptops)
 
   - Alternatively, install Rancher Desktop.
 
@@ -254,7 +274,7 @@ LOG_LEVEL=info
 
 Don't forget to remove afterwards🫣
 
-### Preloaded Test Data(Might be broken due to Authentication)
+### Preloaded Test Data (Might be broken due to Authentication)
 
 - Passport Number: ABC1234JANE
 - Country of Issue: Barbados
