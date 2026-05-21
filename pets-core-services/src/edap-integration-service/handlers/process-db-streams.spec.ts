@@ -40,13 +40,17 @@ describe("integrationHandler", () => {
       eventSource: "aws:dynamodb",
       awsRegion: "us-east-1",
       dynamodb: {
-        applicationId: "123",
+        NewImage: {
+          pk: { S: "pk-one" },
+          sk: { S: "sk-one" },
+          applicationId: { S: "123" },
+        },
       },
-    } as unknown as DynamoDBRecord;
+    };
 
     sampleEvent = {
       Records: [sampleRecord],
-    } as DynamoDBStreamEvent;
+    };
   });
 
   test("processes a record successfully", async () => {
@@ -59,8 +63,9 @@ describe("integrationHandler", () => {
     });
     expect(result.batchItemFailures).toHaveLength(0);
     expect(getClinicDataStreamMock).toHaveBeenCalledTimes(1);
-    expect(sendDbStreamMessageMock).toHaveBeenCalledWith(JSON.stringify({ applicationId: "1234" }));
+    expect(sendDbStreamMessageMock).toHaveBeenCalledWith({ applicationId: "1234" });
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining("successfully processed"));
+    expect(logger.info).toHaveBeenCalledWith("All processed successfully");
   });
 
   test("sends to DLQ on processing error", async () => {
@@ -75,8 +80,11 @@ describe("integrationHandler", () => {
     });
     expect(result.batchItemFailures).toHaveLength(1);
     expect(sendToDLQMock).toHaveBeenCalledTimes(1);
-    expect(sendToDLQMock).toHaveBeenCalledWith(JSON.stringify(sampleEvent.Records[0]));
+    // newRecord is {} (its initial value) because getClinicDataStream threw before assignment completed
+    expect(sendToDLQMock).toHaveBeenCalledWith(sampleRecord);
     expect(logger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "ERROR");
+    expect(logger.error).toHaveBeenCalledWith({ newRecord: {} }, "ERROR in the record");
+    expect(logger.error).toHaveBeenCalledWith("Errors: 1");
   });
 
   test("error in sending to DLQ throws", async () => {
@@ -96,5 +104,62 @@ describe("integrationHandler", () => {
     // @ts-expect-error testing bad input
     await expect(edapIntegrationHandler(undefined)).rejects.toThrow("ERROR: event is not defined");
     expect(logger.error).toHaveBeenCalledWith("ERROR: event is not defined.");
+  });
+
+  test("sends to DLQ when sendDbStreamMessage fails", async () => {
+    const processedData = { applicationId: "1234" };
+    getClinicDataStreamMock.mockReturnValue(processedData);
+    sendDbStreamMessageMock.mockRejectedValue(new Error("SQS error"));
+    sendToDLQMock.mockResolvedValue(undefined);
+
+    const result = await edapIntegrationHandler(sampleEvent, ctx, () => {
+      return;
+    });
+    expect(result.batchItemFailures).toHaveLength(1);
+    // newRecord = processedData because getClinicDataStream succeeded before sendDbStreamMessage threw
+    expect(sendToDLQMock).toHaveBeenCalledWith(sampleRecord);
+    expect(logger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "ERROR");
+    expect(logger.error).toHaveBeenCalledWith("Errors: 1");
+  });
+
+  test("handles multiple records with partial failure", async () => {
+    const secondRecord = {
+      ...sampleRecord,
+      eventID: "2",
+      dynamodb: { SequenceNumber: "seq-2" },
+    } as unknown as DynamoDBRecord;
+    const multiEvent: DynamoDBStreamEvent = { Records: [sampleRecord, secondRecord] };
+
+    getClinicDataStreamMock
+      .mockReturnValueOnce({ applicationId: "1" })
+      .mockImplementationOnce(() => {
+        throw new Error("Stream error");
+      });
+    sendDbStreamMessageMock.mockResolvedValue(undefined);
+    sendToDLQMock.mockResolvedValue(undefined);
+
+    const result = await edapIntegrationHandler(multiEvent, ctx, () => {
+      return;
+    });
+    expect(result.batchItemFailures).toHaveLength(1);
+    expect(result.batchItemFailures[0].itemIdentifier).toBe("seq-2");
+    expect(sendDbStreamMessageMock).toHaveBeenCalledTimes(1);
+    expect(sendToDLQMock).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith("Errors: 1");
+  });
+
+  test("logs DLQ error before rethrowing", async () => {
+    getClinicDataStreamMock.mockImplementation(() => {
+      throw new Error("Stream error");
+    });
+    const dlqError = new Error("DLQ failed");
+    sendToDLQMock.mockRejectedValue(dlqError);
+
+    await expect(
+      edapIntegrationHandler(sampleEvent, ctx, () => {
+        return;
+      }),
+    ).rejects.toThrow("Record can't be sent in the SQS/DLQ message");
+    expect(logger.error).toHaveBeenCalledWith(dlqError);
   });
 });

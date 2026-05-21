@@ -47,10 +47,13 @@ const edapIntegrationHandler: Handler = async (
     try {
       newRecord = StreamService.getClinicDataStream(record);
 
-      const stringifiedRecord = JSON.stringify(newRecord);
-      await sqService.sendDbStreamMessage(stringifiedRecord);
+      if (newRecord) {
+        await sqService.sendDbStreamMessage(newRecord);
 
-      logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
+        logger.info(`event ${record.dynamodb?.SequenceNumber} successfully processed`);
+      } else {
+        logger.error({ record }, "Unexpected record structure");
+      }
     } catch (error) {
       logger.error({ error }, "ERROR");
       logger.error({ newRecord }, "ERROR in the record");
@@ -58,7 +61,7 @@ const edapIntegrationHandler: Handler = async (
         itemIdentifier: record.dynamodb?.SequenceNumber ?? "",
       });
       try {
-        await sqService.sendToDLQ(JSON.stringify(record) ?? null);
+        await sqService.sendToDLQ(record);
       } catch (error) {
         logger.error(error);
         throw new Error("Record can't be sent in the SQS/DLQ message");

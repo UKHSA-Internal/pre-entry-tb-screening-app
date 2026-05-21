@@ -1,7 +1,7 @@
-import { vi } from "vitest";
+import { Mock, vi } from "vitest";
 
 // Mock function for the static method
-export const getClinicDataStreamMock = vi.fn();
+export const getClinicDataStreamMock: Mock = vi.fn();
 
 // Mocked StreamService class
 export class StreamService {

@@ -7,9 +7,19 @@ import {
   SendMessageCommandOutput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
+import * as dynamoUtils from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord, DynamoDBStreamEvent } from "aws-lambda";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+
+// Wrap unmarshall in a vi.fn so vi.mocked() can intercept it inside stream-service.ts
+vi.mock("@aws-sdk/util-dynamodb", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@aws-sdk/util-dynamodb")>();
+  return {
+    ...actual,
+    unmarshall: vi.fn(actual.unmarshall),
+  };
+});
 
 import { logger } from "../../shared/logger";
 import { applicationData } from "../tests/db-data/data-application";
@@ -49,7 +59,7 @@ describe("init", () => {
 
     describe("when fetching data stream and the eventName is other than INSERT or MODIFY", () => {
       test("should create appropriate message about it", () => {
-        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
         // @ts-expect-error ignore
         event.Records[0].eventName = "OTHER?";
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
@@ -58,7 +68,7 @@ describe("init", () => {
     });
     describe("when fetching data stream and there is no NewImage", () => {
       test("should log 'No NewImage' and return empty object", () => {
-        const loggerMock = vi.spyOn(logger, "info").mockImplementation(() => null);
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
         const recordWithoutNewImage: DynamoDBRecord = {
           ...event.Records[0],
           eventName: "INSERT",
@@ -66,7 +76,72 @@ describe("init", () => {
         };
         const result = StreamService.getClinicDataStream(recordWithoutNewImage);
         expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
-        expect(result).toEqual({});
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe("when fetching data stream with MODIFY event and no NewImage", () => {
+      test("should log 'No NewImage' and return empty object", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithoutNewImage: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "MODIFY",
+          dynamodb: {},
+        };
+        const result = StreamService.getClinicDataStream(recordWithoutNewImage);
+        expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe("when fetching data stream and the eventName is REMOVE", () => {
+      test("should log 'event name was not of correct type'", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithRemove: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "REMOVE",
+        };
+        StreamService.getClinicDataStream(recordWithRemove);
+        expect(loggerMock).toHaveBeenCalledWith("event name was not of correct type");
+        loggerMock.mockRestore();
+      });
+    });
+
+    describe("when fetching data stream and the dynamodb property is undefined", () => {
+      test("should log 'No NewImage' and return undefined", () => {
+        const loggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        const recordWithoutDynamoDB: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "INSERT",
+          dynamodb: undefined,
+        };
+        const result = StreamService.getClinicDataStream(recordWithoutDynamoDB);
+        expect(loggerMock).toHaveBeenCalledWith("No 'NewImage'");
+        expect(result).toBeUndefined();
+        loggerMock.mockRestore();
+      });
+    });
+
+    describe("when unmarshall throws an error for the record", () => {
+      test("should log the error and return empty object", () => {
+        const loggerErrorMock = vi.spyOn(logger, "error").mockImplementation(() => null);
+        loggerErrorMock.mockClear();
+        vi.mocked(dynamoUtils.unmarshall).mockImplementationOnce(() => {
+          throw new Error("Invalid DynamoDB data");
+        });
+        const recordWithNewImage: DynamoDBRecord = {
+          ...event.Records[0],
+          eventName: "INSERT",
+          dynamodb: {
+            NewImage: { pk: { S: "test" } },
+          },
+        };
+        const result = StreamService.getClinicDataStream(recordWithNewImage);
+        expect(loggerErrorMock).toHaveBeenCalledTimes(1);
+        const [firstArg, secondArg] = loggerErrorMock.mock.calls[0] as [{ error: unknown }, string];
+        expect(firstArg.error).toBeInstanceOf(Error);
+        expect(secondArg).toContain("unmarshall error");
+        expect(result).toBeUndefined();
       });
     });
   });
@@ -115,7 +190,7 @@ describe("init", () => {
         test("should successfully add the records to the queue", () => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-redundant-type-constituents
           const sendMessagePromises: Array<Promise<any | SendMessageCommandOutput>> = [];
-          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
+          sendMessagePromises.push(sqService.sendDbStreamMessage(processedEvent as DynamoDBRecord));
           return Promise.all(sendMessagePromises).catch((error: any) => {
             expect(error).toBeInstanceOf(Error);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -133,7 +208,7 @@ describe("init", () => {
             }),
           );
 
-          sendMessagePromises.push(sqService.sendDbStreamMessage(JSON.stringify(processedEvent)));
+          sendMessagePromises.push(sqService.sendDbStreamMessage(processedEvent as DynamoDBRecord));
 
           expect.assertions(0);
           return Promise.all(sendMessagePromises).catch((error: any) => {
