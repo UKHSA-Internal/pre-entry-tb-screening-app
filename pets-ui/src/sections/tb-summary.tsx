@@ -21,6 +21,7 @@ import {
   selectSputumDecision,
   selectTbCertificate,
   selectTravel,
+  selectUserDetails,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { ReduxApplicantDetailsType, ReduxTravelDetailsType } from "@/types";
@@ -36,11 +37,19 @@ import {
 } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
-const notIssuedLink = (isLocked: boolean, anchor: string): string | undefined =>
-  isLocked ? undefined : `/why-are-you-not-issuing-certificate#${anchor}`;
+const notIssuedLink = (
+  isLocked: boolean,
+  isSuperUser: boolean,
+  anchor: string,
+): string | undefined =>
+  isSuperUser || !isLocked ? `/why-are-you-not-issuing-certificate#${anchor}` : undefined;
 
-const clinicInfoLink = (isLocked: boolean, anchor: string): string | undefined =>
-  isLocked ? undefined : `/clinic-certificate-information#${anchor}`;
+const clinicInfoLink = (
+  isLocked: boolean,
+  isSuperUser: boolean,
+  anchor: string,
+): string | undefined =>
+  isSuperUser || !isLocked ? `/clinic-certificate-information#${anchor}` : undefined;
 
 const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);
@@ -53,6 +62,7 @@ const TbSummary = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
+  const userData = useAppSelector(selectUserDetails);
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -235,20 +245,34 @@ const TbSummary = () => {
         {
           key: "Reason for not issuing certificate",
           value: tbCertificateData.reasonNotIssued,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.reasonNotIssued),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.reasonNotIssued,
+          ),
           hiddenLabel: "Reason for not issuing certificate",
         },
         {
           key: "Declaring Physician's name",
           value: tbCertificateData.declaringPhysicianName,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.declaringPhysicianName,
+          ),
           hiddenLabel: "Declaring Physician's name",
+          enableForSuperUser: true,
         },
         {
           key: "Physician's comments",
           value: tbCertificateData.comments,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.comments),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.comments,
+          ),
           hiddenLabel: "Physician's comments",
+          enableForSuperUser: true,
         },
       ];
 
@@ -283,14 +307,24 @@ const TbSummary = () => {
         {
           key: "Declaring physician name",
           value: tbCertificateData.declaringPhysicianName,
-          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          link: clinicInfoLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.declaringPhysicianName,
+          ),
           hiddenLabel: "Declaring physician name",
+          enableForSuperUser: true,
         },
         {
           key: "Physician's notes",
           value: tbCertificateData.comments,
-          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.comments),
+          link: clinicInfoLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.comments,
+          ),
           hiddenLabel: "Physician's notes",
+          enableForSuperUser: true,
         },
       ]
     : [];
@@ -342,6 +376,7 @@ const TbSummary = () => {
               taskStatus={summaryStatus}
               applicationStatus={applicationData.applicationStatus}
               summaryElements={summaryData}
+              isSuperUser={userData.isSuperUser}
             />
 
             {currentAddressData.length > 0 && (
@@ -351,6 +386,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={currentAddressData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -362,6 +398,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={ukAddressData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -374,6 +411,7 @@ const TbSummary = () => {
                     taskStatus={summaryStatus}
                     applicationStatus={applicationData.applicationStatus}
                     summaryElements={certificateData}
+                    isSuperUser={userData.isSuperUser}
                   />
                 </div>
               </>
@@ -386,6 +424,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={screeningData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -412,6 +451,7 @@ const TbSummary = () => {
           taskStatus={summaryStatus}
           applicationStatus={applicationData.applicationStatus}
           summaryElements={summaryData}
+          isSuperUser={userData.isSuperUser}
         />
       )}
 

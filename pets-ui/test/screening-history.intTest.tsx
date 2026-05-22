@@ -156,7 +156,12 @@ describe("ScreeningHistory", () => {
   it("all applicantDataHeader fields & table column labels display correctly", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -195,7 +200,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
       applicationsList: [applicationInProgress],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -212,7 +222,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
       applicationsList: [applicationAtOtherClinic],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -247,7 +262,12 @@ describe("ScreeningHistory", () => {
         applicationCancelled,
         applicatioCertExpired,
       ],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -293,7 +313,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
       applicationsList: [applicationInProgress],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     const { store } = renderWithProviders(
@@ -351,7 +376,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
       applicationsList: [applicationInProgress],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -390,7 +420,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: populatedApplicantSlice,
       applicationsList: [applicationInProgress],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     const { store } = renderWithProviders(
@@ -427,7 +462,12 @@ describe("ScreeningHistory", () => {
     const preloadedState = {
       applicant: { ...populatedApplicantSlice, status: TaskStatus.COMPLETE },
       applicationsList: [applicationCancelled],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(

@@ -7,7 +7,7 @@ import Button from "@/components/button/button";
 import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplication, selectTravel } from "@/redux/store";
+import { selectApplication, selectTravel, selectUserDetails } from "@/redux/store";
 import { setTravelDetailsStatus } from "@/redux/travelSlice";
 import { ButtonClass, TaskStatus } from "@/utils/enums";
 import { attributeToComponentId } from "@/utils/records";
@@ -15,6 +15,7 @@ import { attributeToComponentId } from "@/utils/records";
 const TravelReview = () => {
   const applicationData = useAppSelector(selectApplication);
   const travelData = useAppSelector(selectTravel);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -101,6 +102,7 @@ const TravelReview = () => {
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete
+        isSuperUser={userData.isSuperUser}
       />
 
       {(travelData.status == TaskStatus.NOT_YET_STARTED ||

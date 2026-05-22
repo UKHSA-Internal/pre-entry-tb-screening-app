@@ -1,12 +1,16 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
 import { useLocation } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 
+import { petsApi } from "@/api/api";
 import SputumQuestionPage from "@/pages/sputum-question";
+import { ApplicationStatus, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
 
+let mock: MockAdapter;
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router`, async (): Promise<unknown> => {
   const actual: Record<string, unknown> = await vi.importActual(`react-router`);
@@ -17,6 +21,31 @@ vi.mock(`react-router`, async (): Promise<unknown> => {
   };
 });
 
+const preloadedState = {
+  user: {
+    jobTitle: "",
+    clinicId: "my-clinic",
+    name: "Bilb O'Baggins",
+    isSuperUser: false,
+  },
+  application: {
+    applicationId: "528db370-1325-43a3-81f2-e60a4f015afe",
+    applicationStatus: ApplicationStatus.IN_PROGRESS,
+    clinicId: "my-clinic",
+    dateCreated: { year: "", month: "", day: "" },
+  },
+  sputumDecision: {
+    status: TaskStatus.IN_PROGRESS,
+    isSputumRequired: YesOrNo.NO,
+    completionDate: { year: "", month: "", day: "" },
+  },
+};
+const superUserPreloadedState = {
+  ...preloadedState,
+  user: { ...preloadedState.user, isSuperUser: true },
+  sputumDecision: { ...preloadedState.sputumDecision, status: TaskStatus.COMPLETE },
+};
+
 describe("SputumQuestionPage", () => {
   const user = userEvent.setup();
 
@@ -24,6 +53,8 @@ describe("SputumQuestionPage", () => {
   let scrollIntoViewMockFn: Mock;
 
   beforeEach(() => {
+    mock = new MockAdapter(petsApi);
+
     (useLocation as Mock).mockReturnValue({
       pathname: "/is-sputum-collection-required",
       hash: "",
@@ -149,5 +180,62 @@ describe("SputumQuestionPage", () => {
   it("does not pre-select any radio button by default if the store's default isSputumRequired is null/undefined", () => {
     expect(screen.getByRole("radio", { name: "Yes" })).not.toBeChecked();
     expect(screen.getByRole("radio", { name: "No" })).not.toBeChecked();
+  });
+
+  test("correctly updates store on submit when user is non-super user", async () => {
+    cleanup();
+    const { store } = renderWithProviders(
+      <HelmetProvider>
+        <SputumQuestionPage />
+      </HelmetProvider>,
+      { preloadedState },
+    );
+
+    await user.click(screen.getByRole("radio", { name: "Yes" }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => {
+      expect(store.getState().sputumDecision.status).toEqual(TaskStatus.IN_PROGRESS);
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-decision-information");
+    });
+  });
+
+  it("calls put endpoint & on success navigates to summary page (when superuser submits and task is already complete)", async () => {
+    cleanup();
+    window.history.pushState({}, "", "/this-page?from=/check-sputum-decision-information");
+    renderWithProviders(
+      <HelmetProvider>
+        <SputumQuestionPage />
+      </HelmetProvider>,
+      { preloadedState: superUserPreloadedState },
+    );
+    mock.onPut("/application/528db370-1325-43a3-81f2-e60a4f015afe/sputum-decision").reply(200);
+
+    await user.click(screen.getByRole("radio", { name: "Yes" }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => {
+      expect(mock.history.put).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-sputum-decision-information");
+    });
+  });
+
+  test("calls put endpoint & on failure navigates to error page (when superuser submits and task is already complete)", async () => {
+    cleanup();
+    renderWithProviders(
+      <HelmetProvider>
+        <SputumQuestionPage />
+      </HelmetProvider>,
+      { preloadedState: superUserPreloadedState },
+    );
+    mock.onPut("/application/528db370-1325-43a3-81f2-e60a4f015afe/sputum-decision").reply(500);
+
+    await user.click(screen.getByRole("radio", { name: "Yes" }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => {
+      expect(mock.history.put).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
+    });
   });
 });

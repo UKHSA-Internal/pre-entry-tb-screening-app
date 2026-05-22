@@ -1,8 +1,10 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MockAdapter from "axios-mock-adapter";
 import { HelmetProvider } from "react-helmet-async";
 import { describe, expect, it, Mock } from "vitest";
 
+import { petsApi } from "@/api/api";
 import ChestXrayUploadPage from "@/pages/chest-xray-upload";
 import ChestXrayForm from "@/sections/chest-xray-form";
 import { ApplicationStatus, ImageType, TaskStatus } from "@/utils/enums";
@@ -10,6 +12,7 @@ import { renderWithProviders } from "@/utils/test-utils";
 import uploadFile from "@/utils/uploadFile";
 import validateFiles from "@/utils/validateFiles";
 
+let mock: MockAdapter;
 const useNavigateMock: Mock = vi.fn();
 vi.mock(`react-router`, async (): Promise<unknown> => {
   const actual: Record<string, unknown> = await vi.importActual(`react-router`);
@@ -28,6 +31,7 @@ vi.mock("@/utils/validateFiles", () => ({
 }));
 
 beforeEach(() => {
+  mock = new MockAdapter(petsApi);
   useNavigateMock.mockClear();
   global.URL.createObjectURL = vi.fn(() => "mock-url");
 });
@@ -88,7 +92,7 @@ describe("ChestXrayForm Section", () => {
     expect(screen.getByText("pa-file-name.jpg")).toBeInTheDocument();
   });
 
-  it("uploads three X-ray files", async () => {
+  it("uploads three X-ray files & navigates to summary page on submit", async () => {
     vi.mocked(validateFiles).mockResolvedValue(true);
     vi.mocked(uploadFile).mockResolvedValue("test/bucket/path");
 
@@ -98,6 +102,12 @@ describe("ChestXrayForm Section", () => {
         dateCreated: { year: "2010", month: "1", day: "1" },
         applicationStatus: ApplicationStatus.IN_PROGRESS,
         clinicId: "clinic-001",
+      },
+      user: {
+        jobTitle: "",
+        clinicId: "clinic-001",
+        name: "Bilb O'Baggins",
+        isSuperUser: false,
       },
     };
 
@@ -163,6 +173,8 @@ describe("ChestXrayForm Section", () => {
         "abc-123",
         ImageType.Dicom,
       );
+
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-chest-x-ray-images");
     });
   });
 
@@ -215,6 +227,85 @@ describe("ChestXrayForm Section", () => {
     const errorSummaryDiv = screen.getByTestId("error-summary");
     await waitFor(() => {
       expect(errorSummaryDiv).toHaveFocus();
+    });
+  });
+
+  test("calls put endpoint & on success navigates to summary page (when superuser submits and task is already complete)", async () => {
+    const preloadedState = {
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
+      },
+      chestXray: {
+        status: TaskStatus.COMPLETE,
+        posteroAnteriorXrayFileName: "",
+        posteroAnteriorXrayFile: "",
+        dateXrayTaken: { year: "2025", month: "1", day: "1" },
+      },
+      user: {
+        jobTitle: "",
+        clinicId: "clinic-001",
+        name: "Bilb O'Baggins",
+        isSuperUser: true,
+      },
+    };
+    const user = userEvent.setup();
+    window.history.pushState({}, "", "/this-page?from=/check-chest-x-ray-images");
+    renderWithProviders(<ChestXrayForm />, { preloadedState });
+    mock.onPut("/application/abc-123/chest-xray").reply(200);
+
+    await userEvent.upload(
+      screen.getByTestId("postero-anterior-xray"),
+      new File(["dummy"], "postero-anterior.dcm", {
+        type: "image/dicom",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => {
+      expect(mock.history.put).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenCalledWith("/check-chest-x-ray-images");
+    });
+  });
+
+  test("calls put endpoint & on failure navigates to error page (when superuser submits and task is already complete)", async () => {
+    const preloadedState = {
+      application: {
+        applicationId: "abc-123",
+        dateCreated: { year: "2010", month: "1", day: "1" },
+        applicationStatus: ApplicationStatus.IN_PROGRESS,
+        clinicId: "clinic-001",
+      },
+      chestXray: {
+        status: TaskStatus.COMPLETE,
+        posteroAnteriorXrayFileName: "",
+        posteroAnteriorXrayFile: "",
+        dateXrayTaken: { year: "2025", month: "1", day: "1" },
+      },
+      user: {
+        jobTitle: "",
+        clinicId: "clinic-001",
+        name: "Bilb O'Baggins",
+        isSuperUser: true,
+      },
+    };
+    const user = userEvent.setup();
+    renderWithProviders(<ChestXrayForm />, { preloadedState });
+    mock.onPut("/application/abc-123/chest-xray").reply(500);
+
+    await userEvent.upload(
+      screen.getByTestId("postero-anterior-xray"),
+      new File(["dummy"], "postero-anterior.dcm", {
+        type: "image/dicom",
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor(() => {
+      expect(mock.history.put).toHaveLength(1);
+      expect(useNavigateMock).toHaveBeenCalledWith("/sorry-there-is-problem-with-service");
     });
   });
 });

@@ -67,6 +67,8 @@ const attributeToComponentId: { [key: string]: string } = {
   consent: "do-you-have-consent",
   cancellationReason: "why-are-you-cancelling-screening",
   cancellationReasonOther: "conditional-why-are-you-cancelling-screening-other",
+  declaringPhysicianName: "declaring-physician-name",
+  physicianComments: "physician-comments",
 };
 
 const formRegex = {
