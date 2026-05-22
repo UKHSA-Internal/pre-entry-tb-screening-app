@@ -99,9 +99,6 @@ export const ApplicantSearchResponseSchema = ApplicantRegisterRequestSchema.exte
   }),
 });
 export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "Unique Application ID for applicant",
-  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -110,12 +107,35 @@ export const ApplicantResponseSchema = ApplicantRegisterRequestSchema.extend({
   }),
 });
 
-export const ApplicantUpdateRequestSchema = ApplicantBaseSchema;
+export const ApplicantUpdateRequestSchema = ApplicantBaseSchema.strict();
+export const SuperUserApplicantUpdateRequestSchema = ApplicantBaseSchema.strict();
+export const MultiAppUpdateApplicantRequestSchema = z
+  .object({
+    countryOfIssue: z.nativeEnum(CountryCode).openapi({
+      description: "Passport Issue Country",
+    }),
+    passportNumber: z.string().openapi({
+      description: "PassportNumber of Applicant",
+    }),
+    applicantHomeAddress1: z.string().optional().openapi({
+      description: "First line of Applicant's Address",
+    }),
+    applicantHomeAddress2: z.string().optional().openapi({
+      description: "Second line of Applicant's Address",
+    }),
+    applicantHomeAddress3: z.string().optional().openapi({
+      description: "Third line of Applicant's Address",
+    }),
+    townOrCity: z.string().optional(),
+    provinceOrState: z.string().optional(),
+    postcode: z.string().optional(),
+    country: z.nativeEnum(CountryCode).optional().openapi({
+      description: "Country of Applican't Address",
+    }),
+  })
+  .strict();
 
 export const ApplicantUpdateResponseSchema = ApplicantUpdateRequestSchema.extend({
-  applicationId: z.string().openapi({
-    description: "Unique Application ID for applicant",
-  }),
   dateUpdated: z.string().date().optional().openapi({
     description: "Date of Birth in ISO Format",
   }),

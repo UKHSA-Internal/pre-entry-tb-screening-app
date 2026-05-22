@@ -1,17 +1,46 @@
-import { GetCommand, PutCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb";
+import {
+  GetCommand,
+  PutCommand,
+  PutCommandInput,
+  UpdateCommand,
+  UpdateCommandInput,
+} from "@aws-sdk/lib-dynamodb";
 
 import awsClients from "../../shared/clients/aws";
+import { buildUpdateExpression } from "../../shared/helpers/buildUpdateExpression";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { TaskStatus } from "../../shared/types/enum";
 
 const { dynamoDBDocClient: docClient } = awsClients;
 
-abstract class IChestXRay {
+abstract class ChestXrayBase {
+  applicationId!: string;
+  posteroAnteriorXrayFileName?: string;
+  apicalLordoticXrayFileName?: string;
+  lateralDecubitusXrayFileName?: string;
+
+  constructor(details: Partial<ChestXrayBase>) {
+    Object.assign(this, details); // copies all matching props
+  }
+
+  toJson() {
+    // Copy everything from this
+    const json = { ...this } as Record<string, unknown>;
+
+    // Exclude internal fields
+    delete json.createdBy;
+    delete json.updatedBy;
+    delete json.pk;
+    delete json.sk;
+
+    return json;
+  }
+}
+export type IChestXray = {
   applicationId: string;
   status: TaskStatus;
-  dateCreated: Date;
-  createdBy: string;
+
   dateXrayTaken: Date;
   posteroAnteriorXrayFileName: string;
   posteroAnteriorXray: string;
@@ -19,7 +48,36 @@ abstract class IChestXRay {
   apicalLordoticXray?: string;
   lateralDecubitusXrayFileName?: string;
   lateralDecubitusXray?: string;
-  constructor(details: IChestXRay) {
+
+  dateCreated: Date;
+  createdBy: string;
+};
+
+export type IChestXrayUpdate = {
+  applicationId: string;
+
+  posteroAnteriorXrayFileName?: string;
+  apicalLordoticXrayFileName?: string;
+  lateralDecubitusXrayFileName?: string;
+
+  dateUpdated: Date;
+  updatedBy: string;
+};
+
+export class ChestXray extends ChestXrayBase {
+  status: TaskStatus;
+
+  dateXrayTaken: Date;
+  posteroAnteriorXrayFileName: string;
+  posteroAnteriorXray: string;
+  apicalLordoticXray?: string;
+  lateralDecubitusXray?: string;
+
+  dateCreated: Date;
+  createdBy: string;
+
+  constructor(details: IChestXray) {
+    super(details);
     this.applicationId = details.applicationId;
     this.status = details.status;
 
@@ -37,45 +95,59 @@ abstract class IChestXRay {
   }
 }
 
-export type NewChestXRay = Omit<IChestXRay, "dateCreated" | "status" | "dateXrayTaken"> & {
+export type NewChestXray = Omit<IChestXray, "dateCreated" | "status" | "dateXrayTaken"> & {
   dateXrayTaken: Date | string;
 };
+export class ChestXrayUpdate extends ChestXrayBase {
+  dateUpdated: Date;
+  updatedBy: string;
+  constructor(details: IChestXrayUpdate) {
+    super(details);
 
-export class ChestXRay extends IChestXRay {
+    // Audit
+    this.dateUpdated = details.dateUpdated;
+    this.updatedBy = details.updatedBy;
+  }
+}
+
+export type NewChestXrayUpdate = Omit<IChestXrayUpdate, "dateUpdated">;
+
+export class ChestXrayDbOps {
   static readonly getPk = (applicationId: string) => Application.getPk(applicationId);
   static readonly sk = "APPLICATION#CHEST#XRAY";
   static readonly getTableName = () => process.env.APPLICATION_SERVICE_DATABASE_NAME;
 
-  private constructor(details: IChestXRay) {
-    super(details);
-  }
-
-  private todbItem() {
+  static todbItem(chestXray: ChestXray) {
     const dbItem = {
-      ...this,
-      dateXrayTaken: this.dateXrayTaken.toISOString(),
-      dateCreated: this.dateCreated.toISOString(),
-      pk: ChestXRay.getPk(this.applicationId),
-      sk: ChestXRay.sk,
+      ...chestXray,
+      dateXrayTaken: chestXray.dateXrayTaken.toISOString(),
+      dateCreated: chestXray.dateCreated.toISOString(),
+      pk: ChestXrayDbOps.getPk(chestXray.applicationId),
+      sk: ChestXrayDbOps.sk,
     };
     return dbItem;
   }
 
-  static async createChestXray(details: NewChestXRay) {
+  static async createChestXray(
+    details: Omit<IChestXray, "dateCreated" | "status" | "dateXrayTaken"> & {
+      dateXrayTaken: Date | string;
+    },
+  ) {
     try {
       logger.info("Saving Chest X-Ray Information to DB");
-      const updatedDetails = {
+      const chestXrayDetails = {
         ...details,
         dateXrayTaken: new Date(details.dateXrayTaken),
         dateCreated: new Date(),
         status: TaskStatus.completed,
       };
 
-      const chestXray = new ChestXRay(updatedDetails);
+      const chestXray = new ChestXray(chestXrayDetails);
 
-      const dbItem = chestXray.todbItem();
+      const dbItem = ChestXrayDbOps.todbItem(chestXray);
+
       const params: PutCommandInput = {
-        TableName: ChestXRay.getTableName(),
+        TableName: ChestXrayDbOps.getTableName(),
         Item: { ...dbItem },
         ConditionExpression: "attribute_not_exists(pk) AND attribute_not_exists(sk)",
       };
@@ -90,16 +162,54 @@ export class ChestXRay extends IChestXRay {
       throw error;
     }
   }
+  static async updateChestXray(
+    details: Omit<IChestXrayUpdate, "dateUpdated" | "status">,
+  ): Promise<ChestXrayUpdate> {
+    try {
+      logger.info("Update Chest Xray Details to DB");
+      const pk = ChestXrayDbOps.getPk(details.applicationId);
+      const sk = ChestXrayDbOps.sk;
+      const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
+        buildUpdateExpression(details);
 
+      const params: UpdateCommandInput = {
+        TableName: ChestXrayDbOps.getTableName(),
+        Key: { pk, sk },
+        UpdateExpression,
+        ExpressionAttributeNames,
+        ExpressionAttributeValues,
+        ReturnValues: "ALL_NEW", // Return updated item
+      };
+
+      const command = new UpdateCommand(params);
+      const response = await docClient.send(command);
+      const attrs = response.Attributes!;
+      if (!attrs) throw new Error("Update failed");
+
+      logger.info({ response }, "Chest Xray details updated successfully");
+      const chestXray = new ChestXrayUpdate({
+        applicationId: attrs?.applicationId,
+        posteroAnteriorXrayFileName: attrs?.posteroAnteriorXrayFileName,
+        lateralDecubitusXrayFileName: attrs?.lateralDecubitusXrayFileName,
+        apicalLordoticXrayFileName: attrs?.apicalLordoticXrayFileName,
+        dateUpdated: new Date(attrs?.dateUpdated as string),
+        updatedBy: attrs?.updatedBy,
+      });
+      return chestXray;
+    } catch (error) {
+      logger.error(error, "Error updating chest xray");
+      throw error;
+    }
+  }
   static async getByApplicationId(applicationId: string) {
     try {
       logger.info("fetching Chest X-ray");
 
       const params = {
-        TableName: ChestXRay.getTableName(),
+        TableName: ChestXrayDbOps.getTableName(),
         Key: {
-          pk: ChestXRay.getPk(applicationId),
-          sk: ChestXRay.sk,
+          pk: ChestXrayDbOps.getPk(applicationId),
+          sk: ChestXrayDbOps.sk,
         },
       };
 
@@ -113,32 +223,17 @@ export class ChestXRay extends IChestXRay {
 
       logger.info("Chest X Ray fetched successfully");
 
-      const dbItem = data.Item as ReturnType<ChestXRay["todbItem"]>;
+      const chextXrayDbItem = data.Item as ReturnType<(typeof ChestXrayDbOps)["todbItem"]>;
 
-      const chestXray = new ChestXRay({
-        ...dbItem,
-        dateXrayTaken: new Date(dbItem.dateXrayTaken),
-        dateCreated: new Date(dbItem.dateCreated),
+      const chestXray = new ChestXray({
+        ...chextXrayDbItem,
+        dateXrayTaken: new Date(chextXrayDbItem.dateXrayTaken),
+        dateCreated: new Date(chextXrayDbItem.dateCreated),
       });
       return chestXray;
     } catch (error) {
       logger.error(error, "Error retrieving Chest X-ray");
       throw error;
     }
-  }
-
-  toJson() {
-    return {
-      applicationId: this.applicationId,
-      status: this.status,
-      dateXrayTaken: this.dateXrayTaken,
-      posteroAnteriorXrayFileName: this.posteroAnteriorXrayFileName,
-      posteroAnteriorXray: this.posteroAnteriorXray,
-      apicalLordoticXrayFileName: this.apicalLordoticXrayFileName,
-      apicalLordoticXray: this.apicalLordoticXray,
-      lateralDecubitusXrayFileName: this.lateralDecubitusXrayFileName,
-      lateralDecubitusXray: this.lateralDecubitusXray,
-      dateCreated: this.dateCreated,
-    };
   }
 }

@@ -12,6 +12,7 @@ import awsClients from "../clients/aws";
 import { assertEnvExists } from "../config";
 import { CountryCode } from "../country";
 import { getDateWithoutTime } from "../date";
+import { buildUpdateExpression } from "../helpers/buildUpdateExpression";
 import { logger } from "../logger";
 import { TaskStatus } from "../types/enum";
 
@@ -267,27 +268,15 @@ export class ApplicantDbOps {
 
       const pk = this.getPk(details.countryOfIssue, details.passportNumber);
       const sk = this.sk;
-
-      // Clean up: remove undefined fields before building update expression
-      const fieldsToUpdate = Object.entries(details).reduce(
-        (acc, [key, value]) => {
-          if (value !== undefined) acc[key] = value;
-          return acc;
-        },
-        {} as Record<string, AllApplicantTypes>,
-      );
-
-      fieldsToUpdate.dateUpdated = new Date().toISOString();
-
-      const { updateExpression, expressionAttribute, expressionAttributeNames } =
-        this.createUpdateExpressions(fieldsToUpdate);
+      const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
+        buildUpdateExpression(details);
 
       const params: UpdateCommandInput = {
         TableName: this.getTableName(),
         Key: { pk, sk },
-        UpdateExpression: `SET ${updateExpression.join(", ")}`,
-        ExpressionAttributeValues: expressionAttribute,
-        ExpressionAttributeNames: expressionAttributeNames,
+        UpdateExpression,
+        ExpressionAttributeValues,
+        ExpressionAttributeNames,
         ReturnValues: "ALL_NEW", // Return updated item
         ConditionExpression: "attribute_exists(pk) AND attribute_exists(sk)",
       };

@@ -269,7 +269,29 @@ export const TbCertificateRequestSchema = z.union([
   TbCertificateNotIssuedRequestSchema,
 ]);
 
+export const TbCertificateUpdateRequestSchema = z
+  .object({
+    physicianName: z.string().optional().openapi({
+      description: "Physician's Name",
+    }),
+    comments: z.string().optional().openapi({
+      description: "Physician's comments",
+    }),
+  })
+  .strict();
+
+export const TbCertificateUpdateResponseSchema = TbCertificateUpdateRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
+  }),
+});
 export const TbCertificateIssuedResponseSchema = TbCertificateIssuedRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
   dateCreated: z.string().date().openapi({
     description: "Creation Date in UTC timezone",
   }),
@@ -332,6 +354,31 @@ export const ChestXRayResponseSchema = ChestXRayRequestSchema.extend({
   }),
   status: z.nativeEnum(TaskStatus).openapi({
     description: "Status of Task",
+  }),
+});
+
+export const ChestXRayUpdateRequestSchema = z
+  .object({
+    posteroAnteriorXrayFileName: z.string().optional().openapi({
+      description: "File name for the Postero Anterior X-Ray",
+    }),
+
+    apicalLordoticXrayFileName: z.string().optional().openapi({
+      description: "File name for the Apical Lordotic X-Ray",
+    }),
+
+    lateralDecubitusXrayFileName: z.string().optional().openapi({
+      description: "File name for the Lateral Decubitus X-Ray",
+    }),
+  })
+  .strict();
+
+export const ChestXRayUpdateResponseSchema = ChestXRayUpdateRequestSchema.extend({
+  applicationId: z.string().openapi({
+    description: "ID of application",
+  }),
+  dateUpdated: z.string().date().openapi({
+    description: "Updated Date in UTC timezone",
   }),
 });
 
@@ -461,14 +508,21 @@ export const RadiologicalOutcomeResponseSchema = RadiologicalOutcomeRequestSchem
   }),
 });
 
-export const SputumDecisionRequestSchema = z.object({
-  sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
-});
+export const SputumDecisionRequestSchema = z
+  .object({
+    sputumRequired: z.nativeEnum(YesOrNo).openapi({ description: "Sputum required: yes/no" }),
+  })
+  .strict();
 
 export const SputumDecisionResponseSchema = SputumDecisionRequestSchema.extend({
   applicationId: z.string().openapi({ description: "ID of application" }),
   dateCreated: z.string().date().openapi({ description: "Creation Date in UTC timezone" }),
   status: z.nativeEnum(TaskStatus).openapi({ description: "Status of Task" }),
+});
+
+export const SputumDecisionUpdateResponseSchema = SputumDecisionRequestSchema.extend({
+  applicationId: z.string().openapi({ description: "ID of application" }),
+  dateUpdated: z.string().date().openapi({ description: "Updated Date in UTC timezone" }),
 });
 
 export const ApplicationBaseSchema = z.object({

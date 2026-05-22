@@ -6,9 +6,11 @@ export const seededSputumDecision: Omit<ISputumDecision, "dateCreated" | "status
   {
     applicationId: seededApplications[1].applicationId,
     sputumRequired: YesOrNo.Yes,
+    createdBy: "test1",
   },
   {
     applicationId: seededApplications[2].applicationId,
     sputumRequired: YesOrNo.No,
+    createdBy: "test2",
   },
 ];
