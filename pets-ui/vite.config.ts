@@ -20,6 +20,12 @@ export default defineConfig({
     },
   },
   envDir: "../configs", // Automatically loads the .env in this directory.
+  // swagger-ui-react imports {default} from immutable, but immutable's ESM build doesn't have a default export.
+  build: {
+    rollupOptions: {
+      shimMissingExports: true,
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {
