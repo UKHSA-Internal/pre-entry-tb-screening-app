@@ -7,6 +7,7 @@ import awsClients from "../clients/aws";
 import { simulateLambdaAuthorizer } from "./local-auth";
 
 describe("simulateLambdaAuthorizer", () => {
+  // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
   const lambdaClientMock = mockClient(awsClients.lambdaClient);
   const originalEnv = process.env;
   beforeEach(() => {
