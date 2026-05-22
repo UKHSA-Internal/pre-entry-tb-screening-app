@@ -146,19 +146,6 @@ describe("TB Certificate Declaration Page", () => {
     });
   });
 
-  /* test plan:
-
-  for all:
-    set up preloaded state
-    fill in form
-  
-  - not super user: test status updated in redux & usenav mock called w /tb-certificate-summary
-  - task not completed: test status updated in redux & usenav mock called w /tb-certificate-summary
-
-  - superuser & task complete: mock put response 200, test usenav mock called w /tb-certificate-summary
-  - superuser & task complete: mock put response 500, test usenav mock called w /sorry-there-is-problem-with-service
-  */
-
   test("correctly updates store on submit when user is non-super user", async () => {
     const user = userEvent.setup();
     const { store } = renderWithProviders(<TbCertificateDeclarationForm />, { preloadedState });
