@@ -9,7 +9,12 @@ import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationId, setClinicId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication, selectApplicationsList } from "@/redux/store";
+import {
+  selectApplicant,
+  selectApplication,
+  selectApplicationsList,
+  selectUserDetails,
+} from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import {
   convertDateStrToObj,
@@ -26,6 +31,7 @@ const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
   const applicationsListData = useAppSelector(selectApplicationsList);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -220,6 +226,7 @@ const ApplicantReview = () => {
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete
+        isSuperUser={userData.isSuperUser}
       />
 
       <Button

@@ -9,7 +9,12 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { useAppSelector } from "@/redux/hooks";
 import { setMedicalScreeningStatus } from "@/redux/medicalScreeningSlice";
-import { selectApplicant, selectApplication, selectMedicalScreening } from "@/redux/store";
+import {
+  selectApplicant,
+  selectApplication,
+  selectMedicalScreening,
+  selectUserDetails,
+} from "@/redux/store";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import { calculateApplicantAge, formatDateForDisplay } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
@@ -20,6 +25,7 @@ const MedicalScreeningReview = () => {
 
   const applicationData = useAppSelector(selectApplication);
   const medicalData = useAppSelector(selectMedicalScreening);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -207,6 +213,7 @@ const MedicalScreeningReview = () => {
         taskStatus={medicalData.status}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
+        isSuperUser={userData.isSuperUser}
       />
 
       {(medicalData.status == TaskStatus.NOT_YET_STARTED ||

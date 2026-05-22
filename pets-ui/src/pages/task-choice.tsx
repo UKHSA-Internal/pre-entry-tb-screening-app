@@ -12,7 +12,6 @@ import { setApplicationsInProgress } from "@/redux/applicationsInProgressSlice";
 import { clearApplicationDetails } from "@/redux/applicationSlice";
 import { clearApplicationsListDetails } from "@/redux/applicationsListSlice";
 import { clearChestXrayDetails } from "@/redux/chestXraySlice";
-import { setUserClinicId } from "@/redux/clinicSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
@@ -20,6 +19,7 @@ import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
+import { setUserDetails } from "@/redux/userSlice";
 import { ReceivedApplicationInProgressType } from "@/types";
 import { setGoogleAnalyticsParams } from "@/utils/google-analytics-utils";
 import { getUserProperties } from "@/utils/userProperties";
@@ -34,11 +34,15 @@ export default function TaskChoicePage() {
     setIsLoading(true);
     const setUserProperties = async () => {
       const userProperties = await getUserProperties();
-      setGoogleAnalyticsParams("user_properties", {
-        user_role: userProperties.jobTitle,
-        clinic_id: userProperties.clinicId,
-      });
-      dispatch(setUserClinicId(userProperties.clinicId ?? ""));
+      if (userProperties) {
+        setGoogleAnalyticsParams("user_properties", {
+          user_role: userProperties?.jobTitle,
+          clinic_id: userProperties?.clinicId,
+        });
+        dispatch(setUserDetails(userProperties));
+      } else {
+        console.error("Error when retrieving user properties");
+      }
     };
     void setUserProperties();
     setIsLoading(false);

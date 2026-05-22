@@ -18,7 +18,7 @@ import {
   setPassportNumber,
 } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication } from "@/redux/store";
+import { selectApplicant, selectApplication, selectUserDetails } from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
 import { countryList } from "@/utils/countryList";
 import { ButtonClass, TaskStatus } from "@/utils/enums";
@@ -41,6 +41,7 @@ interface ApplicantPassportDetailsData {
 const ApplicantPassportDetailsForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -152,6 +153,7 @@ const ApplicantPassportDetailsForm = () => {
                 hiddenLabel: "country of issue",
               },
             ]}
+            isSuperUser={userData.isSuperUser}
           />
         )}
 

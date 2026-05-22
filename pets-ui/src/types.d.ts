@@ -41,8 +41,11 @@ type ReceivedApplicationAttributesType = {
   status: BackendTaskStatus;
 };
 
-type ReduxClinicDetailsType = {
+type ReduxUserDetailsType = {
+  jobTitle: string;
   clinicId: string;
+  name: string;
+  isSuperUser: boolean;
 };
 
 // Application types
@@ -261,6 +264,12 @@ type PostedChestXrayDetailsType = {
   dateXrayTaken: string;
 };
 
+type UpdatedChestXrayDetailsType = {
+  posteroAnteriorXrayFileName?: string;
+  apicalLordoticXrayFileName?: string;
+  lateralDecubitusXrayFileName?: string;
+};
+
 type ReceivedChestXrayDetailsType = PostedChestXrayDetailsType & ReceivedApplicationAttributesType;
 
 // Radiological outcome types
@@ -415,6 +424,11 @@ type PostedTbCertificateNotIssuedType = {
   clinicName: string;
   physicianName: string;
   referenceNumber: string;
+};
+
+type UpdateTbCertificateType = {
+  comments?: string;
+  physicianName: string;
 };
 
 type ReceivedTbCertificateNotIssuedType = PostedTbCertificateNotIssuedType &

@@ -21,6 +21,8 @@ import {
   ReceivedApplicationDetailsType,
   ReceivedApplicationInProgressType,
   ReceivedApplicationListType,
+  UpdatedChestXrayDetailsType,
+  UpdateTbCertificateType,
 } from "@/types";
 import { sendGoogleAnalyticsHttpError } from "@/utils/google-analytics-utils";
 
@@ -169,6 +171,14 @@ export const postChestXrayDetails = async (
   return { status: result.status, statusText: result.statusText };
 };
 
+export const putChestXrayDetails = async (
+  applicationId: string,
+  chestXrayDetails: UpdatedChestXrayDetailsType,
+) => {
+  const result = await petsApi.put(`/application/${applicationId}/chest-xray`, chestXrayDetails);
+  return { status: result.status, statusText: result.statusText };
+};
+
 export const postRadiologicalOutcomeDetails = async (
   applicationId: string,
   radiologicalOutcomeDetails:
@@ -192,11 +202,32 @@ export const postSputumRequirement = async (
   return { status: result.status, statusText: result.statusText };
 };
 
+export const putSputumRequirement = async (
+  applicationId: string,
+  sputumRequirement: { sputumRequired: string },
+) => {
+  const result = await petsApi.put(`/application/${applicationId}/sputum-decision`, {
+    sputumRequired: sputumRequirement.sputumRequired,
+  });
+  return { status: result.status, statusText: result.statusText };
+};
+
 export const postTbCerificateDetails = async (
   applicationId: string,
   tbCertificateDetails: PostedTbCertificateType | PostedTbCertificateNotIssuedType,
 ) => {
   const result = await petsApi.post(
+    `/application/${applicationId}/tb-certificate`,
+    tbCertificateDetails,
+  );
+  return { status: result.status, statusText: result.statusText };
+};
+
+export const putTbCerificateDetails = async (
+  applicationId: string,
+  tbCertificateDetails: UpdateTbCertificateType,
+) => {
+  const result = await petsApi.put(
     `/application/${applicationId}/tb-certificate`,
     tbCertificateDetails,
   );

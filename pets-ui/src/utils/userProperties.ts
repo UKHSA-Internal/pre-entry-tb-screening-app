@@ -1,8 +1,13 @@
 import { msalInstance } from "@/auth/auth";
 
-import { getClinicId } from "./clinic";
+interface UserPropertiesType {
+  jobTitle: string;
+  clinicId: string;
+  name: string;
+  isSuperUser: boolean;
+}
 
-export const getJobTitle = async (): Promise<string | null> => {
+export const getUserProperties = async (): Promise<UserPropertiesType | null> => {
   if (import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION === "true") {
     return null;
   }
@@ -17,28 +22,32 @@ export const getJobTitle = async (): Promise<string | null> => {
     }
   }
 
-  const response = await msalInstance.acquireTokenSilent({
-    account,
-    scopes: [], // add API scopes if needed
-  });
-
-  const claims = response.idTokenClaims as { JobTitle?: string };
-  const jobTitle = claims?.JobTitle ?? null;
-  return jobTitle;
-};
-
-export const getUserProperties = async () => {
-  let jobTitle: string | null = "unknown Job Title";
-  let clinicId: string | null = "unknown Clinic ID";
   try {
-    jobTitle = await getJobTitle();
+    const response = await msalInstance.acquireTokenSilent({
+      account,
+      scopes: [], // add API scopes if needed
+    });
+
+    const claims = response.idTokenClaims as {
+      JobTitle?: string;
+      ClinicID?: string;
+      name?: string;
+      roles?: string[];
+    };
+
+    return {
+      jobTitle: claims?.JobTitle ?? "unknown Job Title",
+      clinicId: claims?.ClinicID ?? "unknown Clinic ID",
+      name: claims?.name ?? "unknown User Name",
+      isSuperUser: claims?.roles?.includes("Application.Update") ?? false,
+    };
   } catch {
-    console.error("Failed to retrieve Job Title when setting GA user_properties");
+    console.error("Failed to retrieve token when getting user properties");
+    return {
+      jobTitle: "unknown Job Title",
+      clinicId: "unknown Clinic ID",
+      name: "unknown User Name",
+      isSuperUser: false,
+    };
   }
-  try {
-    clinicId = await getClinicId();
-  } catch {
-    console.error("Failed to retrieve Clinic ID when setting GA user_properties");
-  }
-  return { jobTitle: jobTitle, clinicId: clinicId };
 };
