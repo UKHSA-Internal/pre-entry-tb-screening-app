@@ -1,7 +1,7 @@
 import { basename, dirname, join, posix, relative, sep } from "node:path";
 
 import * as cdk from "aws-cdk-lib";
-import { Tags } from "aws-cdk-lib";
+import { Annotations, Tags } from "aws-cdk-lib";
 import { ApiDefinition, SpecRestApi } from "aws-cdk-lib/aws-apigateway";
 import { AttributeType, Table, TableProps } from "aws-cdk-lib/aws-dynamodb";
 import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
@@ -175,5 +175,9 @@ class HotReloadedLambda extends Function {
         NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
       },
     });
+
+    Annotations.of(hotReloadBucket).acknowledgeWarning(
+      "@aws-cdk/aws-lambda:codeFromBucketObjectVersionNotSpecified",
+    );
   }
 }

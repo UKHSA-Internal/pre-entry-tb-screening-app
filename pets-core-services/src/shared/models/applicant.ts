@@ -346,7 +346,7 @@ export class ApplicantDbOps {
 
       const applicantInformation = new Applicant({
         ...dbItem,
-        townOrCity: dbItem.townOrCity as string,
+        townOrCity: dbItem.townOrCity,
         dateCreated: new Date(dbItem.dateCreated),
         issueDate: new Date(dbItem.issueDate),
         expiryDate: new Date(dbItem.expiryDate),

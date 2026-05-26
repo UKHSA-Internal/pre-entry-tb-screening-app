@@ -384,6 +384,7 @@ describe("Test for Application Lambda", () => {
   });
 
   describe("Chest X-Ray", () => {
+    // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
     const s3ClientMock = mockClient(awsClients.s3Client);
 
     s3ClientMock.on(HeadObjectCommand).resolves({
@@ -431,6 +432,7 @@ describe("Test for Application Lambda", () => {
   });
 
   describe("Applicant photo", () => {
+    // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
     const s3ClientMock = mockClient(awsClients.s3Client);
 
     s3ClientMock.on(HeadObjectCommand).resolves({
