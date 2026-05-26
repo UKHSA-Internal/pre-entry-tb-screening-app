@@ -45,6 +45,7 @@ const EVENT: EventBridgeEvent<string, EventBridgeEventDetails> = {
 };
 
 describe("Tests for image service lambda", () => {
+  // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
   const s3ClientMock = mockClient(awsClients.s3Client);
 
   test("Copy file", async () => {

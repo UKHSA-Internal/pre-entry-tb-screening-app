@@ -9,8 +9,8 @@
     "cdk": "cdklocal",
     "build:core-services": "node esbuild.local.config.mjs",
     "watch:core-services": "node esbuild.local.config.mjs --watch",
-    "bootstrap": "cdklocal bootstrap",
-    "deploy:local": "cdklocal deploy LocalInfrastructureStack --require-approval never"
+    "bootstrap": "CDK_DISABLE_LEGACY_EXPORT_WARNING=1 cdklocal bootstrap",
+    "deploy:local": "CDK_DISABLE_LEGACY_EXPORT_WARNING=1 cdklocal deploy LocalInfrastructureStack --require-approval never"
   },
   "devDependencies": {
     "@types/node": "22.7.9",

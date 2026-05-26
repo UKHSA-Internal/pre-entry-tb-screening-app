@@ -40,7 +40,7 @@ describe("Google Analytics utilities", () => {
     });
 
     it("does nothing when gtag is not a function", () => {
-      globalThis.gtag = undefined as never;
+      globalThis.gtag = undefined;
 
       updateGoogleAnalyticsConsent(true);
 
@@ -59,7 +59,7 @@ describe("Google Analytics utilities", () => {
     });
 
     it("does nothing when gtag is missing", () => {
-      globalThis.gtag = undefined as never;
+      globalThis.gtag = undefined;
 
       sendGoogleAnalyticsJourneyEvent("applicant_details", "123", "Visa Applicant Details");
 
@@ -78,7 +78,7 @@ describe("Google Analytics utilities", () => {
     });
 
     it("does nothing if gtag is missing", () => {
-      globalThis.gtag = undefined as never;
+      globalThis.gtag = undefined;
 
       sendGoogleAnalyticsFormErrorEvent("applicant_details", ["name", "dateOfBirth"]);
 
@@ -97,7 +97,7 @@ describe("Google Analytics utilities", () => {
     });
 
     it("does nothing if gtag is missing", () => {
-      globalThis.gtag = undefined as never;
+      globalThis.gtag = undefined;
 
       sendGoogleAnalyticsHttpError(501, "/error-url");
 
@@ -119,7 +119,7 @@ describe("Google Analytics utilities", () => {
     });
 
     it("does nothing when gtag is not a function", () => {
-      globalThis.gtag = undefined as never;
+      globalThis.gtag = undefined;
 
       setGoogleAnalyticsParams("x", "y");
 

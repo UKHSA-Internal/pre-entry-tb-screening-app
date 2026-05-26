@@ -7,7 +7,7 @@ import awsClients from "../clients/aws";
 import { CountryCode } from "../country";
 import { seededApplications } from "../fixtures/application";
 import { logger } from "../logger";
-import { ApplicantDbOps, NewApplicant, UpdatedApplicant } from "./applicant";
+import { ApplicantDbOps, NewApplicant } from "./applicant";
 
 const applicantDetails: NewApplicant = {
   fullName: "John Doe",
@@ -95,7 +95,7 @@ describe("Tests for Applicant Model", () => {
     await ApplicantDbOps.updateApplicant({
       ...applicantDetails,
       updatedBy: "updater name",
-    } as UpdatedApplicant);
+    });
 
     // Assert
     expect(
