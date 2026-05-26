@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   DateType,
   PostedSputumSampleType,
-  PostedSputumType,
   ReceivedSputumType,
   ReduxSputumCollectionType,
   ReduxSputumCultureResultType,
@@ -272,7 +271,7 @@ export const sputumSlice = createSlice({
 
       const sampleKeys: ReduxSputumSampleKeys[] = ["sample1", "sample2", "sample3"];
       for (const sample of sampleKeys) {
-        const sampleData = action.payload.sputumSamples?.[sample as keyof PostedSputumType];
+        const sampleData = action.payload.sputumSamples?.[sample];
         setCollectionDetails(sampleData, state[sample]);
         setSmearResults(sampleData?.smearResult, state[sample]);
         setCultureResults(sampleData?.cultureResult, state[sample]);

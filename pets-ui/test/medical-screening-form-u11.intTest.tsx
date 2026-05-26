@@ -152,10 +152,14 @@ describe("MedicalScreeningFormU11Qs", () => {
 
     await user.click(submitButton);
 
-    expect(screen.getAllByText(`Select all that apply, or select "None of these"`)).toHaveLength(2);
-    expect(
-      screen.getAllByText(`Select all that apply, or select "None of these"`)[0],
-    ).toHaveAttribute("aria-label", `Error: Select all that apply, or select "None of these"`);
+    await waitFor(() => {
+      expect(screen.getAllByText(`Select all that apply, or select "None of these"`)).toHaveLength(
+        2,
+      );
+      expect(
+        screen.getAllByText(`Select all that apply, or select "None of these"`)[0],
+      ).toHaveAttribute("aria-label", `Error: Select all that apply, or select "None of these"`);
+    });
   });
 
   it("renders an in focus error summary when continue button pressed but required questions not answered", async () => {
