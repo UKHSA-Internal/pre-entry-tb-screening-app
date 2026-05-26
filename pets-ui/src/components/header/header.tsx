@@ -78,7 +78,7 @@ export default function Header() {
               >
                 <strong>{accounts[0]?.name}</strong>
                 {accounts[0]?.idTokenClaims?.roles?.includes("Application.Update") && (
-                  <span> (Super User)</span>
+                  <span> (super user)</span>
                 )}
               </span>
               <span
