@@ -18,7 +18,12 @@ import {
   setPassportNumber,
 } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication, selectUserDetails } from "@/redux/store";
+import {
+  selectApplicant,
+  selectApplication,
+  selectApplicationsList,
+  selectUserDetails,
+} from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
 import { countryList } from "@/utils/countryList";
 import { ButtonClass, TaskStatus } from "@/utils/enums";
@@ -41,6 +46,7 @@ interface ApplicantPassportDetailsData {
 const ApplicantPassportDetailsForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
   const userData = useAppSelector(selectUserDetails);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -49,6 +55,7 @@ const ApplicantPassportDetailsForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === TaskStatus.COMPLETE;
   const summaryStatus = isComplete ? TaskStatus.IN_PROGRESS : applicantData.status;
+  const isFirstApplication = applicationsListData.length < 1;
 
   const methods = useForm<ReduxApplicantDetailsType>({
     reValidateMode: "onSubmit",
@@ -70,7 +77,10 @@ const ApplicantPassportDetailsForm = () => {
     dispatch(setPassportIssueDate(formData.passportIssueDate));
     dispatch(setPassportExpiryDate(formData.passportExpiryDate));
 
-    if (isComplete && applicationData.applicationId) {
+    if (
+      (isComplete && applicationData.applicationId) ||
+      (userData.isSuperUser && !isFirstApplication)
+    ) {
       setIsLoading(true);
       try {
         const issueDateStr = `${formData.passportIssueDate.year}-${standardiseDayOrMonth(formData.passportIssueDate.month)}-${standardiseDayOrMonth(formData.passportIssueDate.day)}`;
