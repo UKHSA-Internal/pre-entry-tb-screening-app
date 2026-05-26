@@ -15,6 +15,16 @@ const summaryData = [
   },
 ];
 
+const summaryDataSuperUserEnabled = [
+  {
+    key: "Example Title",
+    value: "A typical value",
+    link: "/example-link",
+    hiddenLabel: "Hidden Label Example",
+    enableForSuperUser: true,
+  },
+];
+
 const summaryArrayData = [
   {
     key: "Example Title",
@@ -31,6 +41,7 @@ describe("Summary Component", () => {
         taskStatus={TaskStatus.NOT_YET_STARTED}
         applicationStatus={ApplicationStatus.IN_PROGRESS}
         summaryElements={summaryData}
+        isSuperUser={false}
       />,
     );
     expect(screen.getByText("Example Title")).toBeInTheDocument();
@@ -44,6 +55,7 @@ describe("Summary Component", () => {
         taskStatus={TaskStatus.NOT_YET_STARTED}
         applicationStatus={ApplicationStatus.IN_PROGRESS}
         summaryElements={summaryArrayData}
+        isSuperUser={false}
       />,
     );
     expect(screen.getByText("A typical value")).toBeInTheDocument();
@@ -57,6 +69,7 @@ describe("Summary Component", () => {
         taskStatus={TaskStatus.NOT_YET_STARTED}
         applicationStatus={ApplicationStatus.IN_PROGRESS}
         summaryElements={summaryData}
+        isSuperUser={false}
       />,
     );
     expect(screen.getByText("Change")).toBeInTheDocument();
@@ -72,6 +85,7 @@ describe("Summary Component", () => {
         taskStatus={TaskStatus.COMPLETE}
         applicationStatus={ApplicationStatus.IN_PROGRESS}
         summaryElements={summaryData}
+        isSuperUser={false}
       />,
     );
     expect(screen.getAllByRole("definition")).toHaveLength(1);
@@ -84,6 +98,7 @@ describe("Summary Component", () => {
         applicationStatus={ApplicationStatus.IN_PROGRESS}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete={true}
+        isSuperUser={false}
       />,
     );
 
@@ -98,6 +113,7 @@ describe("Summary Component", () => {
         applicationStatus={ApplicationStatus.CANCELLED}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete={true}
+        isSuperUser={false}
       />,
     );
 
@@ -112,6 +128,7 @@ describe("Summary Component", () => {
         applicationStatus={ApplicationStatus.CERTIFICATE_NOT_ISSUED}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete={true}
+        isSuperUser={false}
       />,
     );
 
@@ -126,6 +143,52 @@ describe("Summary Component", () => {
         applicationStatus={ApplicationStatus.CANCELLED}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete={false}
+        isSuperUser={false}
+      />,
+    );
+
+    expect(screen.queryByText("Change")).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("link")).toHaveLength(0);
+  });
+
+  it("shows change link for superuser even when task complete", () => {
+    renderWithProviders(
+      <Summary
+        taskStatus={TaskStatus.COMPLETE}
+        applicationStatus={ApplicationStatus.IN_PROGRESS}
+        summaryElements={summaryDataSuperUserEnabled}
+        showChangeLinksAfterTaskComplete={false}
+        isSuperUser={true}
+      />,
+    );
+
+    expect(screen.getByText("Change")).toBeInTheDocument();
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  it("does not show change link for superuser when application is cancelled", () => {
+    renderWithProviders(
+      <Summary
+        taskStatus={TaskStatus.COMPLETE}
+        applicationStatus={ApplicationStatus.CANCELLED}
+        summaryElements={summaryDataSuperUserEnabled}
+        showChangeLinksAfterTaskComplete={false}
+        isSuperUser={true}
+      />,
+    );
+
+    expect(screen.queryByText("Change")).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("link")).toHaveLength(0);
+  });
+
+  it("does not show change link for superuser when cert is not issued", () => {
+    renderWithProviders(
+      <Summary
+        taskStatus={TaskStatus.COMPLETE}
+        applicationStatus={ApplicationStatus.CERTIFICATE_NOT_ISSUED}
+        summaryElements={summaryDataSuperUserEnabled}
+        showChangeLinksAfterTaskComplete={false}
+        isSuperUser={true}
       />,
     );
 

@@ -1,11 +1,10 @@
-import { AttributeValue } from "@aws-sdk/client-dynamodb";
 import {
   MessageAttributeValue,
   SendMessageCommand,
   SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { NativeAttributeValue } from "@aws-sdk/util-dynamodb";
 import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
@@ -28,7 +27,7 @@ class SQService {
    * Send a message to EDAP integration queue
    * @param messageBody
    */
-  public sendDbStreamMessage(messageBody: DynamoDBRecord) {
+  public sendDbStreamMessage(messageBody: Record<string, NativeAttributeValue>) {
     logger.info("[SQS] Sending message");
     return this.sendMessage(
       messageBody,
@@ -69,7 +68,7 @@ class SQService {
    * @param queueName - The queue name
    */
   private async sendMessage(
-    messageBody: DynamoDBRecord,
+    messageBody: Record<string, NativeAttributeValue>,
     queueName: string,
     queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
@@ -87,11 +86,7 @@ class SQService {
     };
 
     if (isFifo) {
-      const dynamoDB = messageBody.dynamodb;
-      const newImage = dynamoDB?.NewImage;
-      const data = newImage ? unmarshall(newImage as Record<string, AttributeValue>) : undefined;
-
-      params.MessageGroupId = `${data?.pk ?? dynamoDB?.ApproximateCreationDateTime}_${data?.sk ?? Date.now().toString()}`;
+      params.MessageGroupId = `${messageBody?.pk}_${messageBody?.sk ?? Date.now().toString()}`;
       params.MessageDeduplicationId = Date.now().toString();
     }
 

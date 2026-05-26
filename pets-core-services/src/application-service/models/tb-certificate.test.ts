@@ -1,10 +1,14 @@
-import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import awsClients from "../../shared/clients/aws";
 import { YesOrNo } from "../types/enums";
-import { NewTbCertificateIssuedDetails, TbCertificateDbOps } from "./tb-certificate";
+import {
+  ITbCertificateDetailsUpdate,
+  NewTbCertificateIssuedDetails,
+  TbCertificateDbOps,
+} from "./tb-certificate";
 
 describe("Tests for TB Certificate Model", () => {
   const ddbMock = mockClient(awsClients.dynamoDBDocClient);
@@ -24,6 +28,14 @@ describe("Tests for TB Certificate Model", () => {
     clinicName: "Lakeside Medical & TB Screening Centre",
     physicianName: "Dr.Annelie Botha",
     referenceNumber: "test-application-id",
+  };
+
+  const updateTbCertificate: ITbCertificateDetailsUpdate = {
+    applicationId: "test-application-id",
+    comments: "comments",
+    physicianName: "Dr.Annelie Botha",
+    dateUpdated: new Date("2025-06-21"),
+    updatedBy: "test-tb-certificate-creator",
   };
 
   test("Creating new tb certificate", async () => {
@@ -84,5 +96,42 @@ describe("Tests for TB Certificate Model", () => {
       issueDate: new Date("2025-01-21"),
       expiryDate: new Date("2025-06-21"),
     });
+  });
+
+  test("Updating tb  certificate details", async () => {
+    const pk = "APPLICATION#test-application-id";
+    const sk = "APPLICATION#TB#CERTIFICATE";
+    // Arrange
+    ddbMock.on(UpdateCommand).resolves({
+      Attributes: {
+        ...updateTbCertificate,
+        dateUpdated: "2025-03-04T00:00:00.000Z",
+      },
+    });
+    vi.useFakeTimers();
+    const expectedDateTime = "2025-03-04";
+    vi.setSystemTime(expectedDateTime);
+
+    // Act
+    const updatedTBCertDetails = await TbCertificateDbOps.updateTbCertificate(updateTbCertificate);
+
+    // Assert
+    expect(updatedTBCertDetails).toMatchObject({
+      ...updateTbCertificate,
+      dateUpdated: new Date(expectedDateTime),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(ddbMock.commandCalls(UpdateCommand)[0].firstArg.input).toMatchObject({
+      Key: { pk, sk },
+      TableName: "test-application-details",
+    });
+  });
+  test("Updating tb certificate information: should throw error if DynamoDB update fails", async () => {
+    ddbMock.on(UpdateCommand).resolves({});
+
+    await expect(TbCertificateDbOps.updateTbCertificate(updateTbCertificate)).rejects.toThrow(
+      "Update failed",
+    );
   });
 });

@@ -1,7 +1,7 @@
 import { seededApplications } from "../../shared/fixtures/application";
-import { NewChestXRay } from "../models/chest-xray";
+import { NewChestXray } from "../models/chest-xray";
 
-export const seededChestXray: Array<NewChestXRay> = [
+export const seededChestXray: Array<NewChestXray> = [
   {
     applicationId: seededApplications[1].applicationId,
     dateXrayTaken: "2025-09-04",

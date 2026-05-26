@@ -7,7 +7,7 @@ import { PetsAPIGatewayProxyEvent } from "../../shared/types";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicantPhoto } from "../fixtures/applicant-photo";
 import { ImageHelper } from "../helpers/image-helper";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXrayDbOps } from "../models/chest-xray";
 import { getApplicationHandler } from "./get-application";
 
 // Mock generateImageObjectkey
@@ -187,7 +187,11 @@ describe("Getting Application Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: seededApplications[2].clinicId, createdBy: "hardcoded@user.com" },
+        authorizer: {
+          clinicId: seededApplications[2].clinicId,
+          createdBy: "hardcoded@user.com",
+          superuser: "false",
+        },
       },
       pathParameters: { applicationId: seededApplications[2].applicationId },
     };
@@ -274,7 +278,7 @@ describe("Getting Application Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[1].applicationId },
     };
@@ -297,7 +301,7 @@ describe("Getting Application Handler", () => {
 
     // // Mock the chest xray model
     const detailsSpy = vi
-      .spyOn(ChestXRay, "getByApplicationId")
+      .spyOn(ChestXrayDbOps, "getByApplicationId")
       .mockRejectedValue(new Error("DB failure"));
     // Act
     const response = await getApplicationHandler(event);

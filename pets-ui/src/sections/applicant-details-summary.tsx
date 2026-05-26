@@ -2,14 +2,19 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { createNewApplication, postApplicantDetails } from "@/api/api";
+import { createNewApplication, postApplicantDetails, putApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
 import { setApplicantDetailsStatus } from "@/redux/applicantSlice";
 import { setApplicationId, setClinicId, setDateCreated } from "@/redux/applicationSlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication, selectApplicationsList } from "@/redux/store";
+import {
+  selectApplicant,
+  selectApplication,
+  selectApplicationsList,
+  selectUserDetails,
+} from "@/redux/store";
 import { ButtonClass, ImageType, TaskStatus } from "@/utils/enums";
 import {
   convertDateStrToObj,
@@ -26,6 +31,7 @@ const ApplicantReview = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
   const applicationsListData = useAppSelector(selectApplicationsList);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -73,6 +79,18 @@ const ApplicantReview = () => {
             country: applicantData.country,
             postcode: applicantData.postcode,
           });
+        } else {
+          await putApplicantDetails(applicationRes.data.applicationId, {
+            passportNumber: applicantData.passportNumber,
+            countryOfIssue: applicantData.countryOfIssue,
+            applicantHomeAddress1: applicantData.applicantHomeAddress1,
+            applicantHomeAddress2: applicantData.applicantHomeAddress2,
+            applicantHomeAddress3: applicantData.applicantHomeAddress3,
+            townOrCity: applicantData.townOrCity,
+            provinceOrState: applicantData.provinceOrState,
+            country: applicantData.country,
+            postcode: applicantData.postcode,
+          });
         }
 
         // Upload applicant photo if it exists
@@ -99,33 +117,37 @@ const ApplicantReview = () => {
     {
       key: "Full name",
       value: applicantData.fullName,
-      link: isFirstApplication
-        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.fullName}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.fullName}`
+          : undefined,
       hiddenLabel: "full name",
     },
     {
       key: "Date of birth",
       value: formatDateForDisplay(applicantData.dateOfBirth),
-      link: isFirstApplication
-        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.dateOfBirth}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.dateOfBirth}`
+          : undefined,
       hiddenLabel: "date of birth",
     },
     {
       key: "Sex",
       value: applicantData.sex,
-      link: isFirstApplication
-        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.sex}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.sex}`
+          : undefined,
       hiddenLabel: "sex",
     },
     {
       key: "Nationality",
       value: getCountryName(applicantData.countryOfNationality),
-      link: isFirstApplication
-        ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfNationality}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-personal-information?from=check-visa-applicant-details#${attributeToComponentId.countryOfNationality}`
+          : undefined,
       hiddenLabel: "country of nationality",
     },
     {
@@ -149,17 +171,19 @@ const ApplicantReview = () => {
     {
       key: "Passport issue date",
       value: formatDateForDisplay(applicantData.passportIssueDate),
-      link: isFirstApplication
-        ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportIssueDate}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportIssueDate}`
+          : undefined,
       hiddenLabel: "passport issue date",
     },
     {
       key: "Passport expiry date",
       value: formatDateForDisplay(applicantData.passportExpiryDate),
-      link: isFirstApplication
-        ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportExpiryDate}`
-        : undefined,
+      link:
+        isFirstApplication || userData.isSuperUser
+          ? `/visa-applicant-passport-information?from=check-visa-applicant-details#${attributeToComponentId.passportExpiryDate}`
+          : undefined,
       hiddenLabel: "passport expiry date",
     },
     {
@@ -220,6 +244,7 @@ const ApplicantReview = () => {
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
         showChangeLinksAfterTaskComplete
+        isSuperUser={userData.isSuperUser}
       />
 
       <Button

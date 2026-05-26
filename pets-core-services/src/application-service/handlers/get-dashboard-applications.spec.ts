@@ -31,7 +31,7 @@ describe("Getting Applications Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "", createdBy: "hardcoded@user.com", superuser: "false" },
       },
     };
 
@@ -50,7 +50,7 @@ describe("Getting Applications Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "clinic-123", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "clinic-123", createdBy: "hardcoded@user.com", superuser: "false" },
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -96,7 +96,7 @@ describe("Getting Applications Handler", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access

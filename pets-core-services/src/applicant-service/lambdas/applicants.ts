@@ -38,7 +38,7 @@ export const routes: PetsRoute[] = [
       .before(validateClinicAndApplication)
       .handler(updateApplicantHandler),
     requestBodySchema: ApplicantUpdateRequestSchema.openapi({
-      description: "Details about an Applicant",
+      description: "Applicant update (base or super user)",
     }),
     responseSchema: ApplicantUpdateResponseSchema.openapi({
       description: "Updated Applicant Details",
