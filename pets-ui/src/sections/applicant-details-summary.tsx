@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
-import { createNewApplication, postApplicantDetails } from "@/api/api";
+import { createNewApplication, postApplicantDetails, putApplicantDetails } from "@/api/api";
 import Button from "@/components/button/button";
 import Summary from "@/components/summary/summary";
 import { useApplicantPhoto } from "@/context/applicantPhotoContext";
@@ -71,6 +71,18 @@ const ApplicantReview = () => {
             countryOfIssue: applicantData.countryOfIssue,
             issueDate: issueDateStr,
             expiryDate: expiryDateStr,
+            applicantHomeAddress1: applicantData.applicantHomeAddress1,
+            applicantHomeAddress2: applicantData.applicantHomeAddress2,
+            applicantHomeAddress3: applicantData.applicantHomeAddress3,
+            townOrCity: applicantData.townOrCity,
+            provinceOrState: applicantData.provinceOrState,
+            country: applicantData.country,
+            postcode: applicantData.postcode,
+          });
+        } else {
+          await putApplicantDetails(applicationRes.data.applicationId, {
+            passportNumber: applicantData.passportNumber,
+            countryOfIssue: applicantData.countryOfIssue,
             applicantHomeAddress1: applicantData.applicantHomeAddress1,
             applicantHomeAddress2: applicantData.applicantHomeAddress2,
             applicantHomeAddress3: applicantData.applicantHomeAddress3,

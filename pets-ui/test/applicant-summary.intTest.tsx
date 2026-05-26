@@ -390,4 +390,52 @@ describe("ApplicantReview", () => {
     expect(screen.queryByRole("link", { name: "Change home address country" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Change applicant photo" })).toBeInTheDocument();
   });
+
+  test("calls put endpoint to submit address details when previous application exists", async () => {
+    const preloadedState = {
+      applicant: {
+        status: TaskStatus.IN_PROGRESS,
+        fullName: "Sigmund Sigmundson",
+        sex: "Male",
+        dateOfBirth: { year: "1901", month: "1", day: "1" },
+        countryOfNationality: "NOR",
+        passportNumber: "1234",
+        countryOfIssue: "FIN",
+        passportIssueDate: { year: "1902", month: "02", day: "2" },
+        passportExpiryDate: { year: "2053", month: "03", day: "3" },
+        applicantHomeAddress1: "The Bell Tower",
+        applicantHomeAddress2: "Hallgrimskirkja",
+        applicantHomeAddress3: "Hallgrimstorg 1",
+        townOrCity: "Reykjavik",
+        provinceOrState: "Reykjavik",
+        country: "ISL",
+        postcode: "101",
+        applicantPhotoFileName: "photo.jpg",
+      },
+      applicationsList: [
+        {
+          applicationStatus: ApplicationStatus.CANCELLED,
+          applicationId: "app-01",
+          clinicId: "my-clinic",
+          dateCreated: {
+            year: "2000",
+            month: "12",
+            day: "12",
+          },
+        },
+      ],
+    };
+
+    renderWithProviders(<ApplicantReview />, { preloadedState });
+
+    mock.onPost("/application").reply(200, { applicationId: "abc-123", dateCreated: "2010-01-01" });
+    mock.onPut("/applicant/update/abc-123").reply(200);
+
+    await user.click(screen.getByRole("button"));
+
+    expect(mock.history[0].url).toEqual("/application");
+    expect(mock.history[1].url).toEqual("/applicant/update/abc-123");
+    expect(mock.history).toHaveLength(2);
+    expect(useNavigateMock).toHaveBeenLastCalledWith("/visa-applicant-details-confirmed");
+  });
 });
