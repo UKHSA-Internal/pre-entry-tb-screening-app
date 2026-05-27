@@ -56,9 +56,7 @@ const SputumDecisionSummary = () => {
       link: "/is-sputum-collection-required?from=/check-sputum-decision-information",
       hiddenLabel: "sputum collection required",
       enableForSuperUser:
-        applicationData.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE
-          ? false
-          : true,
+        applicationData.applicationStatus !== ApplicationStatus.CERTIFICATE_AVAILABLE,
     },
   ];
 
