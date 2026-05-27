@@ -170,6 +170,7 @@ const TbSummary = () => {
           value,
           link: `${CURRENT_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
           hiddenLabel: `Current ${key.toLowerCase()}`,
+          enableForSuperUser: true,
         };
       })
     : [];
@@ -181,6 +182,7 @@ const TbSummary = () => {
           value: travelData[field],
           link: `${UK_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
           hiddenLabel: `UK ${key.toLowerCase()}`,
+          enableForSuperUser: true,
         };
       })
     : [];
@@ -192,24 +194,28 @@ const TbSummary = () => {
           value: applicantData.fullName,
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
           hiddenLabel: "Full name",
+          enableForSuperUser: true,
         },
         {
           key: "Nationality",
           value: getCountryName(applicantData.countryOfNationality),
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
           hiddenLabel: "Nationality",
+          enableForSuperUser: true,
         },
         {
           key: "Date of birth",
           value: formatDateForDisplay(applicantData.dateOfBirth),
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
           hiddenLabel: "Date of birth",
+          enableForSuperUser: true,
         },
         {
           key: "Sex",
           value: applicantData.sex,
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
           hiddenLabel: "Sex",
+          enableForSuperUser: true,
         },
         {
           key: "Passport number",
@@ -221,24 +227,28 @@ const TbSummary = () => {
           value: formatDateForDisplay(applicantData.passportIssueDate),
           link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
           hiddenLabel: "Passport issue date",
+          enableForSuperUser: true,
         },
         {
           key: "Passport expiry date",
           value: formatDateForDisplay(applicantData.passportExpiryDate),
           link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
           hiddenLabel: "Passport expiry date",
+          enableForSuperUser: true,
         },
         {
           key: "UKVI visa category",
           value: travelData.visaCategory,
           link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
           hiddenLabel: "UKVI visa category",
+          enableForSuperUser: true,
         },
         {
           key: "Photo",
           value: applicantData.applicantPhotoFileName || "Not provided",
           link: `/upload-visa-applicant-photo?from=tb-certificate-summary`,
           hiddenLabel: "Photo",
+          enableForSuperUser: true,
         },
       ]
     : [
