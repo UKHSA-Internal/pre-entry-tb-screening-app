@@ -13,7 +13,7 @@ import {
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
 import { selectApplication, selectSputumDecision, selectUserDetails } from "@/redux/store";
-import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const SputumDecisionSummary = () => {
   const sputumDecisionData = useAppSelector(selectSputumDecision);
@@ -55,7 +55,10 @@ const SputumDecisionSummary = () => {
       value: sputumDecisionData.isSputumRequired === YesOrNo.YES ? "Yes" : "No",
       link: "/is-sputum-collection-required?from=/check-sputum-decision-information",
       hiddenLabel: "sputum collection required",
-      enableForSuperUser: true,
+      enableForSuperUser:
+        applicationData.applicationStatus === ApplicationStatus.CERTIFICATE_AVAILABLE
+          ? false
+          : true,
     },
   ];
 
