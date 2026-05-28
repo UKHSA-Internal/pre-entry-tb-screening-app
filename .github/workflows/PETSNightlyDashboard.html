@@ -67,9 +67,18 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
+        /* Tooltip for the combination pass rate card */
+        .metric-card .metric-note {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            font-style: italic;
+        }
         
         .status-pass { color: #10b981; }
         .status-fail { color: #ef4444; }
+        .status-pending { color: #f59e0b; }
         
         .environment-section {
             background: white;
@@ -161,6 +170,11 @@
             gap: 12px;
             margin-top: 16px;
         }
+
+        /* 4-column layout when the card is wide enough */
+        @media (min-width: 600px) {
+            .test-stats { grid-template-columns: repeat(4, 1fr); }
+        }
         
         .stat-item {
             background: white;
@@ -233,6 +247,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .error-detail {
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
         
         @media (max-width: 768px) {
             .header h1 {
@@ -288,7 +318,12 @@
         
         function loadDashboard() {
             fetch('./test-results.json')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status} ${res.statusText} — could not load test-results.json`);
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     const dashboard = document.getElementById('dashboard');
                     const loading = document.getElementById('loading');
@@ -303,10 +338,12 @@
                         <div class="metric-label">Overall Status</div>
                     </div>`;
                     
-                    // Success Rate
+                    // Combination Pass Rate (previously "Success Rate" — this is
+                    // env×browser combinations, not individual test pass rate)
                     html += `<div class="metric-card">
                         <div class="metric-value">${data.successRate}%</div>
-                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-label">Combination Pass Rate</div>
+                        <div class="metric-note">env × browser combinations</div>
                     </div>`;
                     
                     // Total Tests
@@ -325,6 +362,12 @@
                     html += `<div class="metric-card">
                         <div class="metric-value status-fail">${data.totalFailed}</div>
                         <div class="metric-label">Failed</div>
+                    </div>`;
+
+                    // Pending — surfaces skipped/pending tests that could mask failures
+                    html += `<div class="metric-card">
+                        <div class="metric-value status-pending">${data.totalPending ?? 0}</div>
+                        <div class="metric-label">Pending</div>
                     </div>`;
                     
                     // Combinations
@@ -367,7 +410,7 @@
                                         <div class="stat-label">Failed</div>
                                     </div>
                                     <div class="stat-item">
-                                        <div class="stat-value" style="color: #f59e0b">${counts.pending}</div>
+                                        <div class="stat-value" style="color: #f59e0b">${counts.pending ?? 0}</div>
                                         <div class="stat-label">Pending</div>
                                     </div>
                                 </div>
@@ -380,7 +423,7 @@
                     // Footer
                     html += `<div class="footer">
                         <a href="${data.runUrl}" target="_blank" class="btn-link">
-                            📊 View Full Test Reports
+                            📊 View GitHub Actions Run
                         </a>
                         <p class="timestamp">
                             Last updated: ${formatDate(data.timestamp)}<br>
@@ -393,11 +436,11 @@
                     dashboard.style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Error loading dashboard:', error);
-                    document.getElementById('loading').innerHTML = 
-                        '<div class="spinner"></div>' +
-                        '<h2>Error loading results</h2>' +
-                        '<p>Please try refreshing the page</p>';
+                    console.error('Dashboard load error:', error);
+                    document.getElementById('loading').innerHTML =
+                        '<h2>⚠️ Error loading results</h2>' +
+                        '<p>Please try refreshing the page</p>' +
+                        `<pre class="error-detail">${error.message}</pre>`;
                 });
         }
         

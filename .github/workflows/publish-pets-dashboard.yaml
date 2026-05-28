@@ -33,10 +33,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install jq and bc
+        run: sudo apt-get update && sudo apt-get install -y jq bc
 
       - name: Make script executable
         run: chmod +x scripts/execute.sh
@@ -53,29 +53,32 @@ jobs:
           if [ -f plan_execution_report.json ]; then
             mv plan_execution_report.json reports/plan_execution_report.json
           else
+            # .jobs must be an object (keyed) to match the real Virtuoso response shape.
             echo '{"outcome":"ERROR","jobs":{}}' > reports/plan_execution_report.json
           fi
 
       - name: Upload report artifact
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: execution-report-${{ env.PLAN_ID }}-${{ github.run_attempt }}
           path: reports/plan_execution_report.json
+          retention-days: 7
 
       # ── Transform report → test-results.json for the dashboard ──────────
       #
-      # Virtuoso returns .jobs as a keyed object (not an array).
-      # Actual field names on each job object from Virtuoso:
-      #   .outcome                    "PASS" | "FAIL" | "ERROR"
-      #   .totalTestExecutions        integer
-      #   .successfulTestExecutions   integer
-      #   .failedTestExecutions       integer
-      #   .skippedTestExecutions      integer
+      # Confirmed Virtuoso API field names (from plan_execution_report.json):
+      #   .statistics.journeyLevel.outcome    "PASS" | "FAIL" | "ERROR"  (overall)
+      #   .jobs                               keyed object  { "jobId": { ... }, ... }
+      #   .jobs.<id>.outcome                  "PASS" | "FAIL" | "ERROR"
+      #   .jobs.<id>.browser                  "CHROME" | "FIREFOX" | "EDGE"
+      #   .jobs.<id>.totalTestExecutions      integer
+      #   .jobs.<id>.successfulTestExecutions integer
+      #   .jobs.<id>.failedTestExecutions     integer
+      #   .jobs.<id>.skippedTestExecutions    integer
       #
-      # NOTE: Virtuoso does not include a .browser field per job when there
-      # is only one job in the plan. The fallback below maps the single job
-      # to Chrome and leaves Firefox/Edge as no-data (status=SKIP).
+      # When no .browser field is present (single-job plan) the first job is
+      # mapped to Chrome; Firefox and Edge are marked SKIP (no data, not a failure).
       - name: Transform results to dashboard format
         if: always()
         run: |
@@ -84,26 +87,27 @@ jobs:
           BROWSERS=("chrome" "firefox" "edge")
 
           TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
-          OVERALL_OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' "$REPORT")
+
+          OVERALL_OUTCOME=$(jq -r '.statistics.journeyLevel.outcome // .outcome // "ERROR"' "$REPORT" 2>/dev/null || echo "ERROR")
+          OVERALL_STATUS=$([[ "$OVERALL_OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
 
           mkdir -p dashboard
 
-          echo "{"               > dashboard/test-results.json
-          echo '  "results": {' >> dashboard/test-results.json
-          echo "    \"$ENVIRONMENT\": {" >> dashboard/test-results.json
-          echo "      \"displayName\": \"$ENV_DISPLAY_NAME\"," >> dashboard/test-results.json
+          # Build the per-browser results as a jq object — no string concatenation,
+          # so special characters in any variable cannot produce invalid JSON.
+          ENV_OBJ='{}'
 
-          FIRST_BROWSER=true
           for BROWSER in "${BROWSERS[@]}"; do
             BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
 
-            # .jobs is a keyed object — iterate its values
+            # .jobs is a keyed object — iterate values via to_entries
             JOB=$(jq -c \
               --arg b "$BROWSER_UPPER" \
               '.jobs | to_entries[].value | select((.browser // "" | ascii_upcase) == $b)' \
               "$REPORT" 2>/dev/null | head -1 || true)
 
-            # Fallback: if no job carries a .browser field, map the first job to chrome only
+            # Fallback: if no job carries a .browser field, map the single job
+            # to chrome only; leave firefox/edge as SKIP (no data, not a failure).
             if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
               HAS_BROWSER=$(jq '[.jobs | to_entries[].value | .browser] | map(select(. != null)) | length' \
                 "$REPORT" 2>/dev/null || echo "0")
@@ -120,58 +124,74 @@ jobs:
               PENDING=$(echo "$JOB" | jq -r '.skippedTestExecutions      // 0')
               STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
             else
-              # No data for this browser — mark as SKIP rather than FAIL
+              # No data for this browser — SKIP, not FAIL
               STATUS="SKIP"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
             fi
 
-            TOTAL_TESTS=$((TOTAL_TESTS   + TOTAL))
-            TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
-            TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
+            TOTAL_TESTS=$((TOTAL_TESTS     + TOTAL))
+            TOTAL_PASSED=$((TOTAL_PASSED   + PASSED))
+            TOTAL_FAILED=$((TOTAL_FAILED   + FAILED))
             TOTAL_PENDING=$((TOTAL_PENDING + PENDING))
 
-            [[ "$FIRST_BROWSER" == "false" ]] && echo "," >> dashboard/test-results.json
-            cat >> dashboard/test-results.json <<EOF
-          "$BROWSER": {
-            "status": "$STATUS",
-            "testCounts": {
-              "total":   $TOTAL,
-              "passed":  $PASSED,
-              "failed":  $FAILED,
-              "pending": $PENDING
-            }
-          }
-          EOF
-            FIRST_BROWSER=false
-            echo "  $BROWSER: status=$STATUS total=$TOTAL passed=$PASSED failed=$FAILED"
+            BROWSER_OBJ=$(jq -n \
+              --arg     status  "$STATUS" \
+              --argjson total   "${TOTAL:-0}" \
+              --argjson passed  "${PASSED:-0}" \
+              --argjson failed  "${FAILED:-0}" \
+              --argjson pending "${PENDING:-0}" \
+              '{"status": $status, "testCounts": {"total": $total, "passed": $passed, "failed": $failed, "pending": $pending}}')
+
+            ENV_OBJ=$(echo "$ENV_OBJ" | jq \
+              --arg     b    "$BROWSER" \
+              --argjson bobj "$BROWSER_OBJ" \
+              '. + {($b): $bobj}')
+
+            echo "$BROWSER: status=$STATUS  total=$TOTAL  passed=$PASSED  failed=$FAILED"
           done
 
-          OVERALL_STATUS=$([[ "$OVERALL_OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
+          # Add display name to the env object
+          ENV_OBJ=$(echo "$ENV_OBJ" | jq --arg name "$ENV_DISPLAY_NAME" '. + {"displayName": $name}')
 
-          # Calculate actual success rate from real counts
+          # Test-based success rate (passed / totalTests) — more meaningful than
+          # combination pass rate when only one environment is being tested.
+          SUCCESS_RATE="0.0"
           if [[ "$TOTAL_TESTS" -gt 0 ]]; then
             SUCCESS_RATE=$(echo "scale=1; $TOTAL_PASSED * 100 / $TOTAL_TESTS" | bc)
-          else
-            SUCCESS_RATE="0.0"
+            # bc may output .N instead of 0.N on some systems — normalise to valid JSON
+            SUCCESS_RATE=$(echo "$SUCCESS_RATE" | sed 's/^\./0./')
           fi
 
           FAILED_COMBINATIONS=$([[ "$OVERALL_STATUS" == "PASS" ]] && echo "0" || echo "1")
 
-          cat >> dashboard/test-results.json <<EOF
-            }
-          },
-          "overallStatus":      "$OVERALL_STATUS",
-          "totalCombinations":  1,
-          "failedCombinations": $FAILED_COMBINATIONS,
-          "totalTests":         $TOTAL_TESTS,
-          "totalPassed":        $TOTAL_PASSED,
-          "totalFailed":        $TOTAL_FAILED,
-          "totalPending":       $TOTAL_PENDING,
-          "successRate":        $SUCCESS_RATE,
-          "runUrl":             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-          "branch":             "${{ github.ref_name }}",
-          "timestamp":          "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
+          # Write test-results.json entirely via jq — no string concatenation
+          jq -n \
+            --argjson envObj             "$ENV_OBJ" \
+            --arg     envKey             "$ENVIRONMENT" \
+            --arg     overallStatus      "$OVERALL_STATUS" \
+            --argjson totalCombinations  1 \
+            --argjson failedCombinations $FAILED_COMBINATIONS \
+            --argjson totalTests         $TOTAL_TESTS \
+            --argjson totalPassed        $TOTAL_PASSED \
+            --argjson totalFailed        $TOTAL_FAILED \
+            --argjson totalPending       $TOTAL_PENDING \
+            --argjson successRate        $SUCCESS_RATE \
+            --arg     runUrl             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg     branch             "${{ github.ref_name }}" \
+            --arg     timestamp          "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{
+              "results":            { ($envKey): $envObj },
+              "overallStatus":      $overallStatus,
+              "totalCombinations":  $totalCombinations,
+              "failedCombinations": $failedCombinations,
+              "totalTests":         $totalTests,
+              "totalPassed":        $totalPassed,
+              "totalFailed":        $totalFailed,
+              "totalPending":       $totalPending,
+              "successRate":        $successRate,
+              "runUrl":             $runUrl,
+              "branch":             $branch,
+              "timestamp":          $timestamp
+            }' > dashboard/test-results.json
 
           echo "=== test-results.json ==="
           cat dashboard/test-results.json
