@@ -87,8 +87,10 @@ describe("TbCertificateQuestionPage", () => {
 
     const yesRadio = screen.getByRole("radio", { name: "Yes" });
     const radioGroupElement = yesRadio.closest("fieldset");
-    expect(radioGroupElement).toBeInTheDocument();
-    expect(within(radioGroupElement!).getByText(expectedErrorMessageText)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(radioGroupElement).toBeInTheDocument();
+      expect(within(radioGroupElement!).getByText(expectedErrorMessageText)).toBeInTheDocument();
+    });
   });
 
   it("renders an in-focus error summary when continue button pressed but required questions not answered", async () => {

@@ -83,7 +83,7 @@ export class Application extends IApplication {
       const updatedDetails: IApplication = {
         ...details,
         dateCreated: new Date(),
-        applicationStatus: ApplicationStatus.inProgress,
+        applicationStatus: ApplicationStatus.travelInfoInProgress,
         applicationStatusGroup: ApplicationStatusGroup.incomplete,
       };
       const newApplication = new Application(updatedDetails);

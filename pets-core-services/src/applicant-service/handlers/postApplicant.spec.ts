@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { CountryCode } from "../../shared/country";
 import { seededApplications } from "../../shared/fixtures/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededApplicants } from "../fixtures/applicants";
 import { AllowedSex } from "../types/enums";
@@ -51,6 +52,9 @@ describe("Test for Posting Applicant into DB", () => {
       pathParameters: { applicationId: seededApplications[0].applicationId },
       parsedBody: newApplicantDetails,
     };
+    const updatedApplication = seededApplications[0];
+    updatedApplication.applicationStatus = ApplicationStatus.travelInfoInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
 
     // Act
     const response = await postApplicantHandler(event);

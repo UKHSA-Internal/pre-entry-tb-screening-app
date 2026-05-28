@@ -12,12 +12,13 @@ import {
   setSputumDecisionCompletionDate,
   setSputumDecisionStatus,
 } from "@/redux/sputumDecisionSlice";
-import { selectApplication, selectSputumDecision } from "@/redux/store";
-import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
+import { selectApplication, selectSputumDecision, selectUserDetails } from "@/redux/store";
+import { ApplicationStatus, ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 
 const SputumDecisionSummary = () => {
   const sputumDecisionData = useAppSelector(selectSputumDecision);
   const applicationData = useAppSelector(selectApplication);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -52,8 +53,10 @@ const SputumDecisionSummary = () => {
     {
       key: "Sputum required",
       value: sputumDecisionData.isSputumRequired === YesOrNo.YES ? "Yes" : "No",
-      link: "/is-sputum-collection-required",
+      link: "/is-sputum-collection-required?from=/check-sputum-decision-information",
       hiddenLabel: "sputum collection required",
+      enableForSuperUser:
+        applicationData.applicationStatus !== ApplicationStatus.CERTIFICATE_AVAILABLE,
     },
   ];
 
@@ -64,6 +67,7 @@ const SputumDecisionSummary = () => {
         taskStatus={sputumDecisionData.status}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
+        isSuperUser={userData.isSuperUser}
       />
 
       {(sputumDecisionData.status == TaskStatus.NOT_YET_STARTED ||

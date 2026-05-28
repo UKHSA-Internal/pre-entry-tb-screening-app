@@ -2,9 +2,11 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockAdapter from "axios-mock-adapter";
 import React from "react";
+import { HelmetProvider } from "react-helmet-async";
 import { Mock } from "vitest";
 
 import { ApplicantPhotoProvider, useApplicantPhoto } from "@/context/applicantPhotoContext";
+import DashboardPage from "@/pages/dashboard";
 import Dashboard from "@/sections/dashboard";
 import { ApplicationStatus, PositiveOrNegative, TaskStatus, YesOrNo } from "@/utils/enums";
 import { renderWithProviders } from "@/utils/test-utils";
@@ -134,6 +136,66 @@ const applicationsInProgressSlice = [
     dateCreated: "2026-04-07T15:32:34.470Z",
     applicationStatus: ApplicationStatus.IN_PROGRESS,
   },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.TRAVEL_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.MEDICAL_SCREENING_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.CHEST_XRAY_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS,
+  },
+  {
+    applicationId: "17811cbc-501d-4051-94ae-67692fefff00",
+    applicantId: "COUNTRY#AFG#PASSPORT#abc9",
+    applicantName: "Name Five",
+    passportNumber: "abc9",
+    countryOfIssue: "AFG",
+    clinicId: "my-clinic",
+    dateCreated: "2026-04-07T15:32:34.470Z",
+    applicationStatus: ApplicationStatus.CERTIFICATE_IN_PROGRESS,
+  },
 ];
 
 describe("Dashboard", () => {
@@ -175,7 +237,12 @@ describe("Dashboard", () => {
   it("table data displays correctly", () => {
     const preloadedState = {
       applicationsInProgress: applicationsInProgressSlice,
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     renderWithProviders(
@@ -203,6 +270,36 @@ describe("Dashboard", () => {
     expect(
       screen.getByRole("row", {
         name: "Name Four abc4 Afghanistan 7 April 2022 Continue: sputum results",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: travel information",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: TB symptoms and medical history",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: upload chest X-ray",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: radiological outcome",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: make a sputum decision",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("row", {
+        name: "Name Five abc9 Afghanistan 7 April 2026 Continue: TB certificate outcome",
       }),
     ).toBeInTheDocument();
 
@@ -425,7 +522,12 @@ describe("Dashboard", () => {
           applicationStatus: ApplicationStatus.IN_PROGRESS,
         },
       ],
-      clinic: { clinicId: "my-clinic" },
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
     };
 
     const { store } = renderWithProviders(
@@ -464,6 +566,7 @@ describe("Dashboard", () => {
 
     mock.onGet("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62").reply(200, {
       applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
+      clinicId: "my-clinic",
       applicantPhotoUrl: "http://localhost:4566/photos/photo.jpg",
       travelInformation: {
         ukAddressLine1: "99 Downing Street",
@@ -567,11 +670,23 @@ describe("Dashboard", () => {
       },
     });
 
+    mock.onGet("/clinics/my-clinic").reply(200, {
+      clinic: {
+        clinicId: "my-clinic",
+        name: "",
+        country: "",
+        city: "",
+        startDate: "",
+        createdBy: "",
+      },
+    });
+
     await user.click(screen.getByRole("link", { name: "Continue with screening" }));
 
     expect(mock.history[0].url).toEqual("/applicant/search");
     expect(mock.history[1].url).toEqual("/application/271554de-f2a9-4660-8ddf-7f070f1b8a62");
-    expect(mock.history).toHaveLength(2);
+    expect(mock.history[2].url).toEqual("/clinics/my-clinic");
+    expect(mock.history).toHaveLength(3);
 
     expect(store.getState().application).toMatchObject({
       applicationId: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
@@ -734,7 +849,7 @@ describe("Dashboard", () => {
       certificateNumber: "271554de-f2a9-4660-8ddf-7f070f1b8a62",
       clinic: {
         city: "",
-        clinicId: "",
+        clinicId: "my-clinic",
         country: "",
         createdBy: "",
         name: "",
@@ -752,5 +867,71 @@ describe("Dashboard", () => {
       expect(contextUrl).toBe("http://localhost:4566/photos/photo.jpg");
       expect(useNavigateMock).toHaveBeenLastCalledWith("/tracker");
     });
+  });
+
+  it("notification banner displays correctly for superuser", () => {
+    const preloadedState = {
+      applicationsInProgress: [applicationsInProgressSlice[0]],
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: true,
+      },
+    };
+
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <HelmetProvider>
+          <DashboardPage />
+        </HelmetProvider>
+      </ApplicantPhotoProvider>,
+      { preloadedState },
+    );
+
+    expect(
+      screen.getByRole("row", {
+        name: "Name One abc1 Afghanistan 7 April 2021 Continue with screening",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("You are signed in as a super user")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You have access to additional administrative features. Changes might affect all users.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("notification banner does not display for non-super user", () => {
+    const preloadedState = {
+      applicationsInProgress: [applicationsInProgressSlice[0]],
+      user: {
+        jobTitle: "",
+        clinicId: "my-clinic",
+        name: "",
+        isSuperUser: false,
+      },
+    };
+
+    renderWithProviders(
+      <ApplicantPhotoProvider>
+        <HelmetProvider>
+          <DashboardPage />
+        </HelmetProvider>
+      </ApplicantPhotoProvider>,
+      { preloadedState },
+    );
+
+    expect(
+      screen.getByRole("row", {
+        name: "Name One abc1 Afghanistan 7 April 2021 Continue with screening",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("You are signed in as a super user")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "You have access to additional administrative features. Changes might affect all users.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });

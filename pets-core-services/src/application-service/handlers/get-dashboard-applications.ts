@@ -5,10 +5,18 @@ import { DashboardApplication } from "../models/dashboard-applications";
 
 export const getDashboardApplicationsHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
-    const { clinicId } = event.requestContext.authorizer;
+    const clinicIdFromToken = event.requestContext.authorizer.clinicId;
+
+    const clinicIdFromRequest = event?.queryStringParameters?.clinicId;
+    let clinicId;
+
     const SUPPORT_CLINIC_ID = process.env.SUPPORT_CLINIC_ID;
-    if (clinicId === SUPPORT_CLINIC_ID) {
+    //Accept clinic Id  from request only from support clinics, for others take from token
+    if (clinicIdFromToken === SUPPORT_CLINIC_ID) {
       logger.info("Logged in as a support clinicId");
+      clinicId = clinicIdFromRequest;
+    } else {
+      clinicId = clinicIdFromToken;
     }
     logger.info({ clinicId }, "Retrieve Applications handler triggered");
 

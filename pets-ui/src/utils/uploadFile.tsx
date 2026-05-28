@@ -30,9 +30,10 @@ const uploadFile = async (
   const SSE_KEY_ID = import.meta.env.VITE_SSE_KEY_ID as string;
 
   const SSE_ALGORITHM = "aws:kms";
+  const normalizedContentType = file.type === "image/jpg" ? "image/jpeg" : file.type;
   await axios.put(uploadUrl, file, {
     headers: {
-      "Content-Type": file.type,
+      "Content-Type": normalizedContentType,
       "x-amz-server-side-encryption": SSE_ALGORITHM,
       "x-amz-server-side-encryption-aws-kms-key-id": SSE_KEY_ID,
       "x-amz-checksum-sha256": checksum,

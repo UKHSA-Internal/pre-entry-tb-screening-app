@@ -26,6 +26,7 @@ const ApplicantPhotoForm = () => {
   const methods = useForm<ReduxApplicantDetailsType>({
     criteriaMode: "all",
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
   });
 
   const {
@@ -108,6 +109,7 @@ const ApplicantPhotoForm = () => {
               setFileState={setApplicantPhoto}
               setFileName={setApplicantPhotoName}
               existingFileName={applicantPhotoFile?.name ?? applicantData.applicantPhotoFileName}
+              removeFieldset
             />
 
             <SubmitButton id="continue" class={ButtonClass.DEFAULT} text="Continue" />

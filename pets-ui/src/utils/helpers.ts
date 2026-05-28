@@ -5,7 +5,7 @@ import {
   ReduxSputumRequirementType,
   ReduxSputumType,
 } from "@/types";
-import { PositiveOrNegative, YesOrNo } from "@/utils/enums";
+import { ApplicationStatus, PositiveOrNegative, YesOrNo } from "@/utils/enums";
 
 import { countryList } from "./countryList";
 import {
@@ -317,8 +317,8 @@ const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
-const logError = (error: Error, info: { componentStack?: string | null }) => {
-  console.error(`Error: + ${error}`);
+const logError = (error: unknown, info: { componentStack?: string | null }) => {
+  console.error("Error: + ", error);
   console.error(`Info: + ${JSON.stringify(info)}`);
 };
 
@@ -470,6 +470,16 @@ const upsertAppIntoAppList = (
   }
 };
 
+const inProgressStatuses = [
+  ApplicationStatus.TRAVEL_IN_PROGRESS,
+  ApplicationStatus.MEDICAL_SCREENING_IN_PROGRESS,
+  ApplicationStatus.CHEST_XRAY_IN_PROGRESS,
+  ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS,
+  ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS,
+  ApplicationStatus.SPUTUM_IN_PROGRESS,
+  ApplicationStatus.CERTIFICATE_IN_PROGRESS,
+];
+
 export {
   calculateApplicantAge,
   calculateCertificateExpiryDate,
@@ -481,6 +491,7 @@ export {
   formatDateType,
   getCountryName,
   hasInvalidCharacters,
+  inProgressStatuses,
   isChildUnder11,
   isDateInTheFuture,
   isDateInThePast,

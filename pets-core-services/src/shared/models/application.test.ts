@@ -42,7 +42,7 @@ describe("Tests for Application Model", () => {
       clinicId,
       createdBy,
       applicationId,
-      applicationStatus: ApplicationStatus.inProgress,
+      applicationStatus: ApplicationStatus.travelInfoInProgress,
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -51,7 +51,7 @@ describe("Tests for Application Model", () => {
       Item: {
         clinicId,
         createdBy,
-        applicationStatus: "In Progress",
+        applicationStatus: "Travel Information In Progress",
         pk: "APPLICATION#test-application-id",
         sk: "APPLICATION#ROOT",
       },
@@ -124,7 +124,7 @@ describe("Tests for Application Model", () => {
     });
   });
 
-  test("Change application status to 'Cancelled'", async () => {
+  test("Update application status to 'Cancelled'", async () => {
     const dateCreated = "2025-02-07";
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";
@@ -171,7 +171,7 @@ describe("Tests for Application Model", () => {
     });
   });
 
-  test("Change application status related to TB Certificate details", async () => {
+  test("Update application status related to TB Certificate details", async () => {
     const dateCreated = "2025-02-07";
     vi.useFakeTimers();
     const expectedDateTime = "2025-03-04";

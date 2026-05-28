@@ -19,7 +19,12 @@ import {
   setSex,
 } from "@/redux/applicantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectApplicant, selectApplication } from "@/redux/store";
+import {
+  selectApplicant,
+  selectApplication,
+  selectApplicationsList,
+  selectUserDetails,
+} from "@/redux/store";
 import { DateType, ReduxApplicantDetailsType } from "@/types";
 import { countryList } from "@/utils/countryList";
 import { ButtonClass, RadioIsInline, TaskStatus } from "@/utils/enums";
@@ -37,14 +42,20 @@ interface ApplicantPersonalDetailsData {
 const ApplicantPersonalDetailsForm = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationData = useAppSelector(selectApplication);
+  const applicationsListData = useAppSelector(selectApplicationsList);
+  const userData = useAppSelector(selectUserDetails);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const isComplete = applicantData.status === TaskStatus.COMPLETE;
+  const isFirstApplication = applicationsListData.length < 1;
 
-  const methods = useForm<ReduxApplicantDetailsType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxApplicantDetailsType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     control,
     handleSubmit,
@@ -59,7 +70,10 @@ const ApplicantPersonalDetailsForm = () => {
     dispatch(setSex(formData.sex));
     dispatch(setCountryOfNationality(formData.countryOfNationality));
 
-    if (isComplete && applicationData.applicationId) {
+    if (
+      (isComplete && applicationData.applicationId) ||
+      (userData.isSuperUser && !isFirstApplication)
+    ) {
       setIsLoading(true);
       try {
         const dateOfBirthStr = `${formData.dateOfBirth.year}-${standardiseDayOrMonth(formData.dateOfBirth.month)}-${standardiseDayOrMonth(formData.dateOfBirth.day)}`;

@@ -28,22 +28,26 @@ import { clearMedicalScreeningDetails } from "@/redux/medicalScreeningSlice";
 import { clearRadiologicalOutcomeDetails } from "@/redux/radiologicalOutcomeSlice";
 import { clearSputumDecision } from "@/redux/sputumDecisionSlice";
 import { clearSputumDetails } from "@/redux/sputumSlice";
-import { selectUserClinic } from "@/redux/store";
+import { selectUserDetails } from "@/redux/store";
 import { clearTbCertificateDetails } from "@/redux/tbCertificateSlice";
 import { clearTravelDetails } from "@/redux/travelSlice";
 import { ApplicantSearchFormType, ReceivedApplicantDetailsType } from "@/types";
 import { fetchClinic } from "@/utils/clinic";
 import { countryList } from "@/utils/countryList";
 import { ApplicationStatus, ButtonClass } from "@/utils/enums";
+import { inProgressStatuses } from "@/utils/helpers";
 import { handleApplicantPhoto } from "@/utils/photo-helpers";
 import { formRegex } from "@/utils/records";
 
 import { getApplicants, getApplication } from "../api/api";
 
 const ApplicantSearchForm = () => {
-  const userClinicData = useAppSelector(selectUserClinic);
+  const userData = useAppSelector(selectUserDetails);
   const navigate = useNavigate();
-  const methods = useForm<ApplicantSearchFormType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ApplicantSearchFormType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const dispatch = useAppDispatch();
   const { setApplicantPhotoUrl, setApplicantPhotoFile } = useApplicantPhoto();
 
@@ -80,27 +84,28 @@ const ApplicantSearchForm = () => {
     let applicantRes: AxiosResponse<ReceivedApplicantDetailsType> | null = null;
     try {
       applicantRes = await getApplicants(passportDetails);
-      for (const application of applicantRes.data.applications) {
-        const applicationId = application.applicationId;
-        if (!uuidValidate(application.applicationId)) {
-          throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+      if (applicantRes.status == 200) {
+        if (!applicantRes.data || Object.keys(applicantRes.data).length === 0) {
+          await fetchClinic(dispatch);
+          navigate("/no-visa-applicant-found");
+          return;
         }
-        if (application.applicationStatus == ApplicationStatus.SPUTUM_IN_PROGRESS) {
-          application.applicationStatus = ApplicationStatus.IN_PROGRESS;
+        for (const application of applicantRes.data.applications) {
+          const applicationId = application.applicationId;
+          if (!uuidValidate(application.applicationId)) {
+            throw new Error(`Application ID (${applicationId}) is in an invalid UUID format`);
+          }
+          if (inProgressStatuses.includes(application.applicationStatus)) {
+            application.applicationStatus = ApplicationStatus.IN_PROGRESS;
+          }
         }
+        dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
+        dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
       }
-      dispatch(setApplicantDetailsFromApiResponse(applicantRes.data));
-      dispatch(setApplicationsListDetailsFromApiResponse(applicantRes.data.applications));
     } catch (error) {
-      if (axios.isAxiosError(error) && error.status == 404) {
-        await fetchClinic(dispatch);
-        navigate("/no-visa-applicant-found");
-        return;
-      } else {
-        console.error(error);
-        navigate("/sorry-there-is-problem-with-service");
-        return;
-      }
+      console.error(error);
+      navigate("/sorry-there-is-problem-with-service");
+      return;
     }
 
     try {
@@ -127,7 +132,7 @@ const ApplicantSearchForm = () => {
     }
 
     for (const application of applicantRes.data.applications) {
-      if (userClinicData.clinicId && userClinicData.clinicId != application.clinicId) {
+      if (userData.clinicId && userData.clinicId != application.clinicId) {
         continue;
       }
       try {

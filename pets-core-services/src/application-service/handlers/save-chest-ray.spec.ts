@@ -5,9 +5,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import awsClients from "../../shared/clients/aws";
 import { seededApplications } from "../../shared/fixtures/application";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { seededChestXray } from "../fixtures/chest-xray";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXrayDbOps } from "../models/chest-xray";
 import { YesOrNo } from "../types/enums";
 import { SaveChestXrayEvent, saveChestXRayHandler } from "./save-chest-ray";
 
@@ -25,6 +27,7 @@ const newChestXray: SaveChestXrayEvent["parsedBody"] = {
 };
 
 describe("Test for Saving Chest X-ray into DB", () => {
+  // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
   const s3ClientMock = mockClient(awsClients.s3Client);
 
   beforeEach(() => {
@@ -46,7 +49,12 @@ describe("Test for Saving Chest X-ray into DB", () => {
       pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: newChestXray,
     };
-
+    const updatedApplication = seededApplications[3];
+    updatedApplication.applicationStatus = ApplicationStatus.radiologicalOutcomeInProgress;
+    updatedApplication.applicationStatusGroup = ApplicationStatusGroup.incomplete;
+    const updateSpy = vi
+      .spyOn(Application, "updateApplication")
+      .mockResolvedValueOnce(updatedApplication as Application);
     // Act
     const response = await saveChestXRayHandler(event);
 
@@ -58,6 +66,12 @@ describe("Test for Saving Chest X-ray into DB", () => {
       dateXrayTaken: expect.any(String),
       dateCreated: expect.any(String),
     });
+    expect(updateSpy).toHaveBeenCalledWith({
+      applicationId: seededApplications[3].applicationId,
+      applicationStatus: ApplicationStatus.radiologicalOutcomeInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+      updatedBy: "hardcoded@user.com",
+    });
   });
 
   test("Saving a new Chest X-Ray details in different clinic as ukhsa staff", async () => {
@@ -66,7 +80,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[3].applicationId },
       parsedBody: newChestXray,
@@ -112,7 +126,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Arrange;
     const errorLoggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);
     const errorMessage = "Couldn't save it";
-    const chestXrayMock = vi.spyOn(ChestXRay, "createChestXray").mockImplementation(() => {
+    const chestXrayMock = vi.spyOn(ChestXrayDbOps, "createChestXray").mockImplementation(() => {
       throw new Error(errorMessage);
     });
     const existingChestXray = seededChestXray[0];
@@ -147,7 +161,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "postero-anterior.dcm object key is invalid",
+      message: "Image validation failed: invalid object key",
     });
   });
 
@@ -171,7 +185,7 @@ describe("Test for Saving Chest X-ray into DB", () => {
     // Assert
     expect(response.statusCode).toBe(422);
     expect(JSON.parse(response.body)).toMatchObject({
-      message: "postero-anterior.dcm image does not exist",
+      message: "Image validation failed: image not found",
     });
   });
 
@@ -227,7 +241,23 @@ describe("Test for Saving Chest X-ray into DB", () => {
       message: "Request event missing body",
     });
   });
+  test("Update application failure returns a 500 response", async () => {
+    // Arrange;
+    const event: SaveChestXrayEvent = {
+      ...mockAPIGwEvent,
+      pathParameters: { applicationId: seededApplications[3].applicationId },
+      parsedBody: newChestXray,
+    };
+    vi.spyOn(Application, "updateApplication").mockRejectedValueOnce(new Error("DB failure"));
+    // Act
+    const response = await saveChestXRayHandler(event);
 
+    // Assert
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body)).toMatchObject({
+      message: "Something went wrong",
+    });
+  });
   test("Any error returns a 500 response", async () => {
     // Arrange;
     vi.spyOn(global, "decodeURIComponent").mockImplementationOnce(() => {

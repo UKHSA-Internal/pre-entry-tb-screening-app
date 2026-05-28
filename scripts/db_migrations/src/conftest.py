@@ -5,7 +5,7 @@ Requires:
   pip install pytest pytest-docker boto3
 
 DynamoDB Local is started automatically via pytest-docker using
-docker-compose.yml in this directory. Tables are recreated before
+docker-compose-test.yml in this directory. Tables are recreated before
 each test so every test starts with a clean, predictable state.
 """
 
@@ -18,12 +18,17 @@ import pytest
 from os import getenv, path
 from botocore.exceptions import ClientError
 
+from migrations import statistics
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
 APPLICANT_TABLE = "applicant-table"
 APPLICATION_TABLE = "application-table"
+CLINICS_TABLE = "clinics-table"
+MIGRATIONS = getenv("MIGRATIONS", "rewrite_clinic_records")
+AWS_REGION = getenv("AWS_REGION", "eu-west-2")
 DYNAMO_LOCAL_URL = "http://localhost:8000"
 REGION = getenv("AWS_REGION", "eu-west-2")
 
@@ -39,6 +44,9 @@ def _stub_awsglue(dry_run: bool = False):
         return_value={
             "APPLICANT_TABLE": APPLICANT_TABLE,
             "APPLICATION_TABLE": APPLICATION_TABLE,
+            "CLINICS_TABLE": CLINICS_TABLE,
+            "MIGRATIONS": MIGRATIONS,
+            "AWS_REGION": AWS_REGION,
             "DRY_RUN": str(dry_run),
         }
     )
@@ -54,7 +62,7 @@ def _stub_awsglue(dry_run: bool = False):
 
 @pytest.fixture(scope="session")
 def docker_compose_file(pytestconfig):
-    return str(path.join(pytestconfig.rootdir, "docker-compose.yml"))
+    return str(path.join(pytestconfig.rootdir, "docker-compose-test.yml"))
 
 
 # ---------------------------------------------------------------------------
@@ -112,11 +120,13 @@ def tables(dynamodb_local):
     """
     _drop_table_if_exists(dynamodb_local, APPLICANT_TABLE)
     _drop_table_if_exists(dynamodb_local, APPLICATION_TABLE)
+    _drop_table_if_exists(dynamodb_local, CLINICS_TABLE)
 
     applicant_table = _create_table(dynamodb_local, APPLICANT_TABLE)
     application_table = _create_table(dynamodb_local, APPLICATION_TABLE)
+    clinics_table = _create_table(dynamodb_local, CLINICS_TABLE)
 
-    yield applicant_table, application_table
+    yield applicant_table, application_table, clinics_table
 
 
 def _drop_table_if_exists(dynamodb, table_name: str):
@@ -152,10 +162,7 @@ def _create_table(dynamodb, table_name: str):
 
 
 def make_statistics():
-    return {
-        "all_applicants": 0,
-        "skipped_missing": 0,
-        "skipped_migrated": 0,
-        "migrated_applicants": 0,
-        "applicants_to_remove": [],
-    }
+    s = statistics.copy()
+    s["applicants_to_remove"] = []
+
+    return s

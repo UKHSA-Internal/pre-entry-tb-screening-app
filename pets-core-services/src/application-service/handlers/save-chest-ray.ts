@@ -8,8 +8,9 @@ import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { generateImageObjectkey, KeyParameters } from "../helpers/upload";
-import { ChestXRay } from "../models/chest-xray";
+import { ChestXray, ChestXrayDbOps } from "../models/chest-xray";
 import { ImageType, YesOrNo } from "../types/enums";
 import { ApplicationNotFound, InvalidObjectKey, ObjectNotFound } from "../types/errors";
 import { ChestXRayRequestSchema } from "../types/zod-schema";
@@ -52,9 +53,9 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       }
     }
 
-    let chestXray: ChestXRay;
+    let chestXray: ChestXray;
     try {
-      chestXray = await ChestXRay.createChestXray({
+      chestXray = await ChestXrayDbOps.createChestXray({
         ...parsedBody,
         createdBy,
         applicationId,
@@ -65,6 +66,14 @@ export const saveChestXRayHandler = async (event: SaveChestXrayEvent) => {
       throw error;
     }
 
+    // Update details in APPLICATION#ROOT record as well
+
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: ApplicationStatus.radiologicalOutcomeInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
     return HttpResponses.ok({
       ...chestXray.toJson(),
     });
@@ -85,11 +94,11 @@ async function validateImages(images: ChestXRayImages, applicationId: string, cl
     }
     if (error instanceof InvalidObjectKey) {
       logger.error(error, "Object key does not match expected");
-      return error.message;
+      return "Image validation failed: invalid object key";
     }
     if (error instanceof ObjectNotFound) {
       logger.error(error, "Object not found in S3");
-      return error.message;
+      return "Image validation failed: image not found";
     }
     throw error;
   }
@@ -144,6 +153,8 @@ const validateObjectKey = async (value: string, expectedKeyParameters: KeyParame
 
   logger.info("Comparing Object Key with expected");
   if (value !== expectedObjectKey) {
+    logger.info(value);
+    logger.info(expectedObjectKey);
     logger.error(`${fileName} object key is invalid`);
     throw new InvalidObjectKey(`${fileName} object key is invalid`);
   }

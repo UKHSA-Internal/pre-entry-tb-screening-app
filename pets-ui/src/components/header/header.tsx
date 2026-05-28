@@ -58,21 +58,51 @@ export default function Header() {
           style={{ display: "flex", justifyContent: "flex-end" }}
         >
           {accounts.length > 0 ? (
-            <LinkLabel
-              title="Sign out"
-              to={signOutUrl}
-              externalLink={false}
-              id="sign-out"
-              className="govuk-header__link govuk-header__service-name"
-              style={{
-                fontFamily: "font/family/Title",
-                fontWeight: 300,
-                fontStyle: "normal",
-                fontSize: "19px",
-                lineHeight: "1.25",
-                letterSpacing: "0%",
-              }}
-            />
+            <>
+              <span
+                style={{
+                  marginTop: 12,
+                  marginBottom: 0,
+                  marginRight: 12,
+                  fontSize: "38px",
+                }}
+              >
+                |
+              </span>
+              <span
+                className="govuk-header__service-name"
+                style={{
+                  marginRight: 12,
+                  fontSize: "19px",
+                }}
+              >
+                <strong>{accounts[0]?.name}</strong>
+                {accounts[0]?.idTokenClaims?.roles?.includes("Application.Update") && (
+                  <span> (super user)</span>
+                )}
+              </span>
+              <span
+                style={{
+                  marginTop: 12,
+                  marginBottom: 0,
+                  marginRight: 12,
+                  fontSize: "38px",
+                }}
+              >
+                |
+              </span>
+              <LinkLabel
+                title="Sign out"
+                to={signOutUrl}
+                externalLink={false}
+                id="sign-out"
+                className="govuk-header__link govuk-header__service-name"
+                style={{
+                  fontWeight: 300,
+                  fontSize: "19px",
+                }}
+              />
+            </>
           ) : null}
         </div>
       </div>

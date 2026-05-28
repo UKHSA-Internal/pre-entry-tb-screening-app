@@ -5,20 +5,31 @@ import { z } from "zod";
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { ApplicantDbOps } from "../../shared/models/applicant";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicantUpdateRequestSchema } from "../types/zod-schema";
+import { ApplicationStatusGroup } from "../../shared/types/enum";
+import {
+  ApplicantUpdateRequestSchema,
+  MultiAppUpdateApplicantRequestSchema,
+  SuperUserApplicantUpdateRequestSchema,
+} from "../types/zod-schema";
 
 export type ApplicantRequestSchema = z.infer<typeof ApplicantUpdateRequestSchema>;
+export type SuperUserApplicantUpdateRequestSchema = z.infer<
+  typeof SuperUserApplicantUpdateRequestSchema
+>;
+export type MultiAppUpdateApplicantRequestSchema = z.infer<
+  typeof MultiAppUpdateApplicantRequestSchema
+>;
 
 export type PutApplicantEvent = PetsAPIGatewayProxyEvent & {
   parsedBody?: ApplicantRequestSchema;
 };
-
-export const updateApplicantHandler = async (event: PutApplicantEvent) => {
+export const updateApplicantHandler = async (event: PetsAPIGatewayProxyEvent) => {
   try {
     logger.info("Put applicant details handler triggered");
 
-    const { parsedBody } = event;
+    const { parsedBody } = event as PutApplicantEvent;
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -30,7 +41,7 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
       passportNumber: parsedBody.passportNumber.slice(-4),
     });
 
-    const { createdBy } = event.requestContext.authorizer;
+    const { createdBy, superuser } = event.requestContext.authorizer;
 
     const applicant = await ApplicantDbOps.findByPassportId(
       parsedBody.countryOfIssue,
@@ -41,8 +52,49 @@ export const updateApplicantHandler = async (event: PutApplicantEvent) => {
       return HttpErrors.notFound("Applicant does not exist");
     }
 
+    // Fetch the applications created for the applicant
+
+    const applications = await Application.getByApplicantId(
+      parsedBody.passportNumber,
+      parsedBody.countryOfIssue,
+    );
+    if (!applications.length && applicant) {
+      logger.error("Applicant has been created without an application");
+      return HttpErrors.validationError("Applicant has been created without an application");
+    }
+
+    const [firstApplication] = applications;
+
+    const isFirstInProgressApplication =
+      applications.length === 1 &&
+      firstApplication?.applicationStatusGroup === ApplicationStatusGroup.incomplete;
+
+    let schema;
+
+    if (superuser === "true") {
+      schema = SuperUserApplicantUpdateRequestSchema;
+    } else if (isFirstInProgressApplication) {
+      schema = ApplicantUpdateRequestSchema;
+    } else {
+      schema = MultiAppUpdateApplicantRequestSchema;
+    }
+    //Validate the request
+    //If superuser allow all fields to be updated
+    //if First In Progress application allow all fields to be updated
+    //If multi app, then allow only certain fields to be updated
+    const validated = schema.safeParse(parsedBody);
+
+    if (!validated.success) {
+      logger.error(
+        { error: validated.error.flatten() },
+        "Update Applicant Request validation failed",
+      );
+      return HttpErrors.validationError("Validation Failed");
+    }
+
+    const validatedBody = validated.data;
     const applicantData = await ApplicantDbOps.updateApplicant({
-      ...parsedBody,
+      ...validatedBody,
       updatedBy: createdBy,
     });
 

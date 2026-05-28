@@ -83,7 +83,7 @@ export class MedicalSummaryPage extends BasePage {
   }): MedicalSummaryPage {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Age" && typeof value === "object" && value !== null) {
-        const ageData = value as { value: number; unit: "months" | "years" };
+        const ageData = value;
         this.verifyAge(ageData.value, ageData.unit);
       } else if (typeof value === "string") {
         this.verifySummaryValue(key, value);

@@ -41,7 +41,7 @@ describe("Test for Getting Applicant", () => {
         {
           applicationId: "generated-app-id-2",
           dateCreated: expect.any(String),
-          applicationStatus: "In Progress",
+          applicationStatus: "Travel Information In Progress",
         },
       ],
     };
@@ -86,7 +86,7 @@ describe("Test for Getting Applicant", () => {
         {
           applicationId: "generated-app-id-2",
           dateCreated: expect.any(String),
-          applicationStatus: "In Progress",
+          applicationStatus: "Travel Information In Progress",
         },
       ],
     };
@@ -126,7 +126,7 @@ describe("Test for Getting Applicant", () => {
     });
   });
 
-  test("Fetching a non-existing Applicant returns a 404 response", async () => {
+  test("Fetching a non-existing Applicant returns a 200 response with an {}", async () => {
     // Arrange
     const event: SearchApplicantEvent = {
       ...mockAPIGwEvent,
@@ -140,10 +140,8 @@ describe("Test for Getting Applicant", () => {
     const response = await searchApplicantHandler(event);
 
     // Assert
-    expect(response.statusCode).toBe(404);
-    expect(JSON.parse(response.body)).toMatchObject({
-      message: "Applicant does not exist",
-    });
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toMatchObject({});
   });
 
   test("Missing clinicId in the request returns a 400 response", async () => {

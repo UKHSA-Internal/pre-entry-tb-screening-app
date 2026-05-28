@@ -17,6 +17,9 @@ import { saveSputumDecisionHandler } from "../handlers/save-sputum-decision";
 import { saveSputumDetailsHandler } from "../handlers/save-sputum-details";
 import { saveTbCertificateHandler } from "../handlers/save-tb-certificate";
 import { saveTravelInformationHandler as createTravelInformationHandler } from "../handlers/save-travel-information";
+import { updateChestXRayHandler } from "../handlers/update-chest-xray";
+import { updateSputumDecisionHandler } from "../handlers/update-sputum-decision";
+import { updateTbCertificateHandler } from "../handlers/update-tb-certificate-details";
 import { updateTravelInformationHandler } from "../handlers/update-travel-information";
 import { setApplicationIdContext } from "../middlewares/application-logger-context";
 import { YesOrNo } from "../types/enums";
@@ -25,6 +28,8 @@ import {
   CancelApplicationRequestSchema,
   ChestXRayRequestSchema,
   ChestXRayResponseSchema,
+  ChestXRayUpdateRequestSchema,
+  ChestXRayUpdateResponseSchema,
   CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
   DashboardApplicationsSchema,
@@ -36,10 +41,13 @@ import {
   RadiologicalOutcomeResponseSchema,
   SputumDecisionRequestSchema,
   SputumDecisionResponseSchema,
+  SputumDecisionUpdateResponseSchema,
   SputumRequestSchema,
   SputumResponseSchema,
   TbCertificateRequestSchema,
   TbCertificateResponseSchema,
+  TbCertificateUpdateRequestSchema,
+  TbCertificateUpdateResponseSchema,
   TravelInformationPostRequestSchema,
   TravelInformationPutRequestSchema,
   TravelInformationPutResponseSchema,
@@ -125,6 +133,7 @@ export const routes: PetsRoute[] = [
       description: "Saved Medical Screening Details",
     }),
   },
+
   {
     method: "POST",
     path: "/application/{applicationId}/chest-xray",
@@ -145,6 +154,20 @@ export const routes: PetsRoute[] = [
     }),
   },
   {
+    method: "PUT",
+    path: "/application/{applicationId}/chest-xray",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateClinicAndApplication)
+      .handler(updateChestXRayHandler),
+    requestBodySchema: ChestXRayUpdateRequestSchema.openapi({
+      description: "Chest Xray of an Applicant",
+    }),
+    responseSchema: ChestXRayUpdateResponseSchema.openapi({
+      description: "Updated Chest Xray of an Applicant",
+    }),
+  },
+  {
     method: "POST",
     path: "/application/{applicationId}/tb-certificate",
     handler: middy<PetsAPIGatewayProxyEvent>()
@@ -156,6 +179,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: TbCertificateResponseSchema.openapi({
       description: "Saved TB Certificate Details",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/tb-certificate",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateClinicAndApplication)
+      .handler(updateTbCertificateHandler),
+    requestBodySchema: TbCertificateUpdateRequestSchema.openapi({
+      description: "TB Certificate Details of an Applicant",
+    }),
+    responseSchema: TbCertificateUpdateResponseSchema.openapi({
+      description: "Updated TB Certificate Details",
     }),
   },
   {
@@ -184,6 +221,20 @@ export const routes: PetsRoute[] = [
     }),
     responseSchema: SputumDecisionResponseSchema.openapi({
       description: "Sputum Decision Details",
+    }),
+  },
+  {
+    method: "PUT",
+    path: "/application/{applicationId}/sputum-decision",
+    handler: middy<PetsAPIGatewayProxyEvent>()
+      .before(setApplicationIdContext)
+      .before(validateClinicAndApplication)
+      .handler(updateSputumDecisionHandler),
+    requestBodySchema: SputumDecisionRequestSchema.openapi({
+      description: "Sputum Decision Details of an Applican",
+    }),
+    responseSchema: SputumDecisionUpdateResponseSchema.openapi({
+      description: "Updated Sputum Decision Details",
     }),
   },
   {
@@ -218,6 +269,13 @@ export const routes: PetsRoute[] = [
     method: "GET",
     path: "/application/dashboard",
     handler: middy<PetsAPIGatewayProxyEvent>().handler(getDashboardApplicationsHandler),
+    queryParams: {
+      clinicId: z
+        .string({
+          description: "ID of the Clinic(Optional). Only applicable for support clinic",
+        })
+        .optional(),
+    },
     responseSchema: DashboardApplicationsSchema.openapi({
       description: "All in progress applications root records for the clinic of logged in user",
     }),

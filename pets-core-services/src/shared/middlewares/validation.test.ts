@@ -48,19 +48,9 @@ describe("validateRequest middleware", () => {
       validationError: {
         age: ["Expected number, received string"],
       },
-      validationErrorVerbose: {
-        issues: [
-          {
-            code: "invalid_type",
-            expected: "number",
-            received: "string",
-            path: ["age"],
-            message: "Expected number, received string",
-          },
-        ],
-        name: "ZodError",
-      },
     });
+    // Security: raw ZodError must not be serialised into the response
+    expect(JSON.parse(response.body)).not.toHaveProperty("validationErrorVerbose");
   });
 
   it("should validate query string parameters successfully", async () => {
@@ -159,5 +149,49 @@ describe("validateRequest middleware", () => {
     expect(JSON.parse(response.body)).toMatchObject({
       message: "Something went wrong",
     });
+  });
+
+  it("should not echo token values or header content in header validation errors", async () => {
+    const sensitiveToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.sensitive-payload";
+    const headersSchema = { authorization: z.string().min(500) };
+
+    const event = {
+      ...mockAPIGwEvent,
+      headers: { authorization: `Bearer ${sensitiveToken}` },
+    };
+
+    const handler = middy().use(validateRequest({ headersSchema }));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    expect(response.statusCode).toBe(400);
+    // The raw token value must not appear in the response body
+    expect(response.body).not.toContain(sensitiveToken);
+    // No stack trace or internal framework info
+    expect(response.body).not.toContain("ZodError");
+    expect(response.body).not.toContain("at Object");
+    expect(JSON.parse(response.body)).not.toHaveProperty("validationErrorVerbose");
+  });
+
+  it("should not include stack traces or framework internals in body validation errors", async () => {
+    const requestSchema = z.object({ name: z.string() });
+
+    const event = {
+      ...mockAPIGwEvent,
+      body: JSON.stringify({ name: 42 }),
+    };
+
+    const handler = middy().use(validateRequest({ requestSchema }));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const response: APIGatewayProxyResult = await handler(event, context);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).not.toContain("ZodError");
+    expect(response.body).not.toContain("node_modules");
+    expect(JSON.parse(response.body)).not.toHaveProperty("validationErrorVerbose");
+    // field-level errors remain to help clients fix their requests
+    expect(JSON.parse(response.body)).toHaveProperty("validationError");
   });
 });

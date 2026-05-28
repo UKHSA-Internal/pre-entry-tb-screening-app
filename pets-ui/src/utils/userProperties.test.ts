@@ -16,12 +16,9 @@ vi.mock("./clinic", () => ({
 }));
 
 import { msalInstance } from "@/auth/auth";
+
+import { getUserProperties } from "./userProperties";
 const mockedMsal = vi.mocked(msalInstance);
-
-import * as clinicModule from "./clinic";
-import * as userPropsModule from "./userProperties";
-
-const { getJobTitle, getUserProperties } = userPropsModule;
 
 const getActiveAccountProps = {
   homeAccountId: "",
@@ -58,7 +55,7 @@ const acquireTokenSilentyProps = {
   correlationId: "",
 };
 
-describe("getJobTitle", () => {
+describe("getUserProperties", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION = "false";
@@ -67,7 +64,7 @@ describe("getJobTitle", () => {
   it("returns null when VITE_AZURE_SKIP_TOKEN_ACQUISITION === true", async () => {
     import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION = "true";
 
-    const result = await getJobTitle();
+    const result = await getUserProperties();
     expect(result).toBeNull();
     expect(mockedMsal.getActiveAccount).not.toHaveBeenCalled();
   });
@@ -77,18 +74,28 @@ describe("getJobTitle", () => {
 
     mockedMsal.getActiveAccount.mockReturnValue(account);
     mockedMsal.acquireTokenSilent.mockResolvedValue({
-      idTokenClaims: { JobTitle: "Nurse" },
+      idTokenClaims: {
+        JobTitle: "Nurse",
+        ClinicID: "clinic-01",
+        name: "Serge Bootson",
+        roles: ["Application.Read"],
+      },
       ...acquireTokenSilentyProps,
     });
 
-    const result = await getJobTitle();
+    const result = await getUserProperties();
 
     expect(mockedMsal.acquireTokenSilent).toHaveBeenCalledWith({
       account,
       scopes: [],
     });
 
-    expect(result).toBe("Nurse");
+    expect(result).toMatchObject({
+      clinicId: "clinic-01",
+      isSuperUser: false,
+      jobTitle: "Nurse",
+      name: "Serge Bootson",
+    });
   });
 
   it("falls back to first returned account when no active account", async () => {
@@ -98,11 +105,16 @@ describe("getJobTitle", () => {
     mockedMsal.getAllAccounts.mockReturnValue([fallbackAccount]);
 
     mockedMsal.acquireTokenSilent.mockResolvedValue({
-      idTokenClaims: { JobTitle: "Doctor" },
+      idTokenClaims: {
+        JobTitle: "Doctor",
+        ClinicID: "clinic-02",
+        name: "Wayne Shoeney",
+        roles: ["Application.Read"],
+      },
       ...acquireTokenSilentyProps,
     });
 
-    const result = await getJobTitle();
+    const result = await getUserProperties();
 
     expect(mockedMsal.setActiveAccount).toHaveBeenCalledWith(fallbackAccount);
 
@@ -111,89 +123,46 @@ describe("getJobTitle", () => {
       scopes: [],
     });
 
-    expect(result).toBe("Doctor");
+    expect(result).toMatchObject({
+      clinicId: "clinic-02",
+      isSuperUser: false,
+      jobTitle: "Doctor",
+      name: "Wayne Shoeney",
+    });
   });
 
-  it("returns null when JobTitle missing", async () => {
+  it("returns unknown values when idTokenClaims missing", async () => {
     mockedMsal.getActiveAccount.mockReturnValue(getActiveAccountProps);
     mockedMsal.acquireTokenSilent.mockResolvedValue({
       idTokenClaims: {},
       ...acquireTokenSilentyProps,
     });
 
-    expect(await getJobTitle()).toBeNull();
+    expect(await getUserProperties()).toMatchObject({
+      clinicId: "unknown Clinic ID",
+      isSuperUser: false,
+      jobTitle: "unknown Job Title",
+      name: "unknown User Name",
+    });
   });
 
   it("returns null when claims undefined", async () => {
     mockedMsal.getActiveAccount.mockReturnValue(getActiveAccountProps);
     mockedMsal.acquireTokenSilent.mockResolvedValue({
-      idTokenClaims: { JobTitle: null },
+      idTokenClaims: {
+        clinicId: null,
+        isSuperUser: null,
+        jobTitle: null,
+        name: null,
+      },
       ...acquireTokenSilentyProps,
     });
 
-    expect(await getJobTitle()).toBeNull();
-  });
-});
-
-describe("getUserProperties", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-    import.meta.env.VITE_AZURE_SKIP_TOKEN_ACQUISITION = "false";
-  });
-
-  it("returns jobTitle and clinicId", async () => {
-    const account = { id: "Admin", ...getActiveAccountProps };
-    mockedMsal.getActiveAccount.mockReturnValue(account);
-    mockedMsal.acquireTokenSilent.mockResolvedValue({
-      idTokenClaims: { JobTitle: "Admin" },
-      ...acquireTokenSilentyProps,
-    });
-
-    vi.spyOn(clinicModule, "getClinicId").mockResolvedValue("C123");
-
-    const res = await getUserProperties();
-
-    expect(res).toEqual({
-      jobTitle: "Admin",
-      clinicId: "C123",
-    });
-  });
-
-  it("handles failure retrieving job title", async () => {
-    vi.spyOn(userPropsModule, "getJobTitle").mockRejectedValue(new Error("fail"));
-    vi.spyOn(clinicModule, "getClinicId").mockResolvedValue("C123");
-
-    const res = await getUserProperties();
-
-    expect(res.jobTitle).toBe("unknown Job Title");
-    expect(res.clinicId).toBe("C123");
-  });
-
-  it("handles failure retrieving clinic ID", async () => {
-    const account = { id: "Admin", ...getActiveAccountProps };
-    mockedMsal.getActiveAccount.mockReturnValue(account);
-    mockedMsal.acquireTokenSilent.mockResolvedValue({
-      idTokenClaims: { JobTitle: "Admin" },
-      ...acquireTokenSilentyProps,
-    });
-
-    vi.spyOn(clinicModule, "getClinicId").mockRejectedValue(new Error("fail"));
-
-    const res = await getUserProperties();
-
-    expect(res.jobTitle).toBe("Admin");
-    expect(res.clinicId).toBe("unknown Clinic ID");
-  });
-
-  it("handles both failures", async () => {
-    vi.spyOn(userPropsModule, "getJobTitle").mockRejectedValue(new Error("fail"));
-    vi.spyOn(clinicModule, "getClinicId").mockRejectedValue(new Error("fail"));
-
-    const res = await getUserProperties();
-
-    expect(res).toEqual({
-      jobTitle: "unknown Job Title",
+    expect(await getUserProperties()).toMatchObject({
       clinicId: "unknown Clinic ID",
+      isSuperUser: false,
+      jobTitle: "unknown Job Title",
+      name: "unknown User Name",
     });
   });
 });

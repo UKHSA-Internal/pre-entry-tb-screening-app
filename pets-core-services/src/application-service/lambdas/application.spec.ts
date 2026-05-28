@@ -81,7 +81,7 @@ vi.mock("../models/dashboard-applications", () => ({
           countryOfIssue: CountryCode.IND,
           clinicId: "clinic-123",
           dateCreated: new Date(),
-          applicationStatus: ApplicationStatus.inProgress,
+          applicationStatus: ApplicationStatus.travelInfoInProgress,
           applicationStatusGroup: ApplicationStatusGroup.incomplete,
         }),
       },
@@ -148,7 +148,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "other one", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "other one",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/{applicationId}",
         path: `/application/${seededApplications[1].applicationId}`,
@@ -168,7 +172,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "UK/LHR/00/",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/{applicationId}",
         path: `/application/${seededApplications[1].applicationId}`,
@@ -376,6 +384,7 @@ describe("Test for Application Lambda", () => {
   });
 
   describe("Chest X-Ray", () => {
+    // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
     const s3ClientMock = mockClient(awsClients.s3Client);
 
     s3ClientMock.on(HeadObjectCommand).resolves({
@@ -423,6 +432,7 @@ describe("Test for Application Lambda", () => {
   });
 
   describe("Applicant photo", () => {
+    // @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
     const s3ClientMock = mockClient(awsClients.s3Client);
 
     s3ClientMock.on(HeadObjectCommand).resolves({
@@ -761,7 +771,11 @@ describe("Test for Application Lambda", () => {
         ...mockAPIGwEvent,
         requestContext: {
           ...mockAPIGwEvent.requestContext,
-          authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+          authorizer: {
+            clinicId: "UK/LHR/00/",
+            createdBy: "hardcoded@user.com",
+            superuser: "false",
+          },
         },
         resource: "/application/dashboard",
         path: `/application/dashboard`,

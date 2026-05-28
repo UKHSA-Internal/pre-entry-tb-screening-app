@@ -251,13 +251,15 @@ describe("SputumCollectionForm", () => {
 
     await user.click(screen.getByText("Save and enter results", { selector: "button" }));
 
-    expect(screen.getByTestId("error-summary")).toBeInTheDocument();
-    expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
-    expect(screen.getAllByText("Enter Sputum sample 1 collection method")).toHaveLength(2);
-    expect(screen.getAllByText("Enter the date sample 2 was taken on")).toHaveLength(2);
-    expect(screen.getAllByText("Enter Sputum sample 2 collection method")).toHaveLength(2);
-    expect(screen.getAllByText("Enter the date sample 3 was taken on")).toHaveLength(2);
-    expect(screen.getAllByText("Enter Sputum sample 3 collection method")).toHaveLength(2);
+    await waitFor(() => {
+      expect(screen.getByTestId("error-summary")).toBeInTheDocument();
+      expect(screen.getAllByText("Enter the date sample 1 was taken on")).toHaveLength(2);
+      expect(screen.getAllByText("Enter Sputum sample 1 collection method")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date sample 2 was taken on")).toHaveLength(2);
+      expect(screen.getAllByText("Enter Sputum sample 2 collection method")).toHaveLength(2);
+      expect(screen.getAllByText("Enter the date sample 3 was taken on")).toHaveLength(2);
+      expect(screen.getAllByText("Enter Sputum sample 3 collection method")).toHaveLength(2);
+    });
   });
 
   test("shows validation errors for incomplete date fields", async () => {

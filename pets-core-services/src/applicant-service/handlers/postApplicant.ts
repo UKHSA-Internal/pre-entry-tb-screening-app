@@ -55,7 +55,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
         return HttpErrors.conflictError("Applicant Details already saved");
       throw error;
     }
-
     return HttpResponses.created({
       ...applicant.toJson(),
     });

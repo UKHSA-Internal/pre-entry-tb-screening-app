@@ -3,7 +3,9 @@ import { z } from "zod";
 
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
+import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
+import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { RadiologicalOutcome } from "../models/radiological-outcome";
 import { RadiologicalOutcomeRequestSchema } from "../types/zod-schema";
 
@@ -40,6 +42,14 @@ export const saveRadiologicalOutcomeHandler = async (event: SaveRadiologicalOutc
         return HttpErrors.conflictError("Radiological Outcome already saved");
       throw error;
     }
+    // Update details in APPLICATION#ROOT record as well
+
+    await Application.updateApplication({
+      applicationId: applicationId,
+      updatedBy: createdBy,
+      applicationStatus: ApplicationStatus.sputumDecisionInProgress,
+      applicationStatusGroup: ApplicationStatusGroup.incomplete,
+    });
 
     return HttpResponses.ok({
       ...radiologicalOutcome.toJson(),
