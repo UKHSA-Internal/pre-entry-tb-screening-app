@@ -45,7 +45,7 @@ export const mockAPIGwEvent: PetsAPIGatewayProxyEvent = {
   requestContext: {
     accountId: "",
     apiId: "",
-    authorizer: { clinicId: "Apollo Clinic", createdBy: "hardcoded@user.com" },
+    authorizer: { clinicId: "Apollo Clinic", createdBy: "hardcoded@user.com", superuser: "false" },
     domainName: "sample-domain-name",
     httpMethod: "sample-http-method",
     identity: {

@@ -33,7 +33,7 @@ import {
   setSputumDetailsFromApiResponse,
   setSputumStatus,
 } from "@/redux/sputumSlice";
-import { selectApplicant, selectApplicationsList, selectUserClinic } from "@/redux/store";
+import { selectApplicant, selectApplicationsList, selectUserDetails } from "@/redux/store";
 import {
   clearTbCertificateDetails,
   setTbCertificateFromApiResponse,
@@ -70,7 +70,7 @@ const getApplicationExpiryDate = (application: ReduxApplicationDetailsType): str
 const ScreeningHistory = () => {
   const applicantData = useAppSelector(selectApplicant);
   const applicationsListData = useAppSelector(selectApplicationsList);
-  const userClinicData = useAppSelector(selectUserClinic);
+  const userData = useAppSelector(selectUserDetails);
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -170,8 +170,8 @@ const ScreeningHistory = () => {
     application: ReduxApplicationDetailsType,
   ): string | React.JSX.Element => {
     if (
-      userClinicData.clinicId == import.meta.env.VITE_SUPPORT_CLINIC_ID ||
-      application.clinicId == userClinicData.clinicId
+      userData.clinicId == import.meta.env.VITE_SUPPORT_CLINIC_ID ||
+      application.clinicId == userData.clinicId
     ) {
       return (
         <LinkLabel
@@ -191,7 +191,7 @@ const ScreeningHistory = () => {
   };
 
   const appFromOtherClinic = applicationsListData.some(
-    (application) => application.clinicId !== userClinicData.clinicId,
+    (application) => application.clinicId !== userData.clinicId,
   );
 
   const noInProgressApps = applicationsListData.every(
@@ -239,6 +239,7 @@ const ScreeningHistory = () => {
         cells: [
           getApplicationExpiryDate(application),
           <StatusTag
+            id={`application-${application.applicationId.slice(0, 8)}-state`}
             key={`application-${application.applicationId.slice(0, 8)}-state`}
             status={application.applicationStatus}
             textOverride={textOverride}
@@ -279,14 +280,14 @@ const ScreeningHistory = () => {
             handleClick={async () => {
               setIsLoading(true);
               dispatch(setApplicantDetailsStatus(TaskStatus.IN_PROGRESS));
-              await fetchClinic(dispatch, userClinicData.clinicId);
+              await fetchClinic(dispatch, userData.clinicId);
               navigate("/do-you-have-visa-applicant-written-consent-for-tb-screening");
             }}
           />
         </div>
       )}
 
-      {userClinicData.clinicId !== import.meta.env.VITE_SUPPORT_CLINIC_ID && appFromOtherClinic && (
+      {userData.clinicId !== import.meta.env.VITE_SUPPORT_CLINIC_ID && appFromOtherClinic && (
         <>
           <br />
           <Details
@@ -315,6 +316,7 @@ const ScreeningHistory = () => {
         columnHeaders={["Start date", "Expiry date", "Status", "Action"]}
         tableRows={applicationTableInfo}
         removeRowTitleStyling
+        hiddenCaption="Application history information"
       />
     </div>
   );

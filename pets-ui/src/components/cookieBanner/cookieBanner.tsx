@@ -31,8 +31,8 @@ export default function CookieBanner() {
     if (accounts.length > 0) {
       const userProperties = await getUserProperties();
       setGoogleAnalyticsParams("user_properties", {
-        user_role: userProperties.jobTitle,
-        clinic_id: userProperties.clinicId,
+        user_role: userProperties?.jobTitle,
+        clinic_id: userProperties?.clinicId,
       });
     }
   };

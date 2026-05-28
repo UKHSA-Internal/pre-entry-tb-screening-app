@@ -8,6 +8,7 @@ import { logger } from "../../shared/logger";
 import { ImageHelper } from "./image-helper";
 
 // Mock S3 client
+// @ts-expect-error aws-sdk-client-mock types incompatible with AWS SDK 3.894.0
 const s3ClientMock = mockClient(awsClients.s3Client);
 
 const errorloggerMock = vi.spyOn(logger, "error").mockImplementation(() => null);

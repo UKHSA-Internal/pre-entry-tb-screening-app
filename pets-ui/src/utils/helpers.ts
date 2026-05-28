@@ -317,8 +317,8 @@ const spreadArrayIfNotEmpty = (...arrays: string[][]) => {
   return arrays.flatMap((array) => (array?.length ? array : []));
 };
 
-const logError = (error: Error, info: { componentStack?: string | null }) => {
-  console.error(`Error: + ${error}`);
+const logError = (error: unknown, info: { componentStack?: string | null }) => {
+  console.error("Error: + ", error);
   console.error(`Info: + ${JSON.stringify(info)}`);
 };
 
@@ -477,7 +477,6 @@ const inProgressStatuses = [
   ApplicationStatus.RADIOLOGICAL_OUTCOME_IN_PROGRESS,
   ApplicationStatus.SPUTUM_DECISION_IN_PROGRESS,
   ApplicationStatus.SPUTUM_IN_PROGRESS,
-  ApplicationStatus.SPUTUM_RESULTS_IN_PROGRESS,
   ApplicationStatus.CERTIFICATE_IN_PROGRESS,
 ];
 

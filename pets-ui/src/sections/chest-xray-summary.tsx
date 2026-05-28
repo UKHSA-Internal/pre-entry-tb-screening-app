@@ -9,7 +9,7 @@ import Spinner from "@/components/spinner/spinner";
 import Summary from "@/components/summary/summary";
 import { setChestXrayStatus } from "@/redux/chestXraySlice";
 import { useAppSelector } from "@/redux/hooks";
-import { selectApplication, selectChestXray } from "@/redux/store";
+import { selectApplication, selectChestXray, selectUserDetails } from "@/redux/store";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
 import {
   formatDateForDisplay,
@@ -21,6 +21,7 @@ import { attributeToComponentId } from "@/utils/records";
 const ChestXraySummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const chestXrayData = useAppSelector(selectChestXray);
+  const userData = useAppSelector(selectUserDetails);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const ChestXraySummary = () => {
       value: formatDateForDisplay(chestXrayData.dateXrayTaken),
       link: `/upload-chest-x-ray-images#${attributeToComponentId.dateXrayTaken}`,
       hiddenLabel: "date of X-ray",
+      enableForSuperUser: false,
     },
     {
       key: "Chest X-ray images",
@@ -64,8 +66,9 @@ const ChestXraySummary = () => {
         [chestXrayData.apicalLordoticXrayFileName ?? ""],
         [chestXrayData.lateralDecubitusXrayFileName ?? ""],
       ),
-      link: `/upload-chest-x-ray-images#${attributeToComponentId.posteroAnteriorXrayFileName}`,
+      link: `/upload-chest-x-ray-images?from=/check-chest-x-ray-images#${attributeToComponentId.posteroAnteriorXrayFileName}`,
       hiddenLabel: "chest X-ray images",
+      enableForSuperUser: true,
     },
   ];
 
@@ -76,6 +79,7 @@ const ChestXraySummary = () => {
         taskStatus={chestXrayData.status}
         applicationStatus={applicationData.applicationStatus}
         summaryElements={summaryData}
+        isSuperUser={userData.isSuperUser}
       />
 
       {(chestXrayData.status == TaskStatus.NOT_YET_STARTED ||

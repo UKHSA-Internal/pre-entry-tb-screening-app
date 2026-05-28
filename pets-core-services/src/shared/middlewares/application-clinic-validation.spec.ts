@@ -32,7 +32,7 @@ describe("Application Validation", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[2].applicationId },
     };
@@ -54,7 +54,11 @@ describe("Application Validation", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "incorrect-clinic-id", createdBy: "hardcoded@user.com" },
+        authorizer: {
+          clinicId: "incorrect-clinic-id",
+          createdBy: "hardcoded@user.com",
+          superuser: "false",
+        },
       },
       pathParameters: { applicationId: seededApplications[2].applicationId },
     };
@@ -76,7 +80,7 @@ describe("Application Validation", () => {
       ...mockAPIGwEvent,
       requestContext: {
         ...mockAPIGwEvent.requestContext,
-        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com" },
+        authorizer: { clinicId: "UK/LHR/00/", createdBy: "hardcoded@user.com", superuser: "false" },
       },
       pathParameters: { applicationId: seededApplications[2].applicationId },
     };

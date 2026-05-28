@@ -21,6 +21,7 @@ import {
   selectSputumDecision,
   selectTbCertificate,
   selectTravel,
+  selectUserDetails,
 } from "@/redux/store";
 import { setTbCertificateStatus } from "@/redux/tbCertificateSlice";
 import { ReduxApplicantDetailsType, ReduxTravelDetailsType } from "@/types";
@@ -36,11 +37,19 @@ import {
 } from "@/utils/helpers";
 import { attributeToComponentId } from "@/utils/records";
 
-const notIssuedLink = (isLocked: boolean, anchor: string): string | undefined =>
-  isLocked ? undefined : `/why-are-you-not-issuing-certificate#${anchor}`;
+const notIssuedLink = (
+  isLocked: boolean,
+  isSuperUser: boolean,
+  anchor: string,
+): string | undefined =>
+  isSuperUser || !isLocked ? `/why-are-you-not-issuing-certificate#${anchor}` : undefined;
 
-const clinicInfoLink = (isLocked: boolean, anchor: string): string | undefined =>
-  isLocked ? undefined : `/clinic-certificate-information#${anchor}`;
+const clinicInfoLink = (
+  isLocked: boolean,
+  isSuperUser: boolean,
+  anchor: string,
+): string | undefined =>
+  isSuperUser || !isLocked ? `/clinic-certificate-information#${anchor}` : undefined;
 
 const TbSummary = () => {
   const applicationData = useAppSelector(selectApplication);
@@ -53,6 +62,7 @@ const TbSummary = () => {
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const sputumData = useAppSelector(selectSputum);
   const tbCertificateData = useAppSelector(selectTbCertificate);
+  const userData = useAppSelector(selectUserDetails);
   const applicantPhotoContext = useApplicantPhoto();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -160,6 +170,7 @@ const TbSummary = () => {
           value,
           link: `${CURRENT_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
           hiddenLabel: `Current ${key.toLowerCase()}`,
+          enableForSuperUser: true,
         };
       })
     : [];
@@ -171,6 +182,7 @@ const TbSummary = () => {
           value: travelData[field],
           link: `${UK_ADDRESS_BASE_URL}#${attributeToComponentId[field]}`,
           hiddenLabel: `UK ${key.toLowerCase()}`,
+          enableForSuperUser: true,
         };
       })
     : [];
@@ -182,24 +194,28 @@ const TbSummary = () => {
           value: applicantData.fullName,
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.fullName}`,
           hiddenLabel: "Full name",
+          enableForSuperUser: true,
         },
         {
           key: "Nationality",
           value: getCountryName(applicantData.countryOfNationality),
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.countryOfNationality}`,
           hiddenLabel: "Nationality",
+          enableForSuperUser: true,
         },
         {
           key: "Date of birth",
           value: formatDateForDisplay(applicantData.dateOfBirth),
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.dateOfBirth}`,
           hiddenLabel: "Date of birth",
+          enableForSuperUser: true,
         },
         {
           key: "Sex",
           value: applicantData.sex,
           link: `/visa-applicant-personal-information?from=tb-certificate-summary#${attributeToComponentId.sex}`,
           hiddenLabel: "Sex",
+          enableForSuperUser: true,
         },
         {
           key: "Passport number",
@@ -211,44 +227,62 @@ const TbSummary = () => {
           value: formatDateForDisplay(applicantData.passportIssueDate),
           link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportIssueDate}`,
           hiddenLabel: "Passport issue date",
+          enableForSuperUser: true,
         },
         {
           key: "Passport expiry date",
           value: formatDateForDisplay(applicantData.passportExpiryDate),
           link: `/visa-applicant-passport-information?from=tb-certificate-summary#${attributeToComponentId.passportExpiryDate}`,
           hiddenLabel: "Passport expiry date",
+          enableForSuperUser: true,
         },
         {
           key: "UKVI visa category",
           value: travelData.visaCategory,
           link: `/proposed-visa-category#${attributeToComponentId.visaCategory}`,
           hiddenLabel: "UKVI visa category",
+          enableForSuperUser: true,
         },
         {
           key: "Photo",
           value: applicantData.applicantPhotoFileName || "Not provided",
           link: `/upload-visa-applicant-photo?from=tb-certificate-summary`,
           hiddenLabel: "Photo",
+          enableForSuperUser: true,
         },
       ]
     : [
         {
           key: "Reason for not issuing certificate",
           value: tbCertificateData.reasonNotIssued,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.reasonNotIssued),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.reasonNotIssued,
+          ),
           hiddenLabel: "Reason for not issuing certificate",
         },
         {
           key: "Declaring Physician's name",
           value: tbCertificateData.declaringPhysicianName,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.declaringPhysicianName,
+          ),
           hiddenLabel: "Declaring Physician's name",
+          enableForSuperUser: true,
         },
         {
           key: "Physician's comments",
           value: tbCertificateData.comments,
-          link: notIssuedLink(isCertificateIssued, attributeToComponentId.comments),
+          link: notIssuedLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.comments,
+          ),
           hiddenLabel: "Physician's comments",
+          enableForSuperUser: true,
         },
       ];
 
@@ -283,14 +317,24 @@ const TbSummary = () => {
         {
           key: "Declaring physician name",
           value: tbCertificateData.declaringPhysicianName,
-          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.declaringPhysicianName),
+          link: clinicInfoLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.declaringPhysicianName,
+          ),
           hiddenLabel: "Declaring physician name",
+          enableForSuperUser: true,
         },
         {
           key: "Physician's notes",
           value: tbCertificateData.comments,
-          link: clinicInfoLink(isCertificateIssued, attributeToComponentId.comments),
+          link: clinicInfoLink(
+            isCertificateIssued,
+            userData.isSuperUser,
+            attributeToComponentId.comments,
+          ),
           hiddenLabel: "Physician's notes",
+          enableForSuperUser: true,
         },
       ]
     : [];
@@ -342,6 +386,7 @@ const TbSummary = () => {
               taskStatus={summaryStatus}
               applicationStatus={applicationData.applicationStatus}
               summaryElements={summaryData}
+              isSuperUser={userData.isSuperUser}
             />
 
             {currentAddressData.length > 0 && (
@@ -351,6 +396,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={currentAddressData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -362,6 +408,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={ukAddressData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -374,6 +421,7 @@ const TbSummary = () => {
                     taskStatus={summaryStatus}
                     applicationStatus={applicationData.applicationStatus}
                     summaryElements={certificateData}
+                    isSuperUser={userData.isSuperUser}
                   />
                 </div>
               </>
@@ -386,6 +434,7 @@ const TbSummary = () => {
                   taskStatus={summaryStatus}
                   applicationStatus={applicationData.applicationStatus}
                   summaryElements={screeningData}
+                  isSuperUser={userData.isSuperUser}
                 />
               </>
             )}
@@ -412,6 +461,7 @@ const TbSummary = () => {
           taskStatus={summaryStatus}
           applicationStatus={applicationData.applicationStatus}
           summaryElements={summaryData}
+          isSuperUser={userData.isSuperUser}
         />
       )}
 

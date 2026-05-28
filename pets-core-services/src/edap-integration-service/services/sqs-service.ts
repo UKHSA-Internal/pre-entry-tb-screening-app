@@ -4,6 +4,8 @@ import {
   SendMessageCommandInput,
   SQSClient,
 } from "@aws-sdk/client-sqs";
+import { NativeAttributeValue } from "@aws-sdk/util-dynamodb";
+import { DynamoDBRecord } from "aws-lambda";
 
 import awsClients from "../../shared/clients/aws";
 import { logger } from "../../shared/logger";
@@ -25,8 +27,8 @@ class SQService {
    * Send a message to EDAP integration queue
    * @param messageBody
    */
-  public sendDbStreamMessage(messageBody: string) {
-    logger.info(`Message Body to be sent: ${messageBody}`);
+  public sendDbStreamMessage(messageBody: Record<string, NativeAttributeValue>) {
+    logger.info("[SQS] Sending message");
     return this.sendMessage(
       messageBody,
       process.env.EDAP_INTEGRATION_QUEUE_NAME as string,
@@ -49,8 +51,8 @@ class SQService {
    * Send a message to DLQ
    * @param messageBody
    */
-  public sendToDLQ(messageBody: string) {
-    logger.info(`Message Body to be sent to DLQ: ${messageBody}`);
+  public sendToDLQ(messageBody: DynamoDBRecord) {
+    logger.info("[DLQ] Sending message");
 
     return this.sendMessage(
       messageBody,
@@ -66,7 +68,7 @@ class SQService {
    * @param queueName - The queue name
    */
   private async sendMessage(
-    messageBody: string,
+    messageBody: Record<string, NativeAttributeValue>,
     queueName: string,
     queueOwnerAWSAccountId: string,
     messageAttributes?: Record<string, MessageAttributeValue>,
@@ -78,18 +80,16 @@ class SQService {
 
     const queueUrl = `https://sqs.${process.env.AWS_REGION}.amazonaws.com/${queueOwnerAWSAccountId}/${queueName}`;
 
-    logger.info(`Queue URL: ${queueUrl}`);
-
     const params: SendMessageCommandInput = {
       QueueUrl: queueUrl,
-      MessageBody: messageBody,
+      MessageBody: JSON.stringify(messageBody),
     };
 
     if (isFifo) {
-      // Add FIFO-specific fields
-      params.MessageGroupId = "default"; // can customize if you want different groups
-      params.MessageDeduplicationId = Date.now().toString(); // or use a UUID
+      params.MessageGroupId = `${messageBody?.pk}_${messageBody?.sk ?? Date.now().toString()}`;
+      params.MessageDeduplicationId = Date.now().toString();
     }
+
     if (messageAttributes) {
       Object.assign(params, { MessageAttributes: messageAttributes });
     }

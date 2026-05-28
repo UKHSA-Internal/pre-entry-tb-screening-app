@@ -1,6 +1,6 @@
 import { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
-import { DynamoDBRecord, StreamRecord } from "aws-lambda";
+import { NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
+import { DynamoDBRecord } from "aws-lambda";
 
 import { logger } from "../../shared/logger";
 /**
@@ -12,10 +12,9 @@ class StreamService {
    * Extract INSERT events from the DynamoDB Stream
    * @param event
    */
-  public static getClinicDataStream(record: DynamoDBRecord) {
-    logger.info(`record: ${JSON.stringify(record)}`);
-    const dbrecord: StreamRecord["NewImage"] = {};
-
+  public static getClinicDataStream(
+    record: DynamoDBRecord,
+  ): Record<string, NativeAttributeValue> | undefined {
     if (record.eventName === "INSERT" || record.eventName === "MODIFY") {
       if (record?.dynamodb?.NewImage) {
         const newImage = record.dynamodb?.NewImage as Record<string, AttributeValue>;
@@ -23,17 +22,16 @@ class StreamService {
         try {
           return unmarshall(newImage);
         } catch (error) {
-          logger.error({ error }, "unmarshall error");
-          logger.error({ record }, "error in record");
+          logger.error({ error }, `unmarshall error for the record: ${JSON.stringify(newImage)}`);
         }
       } else {
-        logger.info(record);
+        logger.error("No 'NewImage'");
       }
     } else {
-      logger.info("event name was not of correct type");
+      logger.error("event name was not of correct type");
     }
 
-    return dbrecord;
+    return undefined;
   }
 }
 

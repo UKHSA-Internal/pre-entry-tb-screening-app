@@ -99,7 +99,7 @@ export class AuditDbOps {
         updatedBy: email ?? "",
         eventType: record.eventName,
         // Application (App/API) - Application, API (for IOM) or Console
-        source: source ? (source as SourceType) : SourceType.app,
+        source: source || SourceType.app,
         // applicant-details / application-details
         sourceTable: tableName,
         changeDetails: oldImage
@@ -128,7 +128,7 @@ export class AuditDbOps {
       await docClient.send(command);
       logger.info("New audit created successfully");
 
-      return newAudit as AuditBase;
+      return newAudit;
     } catch (error) {
       logger.error({ error }, "Creating audit failed");
       throw error;

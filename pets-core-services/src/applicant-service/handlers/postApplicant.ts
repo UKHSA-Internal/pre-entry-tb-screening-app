@@ -5,9 +5,7 @@ import { z } from "zod";
 import { HttpErrors, HttpResponses } from "../../shared/httpResponses";
 import { logger } from "../../shared/logger";
 import { Applicant, ApplicantDbOps } from "../../shared/models/applicant";
-import { Application } from "../../shared/models/application";
 import { PetsAPIGatewayProxyEvent } from "../../shared/types";
-import { ApplicationStatus, ApplicationStatusGroup } from "../../shared/types/enum";
 import { ApplicantRegisterRequestSchema } from "../types/zod-schema";
 
 export type ApplicantRequestSchema = z.infer<typeof ApplicantRegisterRequestSchema>;
@@ -21,7 +19,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
     logger.info("Post applicant details handler triggered");
 
     const { parsedBody } = event;
-    const applicationId = decodeURIComponent(event.pathParameters?.["applicationId"] ?? "").trim();
 
     if (!parsedBody) {
       logger.error("Event missing parsed body");
@@ -58,14 +55,6 @@ export const postApplicantHandler = async (event: PostApplicantEvent) => {
         return HttpErrors.conflictError("Applicant Details already saved");
       throw error;
     }
-    // Update details in APPLICATION#ROOT record as well
-
-    await Application.updateApplication({
-      applicationId: applicationId,
-      updatedBy: createdBy,
-      applicationStatus: ApplicationStatus.travelInfoInProgress,
-      applicationStatusGroup: ApplicationStatusGroup.incomplete,
-    });
     return HttpResponses.created({
       ...applicant.toJson(),
     });

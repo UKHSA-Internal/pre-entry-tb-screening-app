@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router";
 
+import { putTbCerificateDetails } from "@/api/api";
 import ErrorDisplay from "@/components/errorSummary/errorSummary";
 import FreeText from "@/components/freeText/freeText";
 import Heading from "@/components/heading/heading";
+import Spinner from "@/components/spinner/spinner";
 import SubmitButton from "@/components/submitButton/submitButton";
 import Summary from "@/components/summary/summary";
 import TextArea from "@/components/textArea/textArea";
@@ -15,6 +17,7 @@ import {
   selectClinic,
   selectMedicalScreening,
   selectTbCertificate,
+  selectUserDetails,
 } from "@/redux/store";
 import {
   setCertficateDate,
@@ -38,9 +41,11 @@ const TbCertificateDeclarationForm = () => {
   const chestXrayData = useAppSelector(selectChestXray);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
   const tbCertificateData = useAppSelector(selectTbCertificate);
+  const userData = useAppSelector(selectUserDetails);
   const clinic = useAppSelector(selectClinic);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const issueDate = calculateCertificateIssueDate(
     chestXrayData.dateXrayTaken,
@@ -55,15 +60,17 @@ const TbCertificateDeclarationForm = () => {
   );
   const expiryFormatted = formatDateForDisplay(expiryDate);
 
-  const methods = useForm<ReduxTbCertificateType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<ReduxTbCertificateType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },
   } = methods;
 
-  const onSubmit: SubmitHandler<ReduxTbCertificateType> = (data) => {
+  const onSubmit: SubmitHandler<ReduxTbCertificateType> = async (data) => {
     dispatch(setComments(data.comments));
-
     dispatch(
       setCertficateDate({
         day: issueDate.day,
@@ -73,8 +80,28 @@ const TbCertificateDeclarationForm = () => {
     );
     dispatch(setCertificateNumber(applicationData.applicationId));
     dispatch(setDeclaringPhysicianName(data.declaringPhysicianName));
-    dispatch(setTbCertificateStatus(TaskStatus.IN_PROGRESS));
-    navigate("/tb-certificate-summary");
+
+    if (
+      userData.isSuperUser &&
+      tbCertificateData.status === TaskStatus.COMPLETE &&
+      applicationData.applicationId
+    ) {
+      setIsLoading(true);
+      try {
+        await putTbCerificateDetails(applicationData.applicationId, {
+          comments: data.comments,
+          physicianName: data.declaringPhysicianName,
+        });
+
+        navigate("/tb-certificate-summary");
+      } catch (error) {
+        console.error(error);
+        navigate("/sorry-there-is-problem-with-service");
+      }
+    } else {
+      dispatch(setTbCertificateStatus(TaskStatus.IN_PROGRESS));
+      navigate("/tb-certificate-summary");
+    }
   };
 
   const errorsToShow = Object.keys(errors);
@@ -109,6 +136,8 @@ const TbCertificateDeclarationForm = () => {
 
   return (
     <FormProvider {...methods}>
+      {isLoading && <Spinner />}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         {!!errorsToShow?.length && <ErrorDisplay errorsToShow={errorsToShow} errors={errors} />}
 
@@ -139,6 +168,7 @@ const TbCertificateDeclarationForm = () => {
               hiddenLabel: "Certificate issue expiry",
             },
           ]}
+          isSuperUser={userData.isSuperUser}
         />
 
         <div ref={declaringPhysicianName}>

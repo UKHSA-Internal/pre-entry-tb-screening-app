@@ -2,7 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { coverageConfigDefaults, defaultInclude, defineConfig } from "vitest/config";
 
-const coreServicesUrl = `https://${process.env.API_GATEWAY_ID}.execute-api.localhost.localstack.cloud:4566`;
+const coreServicesUrl = `http://${process.env.API_GATEWAY_ID}.execute-api.localhost:4566`;
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,17 +20,17 @@ export default defineConfig({
     },
   },
   envDir: "../configs", // Automatically loads the .env in this directory.
+  // swagger-ui-react imports {default} from immutable, but immutable's ESM build doesn't have a default export.
+  build: {
+    rollupOptions: {
+      shimMissingExports: true,
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {
         quietDeps: true,
-        silenceDeprecations: [
-          "import",
-          "mixed-decls",
-          "global-builtin",
-          "slash-div",
-          "legacy-js-api",
-        ],
+        silenceDeprecations: ["import", "global-builtin", "slash-div", "legacy-js-api"],
       },
     },
   },

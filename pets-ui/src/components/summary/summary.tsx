@@ -7,6 +7,7 @@ export type SummaryElement = {
   value: string | Array<string> | undefined;
   link?: string;
   hiddenLabel: string;
+  enableForSuperUser?: boolean;
 };
 
 interface SummaryProps {
@@ -14,6 +15,7 @@ interface SummaryProps {
   applicationStatus: ApplicationStatus;
   summaryElements: SummaryElement[];
   showChangeLinksAfterTaskComplete?: boolean;
+  isSuperUser: boolean;
 }
 
 function summaryValue(summaryElement: SummaryElement) {
@@ -64,16 +66,22 @@ export default function Summary(props: Readonly<SummaryProps>) {
           <div className="govuk-summary-list__row" key={summaryElement.key}>
             <dt className="govuk-summary-list__key">{summaryElement.key}</dt>
             {summaryValue(summaryElement)}
-            {summaryElement.link && summaryElement.link.length > 0 && showChangeLink && (
-              <dd className="govuk-summary-list__actions">
-                <LinkLabel
-                  to={summaryElement.link}
-                  title="Change"
-                  hiddenLabel={" " + summaryElement.hiddenLabel}
-                  externalLink={false}
-                />
-              </dd>
-            )}
+            {summaryElement.link &&
+              summaryElement.link.length > 0 &&
+              (showChangeLink ||
+                (props.applicationStatus !== ApplicationStatus.CANCELLED &&
+                  props.applicationStatus !== ApplicationStatus.CERTIFICATE_NOT_ISSUED &&
+                  props.isSuperUser &&
+                  summaryElement.enableForSuperUser)) && (
+                <dd className="govuk-summary-list__actions">
+                  <LinkLabel
+                    to={summaryElement.link}
+                    title="Change"
+                    hiddenLabel={" " + summaryElement.hiddenLabel}
+                    externalLink={false}
+                  />
+                </dd>
+              )}
           </div>
         );
       })}

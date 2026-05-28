@@ -51,10 +51,7 @@ describe("ApplicantPhotoContext", () => {
       readAsDataURL() {
         setTimeout(() => {
           if (this.onload) {
-            const onloadFn = this.onload as (
-              this: FileReader,
-              ev: ProgressEvent<FileReader>,
-            ) => unknown;
+            const onloadFn = this.onload;
             onloadFn.call(
               this as unknown as FileReader,
               new ProgressEvent("load") as ProgressEvent<FileReader>,

@@ -1,6 +1,10 @@
+vi.mock("./api/api.ts", () => ({
+  generateImageUploadUrl: vi.fn(),
+}));
+
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, Mock, test, vi } from "vitest";
 
 import { generateImageUploadUrl } from "@/api/api";
 
@@ -12,15 +16,13 @@ vi.mock("@/api/api");
 
 describe("testFile with axios-mock-adapter", () => {
   let mockAxios: MockAdapter;
-  const mockGenerateImageUploadUrl = vi.fn();
 
   beforeEach(() => {
     vi.resetAllMocks();
-    (generateImageUploadUrl as unknown as typeof mockGenerateImageUploadUrl) =
-      mockGenerateImageUploadUrl;
 
     // Setup axios-mock-adapter
     mockAxios = new MockAdapter(axios);
+    vi.clearAllMocks();
 
     // Mock crypto.subtle.digest
     vi.stubGlobal("crypto", {
@@ -37,7 +39,7 @@ describe("testFile with axios-mock-adapter", () => {
   test("uploads file, computes checksum, and returns bucketPath", async () => {
     const file = new File(["hello world"], "test.jpg", { type: "image/jpeg" });
 
-    mockGenerateImageUploadUrl.mockResolvedValueOnce({
+    (generateImageUploadUrl as Mock).mockResolvedValueOnce({
       data: {
         uploadUrl: "https://example.com/upload",
         bucketPath: "bucket/test.jpg",
@@ -51,7 +53,7 @@ describe("testFile with axios-mock-adapter", () => {
 
     const expectedChecksum = btoa(String.fromCharCode(1, 2, 3, 4));
 
-    expect(mockGenerateImageUploadUrl).toHaveBeenCalledWith("app-123", {
+    expect(generateImageUploadUrl).toHaveBeenCalledWith("app-123", {
       fileName: "test.jpg",
       checksum: expectedChecksum,
       imageType: ImageType.Photo,
@@ -69,7 +71,7 @@ describe("testFile with axios-mock-adapter", () => {
   test("throws if upload fails", async () => {
     const file = new File(["oops"], "fail.txt", { type: "text/plain" });
 
-    mockGenerateImageUploadUrl.mockResolvedValueOnce({
+    (generateImageUploadUrl as Mock).mockResolvedValueOnce({
       data: {
         uploadUrl: "https://example.com/upload",
         bucketPath: "bucket/fail.txt",

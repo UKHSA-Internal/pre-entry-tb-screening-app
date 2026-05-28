@@ -27,6 +27,7 @@ const MedicalScreeningFormFemaleQs = () => {
   const medicalData = useAppSelector(selectMedicalScreening);
   const methods = useForm<MedicalScreeningFemaleData>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       pregnant: medicalData.pregnant,
       menstrualPeriods: medicalData.menstrualPeriods,

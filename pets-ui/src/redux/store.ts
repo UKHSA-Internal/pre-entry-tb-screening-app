@@ -5,20 +5,19 @@ import { applicationsInProgressReducer } from "./applicationsInProgressSlice";
 import { applicationReducer } from "./applicationSlice";
 import { applicationsListReducer } from "./applicationsListSlice";
 import { chestXrayReducer } from "./chestXraySlice";
-import { clinicReducer } from "./clinicSlice";
 import { medicalScreeningReducer } from "./medicalScreeningSlice";
 import { radiologicalOutcomeReducer } from "./radiologicalOutcomeSlice";
 import { sputumDecisionReducer } from "./sputumDecisionSlice";
 import { sputumReducer } from "./sputumSlice";
 import { tbCertificateReducer } from "./tbCertificateSlice";
 import { travelReducer } from "./travelSlice";
+import { userReducer } from "./userSlice";
 
 const rootReducer = combineReducers({
   applicant: applicantReducer,
   application: applicationReducer,
   applicationsInProgress: applicationsInProgressReducer,
   applicationsList: applicationsListReducer,
-  clinic: clinicReducer,
   chestXray: chestXrayReducer,
   radiologicalOutcome: radiologicalOutcomeReducer,
   medicalScreening: medicalScreeningReducer,
@@ -26,6 +25,7 @@ const rootReducer = combineReducers({
   sputumDecision: sputumDecisionReducer,
   tbCertificate: tbCertificateReducer,
   travel: travelReducer,
+  user: userReducer,
 });
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {
@@ -51,5 +51,5 @@ export const selectSputum = (state: RootState) => state.sputum;
 export const selectSputumDecision = (state: RootState) => state.sputumDecision;
 export const selectTbCertificate = (state: RootState) => state.tbCertificate;
 export const selectClinic = (state: RootState) => state.tbCertificate.clinic;
-export const selectUserClinic = (state: RootState) => state.clinic;
+export const selectUserDetails = (state: RootState) => state.user;
 export const selectTravel = (state: RootState) => state.travel;

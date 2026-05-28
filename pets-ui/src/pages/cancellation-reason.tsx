@@ -23,7 +23,10 @@ export default function CancellationReasonPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const methods = useForm<CancellationReasonType>({ reValidateMode: "onSubmit" });
+  const methods = useForm<CancellationReasonType>({
+    reValidateMode: "onSubmit",
+    shouldFocusError: false,
+  });
   const {
     handleSubmit,
     formState: { errors },

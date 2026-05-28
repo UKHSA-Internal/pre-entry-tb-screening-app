@@ -26,6 +26,7 @@ const ChestXrayFindingsForm = () => {
 
   const methods = useForm<ReduxRadiologicalOutcomeDetailsType>({
     reValidateMode: "onSubmit",
+    shouldFocusError: false,
     defaultValues: {
       xrayResultDetail: radiologicalOutcomeData.xrayResultDetail,
       xrayMinorFindings: radiologicalOutcomeData.xrayMinorFindings,

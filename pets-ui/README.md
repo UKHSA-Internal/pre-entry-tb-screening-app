@@ -34,7 +34,7 @@ cd pets-ui
 pnpm exec cypress install --force
 ```
 
-- Pull local enviroment secrets using this [guide](../README.md#pulling-secrets-for-local-development).
+- Pull local environment secrets using this [guide](../README.md#pulling-secrets-for-local-development).
 
 ### Running the test
 

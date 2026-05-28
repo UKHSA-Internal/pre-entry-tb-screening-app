@@ -13,6 +13,7 @@ import {
   selectApplication,
   selectMedicalScreening,
   selectRadiologicalOutcome,
+  selectUserDetails,
 } from "@/redux/store";
 import { PostedRadiologicalOutcomeDetailsType } from "@/types";
 import { ButtonClass, TaskStatus, YesOrNo } from "@/utils/enums";
@@ -23,6 +24,7 @@ const RadiologicalOutcomeSummary = () => {
   const applicationData = useAppSelector(selectApplication);
   const radiologicalOutcomeData = useAppSelector(selectRadiologicalOutcome);
   const medicalScreeningData = useAppSelector(selectMedicalScreening);
+  const userData = useAppSelector(selectUserDetails);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -116,6 +118,7 @@ const RadiologicalOutcomeSummary = () => {
           taskStatus={radiologicalOutcomeData.status}
           applicationStatus={applicationData.applicationStatus}
           summaryElements={xrayTakenSummaryData}
+          isSuperUser={userData.isSuperUser}
         />
       )}
       {medicalScreeningData.chestXrayTaken == YesOrNo.NO && (
@@ -123,6 +126,7 @@ const RadiologicalOutcomeSummary = () => {
           taskStatus={radiologicalOutcomeData.status}
           applicationStatus={applicationData.applicationStatus}
           summaryElements={xrayNotTakenSummaryData}
+          isSuperUser={userData.isSuperUser}
         />
       )}
 
