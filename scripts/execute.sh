@@ -106,7 +106,32 @@ if [ "$?" != "0" ] || [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
   exit 1
 fi
 
-JOB_IDS=$(echo "$JOBS" | jq -r ".jobs|.[]|.id" | tr '\n' ' ')
+# ✅ Log raw API response to help diagnose structure on any future failures
+echo "Launch API response:"
+echo "$JOBS" | jq '.' 2>/dev/null || echo "$JOBS"
+
+# ✅ .jobs from the launch API may be a keyed object {"1676": {id:...}}
+# or an array [{id:...}]. Handle both safely instead of assuming array iteration.
+JOBS_TYPE=$(echo "$JOBS" | jq -r '(.jobs // null) | type' 2>/dev/null || echo "null")
+echo "Jobs field type: $JOBS_TYPE"
+
+case "$JOBS_TYPE" in
+  "object")
+    # Keyed object: {"1676": {id: 1676, ...}, ...}
+    JOB_IDS=$(echo "$JOBS" | jq -r '.jobs | to_entries[].value.id' | tr '\n' ' ')
+    ;;
+  "array")
+    # Array: [{id: 1676, ...}, ...]
+    JOB_IDS=$(echo "$JOBS" | jq -r '.jobs[].id' | tr '\n' ' ')
+    ;;
+  *)
+    echo "Unexpected .jobs type: $JOBS_TYPE — cannot extract job IDs."
+    echo "Full response was:"
+    echo "$JOBS"
+    exit 1
+    ;;
+esac
+
 if [ -z "$JOB_IDS" ]; then
   echo "No jobs were returned from plan execution."
   exit 1

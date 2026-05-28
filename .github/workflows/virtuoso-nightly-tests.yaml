@@ -83,9 +83,6 @@ jobs:
   #    • Triggered by workflow_call: runs as a single job. ENVIRONMENT_ID
   #      comes from the workflow_call input.
   #
-  # ⚠️  Replace the dev and preprod virtuoso_env_id values with your actual
-  #     Virtuoso environment IDs (Virtuoso → Settings → Environments).
-  #     The qat ID (98) is taken from the original execute.sh.
   # ─────────────────────────────────────────────────────────────────────────
   run-virtuoso-plan:
     name: Run Virtuoso Plan – ${{ matrix.environment || 'default' }}
@@ -100,9 +97,9 @@ jobs:
           - environment: qat
             virtuoso_env_id: "98"
           - environment: dev
-            virtuoso_env_id: "99"    # replace with actual DEV env ID once set up
+            virtuoso_env_id: "435"
           - environment: preprod
-            virtuoso_env_id: "100"   # replace with actual PREPROD env ID once set up
+            virtuoso_env_id: "442"
           - environment: default
             virtuoso_env_id: ""      # workflow_call path — env ID comes from input
 
@@ -115,7 +112,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      # Guard: workflow_call callers must supply environment_id.
+      # Without it ENVIRONMENT_ID is empty and execute.sh will target the wrong env.
+      - name: Validate environment ID (workflow_call only)
+        if: github.event_name == 'workflow_call'
+        run: |
+          if [[ -z "$ENVIRONMENT_ID" ]]; then
+            echo "::error::workflow_call requires the environment_id input to be set."
+            echo "::error::Check Virtuoso → Settings → Environments for the correct ID."
+            exit 1
+          fi
+          echo "environment_id=$ENVIRONMENT_ID"
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -124,7 +133,7 @@ jobs:
         run: chmod +x scripts/execute.sh
 
       # continue-on-error so transform + upload steps always run and the
-      # dashboard reflects the real result rather than a missing artifact
+      # dashboard reflects the real result rather than a missing artifact.
       - name: Run Virtuoso plan
         id: virtuoso_run
         continue-on-error: true
@@ -138,23 +147,25 @@ jobs:
             mv plan_execution_report.json reports/plan_execution_report.json
           else
             # Script failed before producing a report — write a stub so the
-            # transform step still emits a clean FAIL result for the dashboard
-            echo '{"outcome":"ERROR","jobs":[]}' > reports/plan_execution_report.json
+            # transform step still emits a clean FAIL result for the dashboard.
+            # .jobs must be an object (keyed) to match the real Virtuoso response shape.
+            echo '{"outcome":"ERROR","jobs":{}}' > reports/plan_execution_report.json
           fi
 
       # ── Transform plan_execution_report.json → per-browser result files ──
       #
-      # Virtuoso returns one job per browser configured in the plan.
-      # Expected fields on each job object:
-      #   .outcome       "PASS" | "FAIL" | "ERROR"
-      #   .browser       "CHROME" | "FIREFOX" | "EDGE"  (case-insensitive)
-      #   .totalTests    integer
-      #   .passedTests   integer
-      #   .failedTests   integer
-      #   .pendingTests  integer  (optional)
+      # Confirmed Virtuoso API field names (from plan_execution_report.json):
+      #   .statistics.journeyLevel.outcome    "PASS" | "FAIL" | "ERROR"  (overall)
+      #   .jobs                               keyed object  { "jobId": { ... }, ... }
+      #   .jobs.<id>.outcome                  "PASS" | "FAIL" | "ERROR"
+      #   .jobs.<id>.browser                  "CHROME" | "FIREFOX" | "EDGE"
+      #   .jobs.<id>.totalTestExecutions      integer
+      #   .jobs.<id>.successfulTestExecutions integer
+      #   .jobs.<id>.failedTestExecutions     integer
+      #   .jobs.<id>.skippedTestExecutions    integer
       #
-      # After the first run download the virtuoso-report-{env} artifact and
-      # inspect the JSON. Update the jq paths below if your field names differ.
+      # When no .browser field is present (single-job plan) the first job is
+      # mapped to Chrome; Firefox and Edge are marked SKIP (no data, not a failure).
       - name: Transform results to dashboard format
         if: always() && github.event_name != 'workflow_call'
         run: |
@@ -165,50 +176,63 @@ jobs:
           for BROWSER in "${BROWSERS[@]}"; do
             BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
 
+            # .jobs is a keyed object — iterate values via to_entries
             JOB=$(jq -c \
               --arg b "$BROWSER_UPPER" \
-              '.jobs[]? | select((.browser // "" | ascii_upcase) == $b)' \
+              '.jobs | to_entries[].value | select((.browser // "" | ascii_upcase) == $b)' \
               "$REPORT" 2>/dev/null | head -1 || true)
 
-            # Fallback: if no job carries a .browser field, write all counts
-            # to chrome and leave firefox/edge at zero
+            # Fallback: if no job carries a .browser field, map the single job
+            # to chrome only; leave firefox/edge as SKIP (no data, not a failure).
             if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
-              HAS_BROWSER=$(jq '[.jobs[]?.browser] | map(select(. != null)) | length' \
+              HAS_BROWSER=$(jq '[.jobs | to_entries[].value | .browser] | map(select(. != null)) | length' \
                 "$REPORT" 2>/dev/null || echo "0")
               if [[ "$HAS_BROWSER" == "0" ]]; then
-                JOB=$(jq -c '.jobs[0]? // empty' "$REPORT" 2>/dev/null || true)
+                JOB=$(jq -c '.jobs | to_entries[0].value // empty' "$REPORT" 2>/dev/null || true)
               fi
             fi
 
             if [[ -n "$JOB" ]]; then
               OUTCOME=$(echo "$JOB" | jq -r '.outcome // "UNKNOWN"')
-              TOTAL=$(echo   "$JOB" | jq -r '.totalTests   // .stats.tests    // 0')
-              PASSED=$(echo  "$JOB" | jq -r '.passedTests  // .stats.passes   // 0')
-              FAILED=$(echo  "$JOB" | jq -r '.failedTests  // .stats.failures // 0')
-              PENDING=$(echo "$JOB" | jq -r '.pendingTests // .stats.pending  // 0')
+              TOTAL=$(echo   "$JOB" | jq -r '.totalTestExecutions        // 0')
+              PASSED=$(echo  "$JOB" | jq -r '.successfulTestExecutions   // 0')
+              FAILED=$(echo  "$JOB" | jq -r '.failedTestExecutions       // 0')
+              PENDING=$(echo "$JOB" | jq -r '.skippedTestExecutions      // 0')
               STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
             else
-              STATUS="FAIL"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
+              # No data for this browser — SKIP, not FAIL
+              STATUS="SKIP"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
             fi
 
             mkdir -p "result-${ENVIRONMENT}-${BROWSER}"
             echo "$STATUS" > "result-${ENVIRONMENT}-${BROWSER}/result.txt"
 
-            cat > "result-${ENVIRONMENT}-${BROWSER}/result.json" <<EOF
-          {
-            "status": "$STATUS",
-            "environment": "$ENVIRONMENT",
-            "browser": "$BROWSER",
-            "testCounts": {
-              "total":   $TOTAL,
-              "passed":  $PASSED,
-              "failed":  $FAILED,
-              "pending": $PENDING
-            },
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "runId": "${{ github.run_id }}"
-          }
-          EOF
+            # Use jq to build result.json — prevents invalid JSON if any
+            # variable contains quotes, newlines, or other special characters.
+            jq -n \
+              --arg     status      "$STATUS" \
+              --arg     environment "$ENVIRONMENT" \
+              --arg     browser     "$BROWSER" \
+              --argjson total       "${TOTAL:-0}" \
+              --argjson passed      "${PASSED:-0}" \
+              --argjson failed      "${FAILED:-0}" \
+              --argjson pending     "${PENDING:-0}" \
+              --arg     timestamp   "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              --arg     runId       "${{ github.run_id }}" \
+              '{
+                "status":      $status,
+                "environment": $environment,
+                "browser":     $browser,
+                "testCounts": {
+                  "total":   $total,
+                  "passed":  $passed,
+                  "failed":  $failed,
+                  "pending": $pending
+                },
+                "timestamp": $timestamp,
+                "runId":     $runId
+              }' > "result-${ENVIRONMENT}-${BROWSER}/result.json"
+
             echo "result-${ENVIRONMENT}-${BROWSER}: status=$STATUS  total=$TOTAL  passed=$PASSED  failed=$FAILED"
           done
 
@@ -236,7 +260,7 @@ jobs:
           path: result-${{ matrix.environment }}-edge/
           retention-days: 7
 
-      # The raw report is uploaded for all trigger types — useful for debugging
+      # The raw report is uploaded for all trigger types — useful for debugging.
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
@@ -262,7 +286,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install required tools
         run: sudo apt-get update && sudo apt-get install -y jq bc
@@ -283,9 +307,6 @@ jobs:
       - name: Generate test summary report
         id: summary
         run: |
-          #!/bin/bash
-          set -e
-
           echo "# 🌙 PETS Nightly Test Results" > nightly-summary.md
           echo "" >> nightly-summary.md
           echo "**Run Date**: $(date -u)" >> nightly-summary.md
@@ -300,99 +321,123 @@ jobs:
           TOTAL=0; FAILS=0
           TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
 
-          echo "{"               > dashboard/test-results.json
-          echo '  "results": {' >> dashboard/test-results.json
+          # Accumulate results as a jq object — avoids invalid JSON from
+          # special characters in any variable (branch names, plan names, etc.)
+          RESULTS_JSON='{}'
 
-          FIRST_ENV=true
           for env in "${ENV_LIST[@]}"; do
             echo "## Environment: ${env^^}" >> nightly-summary.md
             echo "" >> nightly-summary.md
             echo "| Browser | Status | Total | Passed | Failed | Pending |" >> nightly-summary.md
             echo "|---------|--------|-------|--------|--------|---------|" >> nightly-summary.md
 
-            [[ "$FIRST_ENV" == "false" ]] && echo "," >> dashboard/test-results.json
-            echo "    \"$env\": {" >> dashboard/test-results.json
-            FIRST_ENV=false
+            ENV_OBJ='{}'
 
-            FIRST_BROWSER=true
             for browser in "${BROWSER_LIST[@]}"; do
               RESULT_DIR="all-artifacts/result-${env}-${browser}"
-              STATUS="UNKNOWN"; TEST_COUNT=0; PASSED_COUNT=0; FAILED_COUNT=0; PENDING_COUNT=0
+              STATUS="UNKNOWN"
+              TEST_COUNT=0; PASSED_COUNT=0; FAILED_COUNT=0; PENDING_COUNT=0
 
-              [[ -f "$RESULT_DIR/result.txt" ]] && STATUS=$(cat "$RESULT_DIR/result.txt")
+              [[ -f "$RESULT_DIR/result.txt" ]] && STATUS=$(cat "$RESULT_DIR/result.txt") || true
+
               if [[ -f "$RESULT_DIR/result.json" ]]; then
-                TEST_COUNT=$(jq -r    '.testCounts.total   // 0' "$RESULT_DIR/result.json")
-                PASSED_COUNT=$(jq -r  '.testCounts.passed  // 0' "$RESULT_DIR/result.json")
-                FAILED_COUNT=$(jq -r  '.testCounts.failed  // 0' "$RESULT_DIR/result.json")
-                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_DIR/result.json")
+                TEST_COUNT=$(jq    -r '.testCounts.total   // 0' "$RESULT_DIR/result.json" 2>/dev/null || echo 0)
+                PASSED_COUNT=$(jq  -r '.testCounts.passed  // 0' "$RESULT_DIR/result.json" 2>/dev/null || echo 0)
+                FAILED_COUNT=$(jq  -r '.testCounts.failed  // 0' "$RESULT_DIR/result.json" 2>/dev/null || echo 0)
+                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_DIR/result.json" 2>/dev/null || echo 0)
               fi
 
-              STATUS_ICON=$([ "$STATUS" = "PASS" ] && echo "✅" || echo "❌")
+              STATUS_ICON=$([ "$STATUS" = "PASS" ] && echo "✅" || [ "$STATUS" = "SKIP" ] && echo "⏭️" || echo "❌")
               echo "| $browser | $STATUS_ICON $STATUS | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
 
-              [[ "$FIRST_BROWSER" == "false" ]] && echo "," >> dashboard/test-results.json
-              cat >> dashboard/test-results.json <<EOF
-              "$browser": {
-                "status": "$STATUS",
-                "testCounts": {
-                  "total":   $TEST_COUNT,
-                  "passed":  $PASSED_COUNT,
-                  "failed":  $FAILED_COUNT,
-                  "pending": $PENDING_COUNT
-                }
-              }
-          EOF
-              FIRST_BROWSER=false
+              # Build per-browser JSON object via jq — all values safely typed
+              BROWSER_OBJ=$(jq -n \
+                --arg     status  "$STATUS" \
+                --argjson total   "${TEST_COUNT:-0}" \
+                --argjson passed  "${PASSED_COUNT:-0}" \
+                --argjson failed  "${FAILED_COUNT:-0}" \
+                --argjson pending "${PENDING_COUNT:-0}" \
+                '{"status": $status, "testCounts": {"total": $total, "passed": $passed, "failed": $failed, "pending": $pending}}')
 
-              TOTAL=$((TOTAL + 1))
-              [[ "$STATUS" != "PASS" ]] && FAILS=$((FAILS + 1))
+              # Merge browser object into the env object
+              ENV_OBJ=$(echo "$ENV_OBJ" | jq \
+                --arg     b    "$browser" \
+                --argjson bobj "$BROWSER_OBJ" \
+                '. + {($b): $bobj}')
+
+              # Only count non-SKIP browsers toward combinations and overall status
+              if [[ "$STATUS" != "SKIP" ]]; then
+                TOTAL=$((TOTAL + 1))
+                [[ "$STATUS" != "PASS" ]] && FAILS=$((FAILS + 1))
+              fi
               TOTAL_TESTS=$((TOTAL_TESTS     + TEST_COUNT))
               TOTAL_PASSED=$((TOTAL_PASSED   + PASSED_COUNT))
               TOTAL_FAILED=$((TOTAL_FAILED   + FAILED_COUNT))
               TOTAL_PENDING=$((TOTAL_PENDING + PENDING_COUNT))
             done
 
-            echo "    }" >> dashboard/test-results.json
+            # Merge env object into the top-level results object
+            RESULTS_JSON=$(echo "$RESULTS_JSON" | jq \
+              --arg     e    "$env" \
+              --argjson eobj "$ENV_OBJ" \
+              '. + {($e): $eobj}')
+
             echo "" >> nightly-summary.md
           done
 
-          echo "  }," >> dashboard/test-results.json
-
+          # Success rate based on actual test counts (not combinations)
           SUCCESS_RATE=0
-          [[ $TOTAL -gt 0 ]] && SUCCESS_RATE=$(echo "scale=1; ($TOTAL - $FAILS) * 100 / $TOTAL" | bc)
+          [[ $TOTAL_TESTS -gt 0 ]] && SUCCESS_RATE=$(echo "scale=1; $TOTAL_PASSED * 100 / $TOTAL_TESTS" | bc)
+          # bc may output .N instead of 0.N on some systems — normalise to valid JSON
+          SUCCESS_RATE=$(echo "$SUCCESS_RATE" | sed 's/^\./0./')
+
+          OVERALL_STATUS="PASS"
+          [[ $FAILS -gt 0 ]] && OVERALL_STATUS="FAIL"
 
           echo "## 📊 Overall Summary" >> nightly-summary.md
           echo "" >> nightly-summary.md
-          echo "- **Test Combinations**: $TOTAL"      >> nightly-summary.md
-          echo "- **Failed Combinations**: $FAILS"    >> nightly-summary.md
-          echo "- **Success Rate**: ${SUCCESS_RATE}%" >> nightly-summary.md
-          echo "- **Total Tests Run**: $TOTAL_TESTS"  >> nightly-summary.md
-          echo "- **Tests Passed**: $TOTAL_PASSED"    >> nightly-summary.md
-          echo "- **Tests Failed**: $TOTAL_FAILED"    >> nightly-summary.md
-          echo "- **Tests Pending**: $TOTAL_PENDING"  >> nightly-summary.md
+          echo "- **Test Combinations**: $TOTAL"          >> nightly-summary.md
+          echo "- **Failed Combinations**: $FAILS"        >> nightly-summary.md
+          echo "- **Test Pass Rate**: ${SUCCESS_RATE}%"   >> nightly-summary.md
+          echo "- **Total Tests Run**: $TOTAL_TESTS"      >> nightly-summary.md
+          echo "- **Tests Passed**: $TOTAL_PASSED"        >> nightly-summary.md
+          echo "- **Tests Failed**: $TOTAL_FAILED"        >> nightly-summary.md
+          echo "- **Tests Pending**: $TOTAL_PENDING"      >> nightly-summary.md
 
-          if [[ $FAILS -eq 0 ]]; then
-            OVERALL_STATUS="PASS"
+          if [[ "$OVERALL_STATUS" == "PASS" ]]; then
             echo "## ✅ Status: ALL TESTS PASSED" >> nightly-summary.md
           else
-            OVERALL_STATUS="FAIL"
             echo "## ❌ Status: SOME TESTS FAILED" >> nightly-summary.md
           fi
 
-          cat >> dashboard/test-results.json <<EOF
-            "overallStatus":      "$OVERALL_STATUS",
-            "totalCombinations":  $TOTAL,
-            "failedCombinations": $FAILS,
-            "totalTests":         $TOTAL_TESTS,
-            "totalPassed":        $TOTAL_PASSED,
-            "totalFailed":        $TOTAL_FAILED,
-            "totalPending":       $TOTAL_PENDING,
-            "successRate":        $SUCCESS_RATE,
-            "runUrl":             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-            "branch":             "${{ needs.setup-matrix.outputs.branch }}",
-            "timestamp":          "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
+          # Write final test-results.json entirely via jq — no string concatenation
+          jq -n \
+            --argjson results             "$RESULTS_JSON" \
+            --arg     overallStatus       "$OVERALL_STATUS" \
+            --argjson totalCombinations   $TOTAL \
+            --argjson failedCombinations  $FAILS \
+            --argjson totalTests          $TOTAL_TESTS \
+            --argjson totalPassed         $TOTAL_PASSED \
+            --argjson totalFailed         $TOTAL_FAILED \
+            --argjson totalPending        $TOTAL_PENDING \
+            --argjson successRate         $SUCCESS_RATE \
+            --arg     runUrl              "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg     branch              "${{ needs.setup-matrix.outputs.branch }}" \
+            --arg     timestamp           "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{
+              "results":            $results,
+              "overallStatus":      $overallStatus,
+              "totalCombinations":  $totalCombinations,
+              "failedCombinations": $failedCombinations,
+              "totalTests":         $totalTests,
+              "totalPassed":        $totalPassed,
+              "totalFailed":        $totalFailed,
+              "totalPending":       $totalPending,
+              "successRate":        $successRate,
+              "runUrl":             $runUrl,
+              "branch":             $branch,
+              "timestamp":          $timestamp
+            }' > dashboard/test-results.json
 
           echo "overall_status=$OVERALL_STATUS" >> "$GITHUB_OUTPUT"
           echo "success_rate=$SUCCESS_RATE"     >> "$GITHUB_OUTPUT"
