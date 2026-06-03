@@ -141,8 +141,8 @@ Cypress.Commands.add("loginViaB2C", () => {
     },
   );
 
-  cy.log("Checking redirection to applicant search");
-  cy.url({ timeout: 30000 }).should("include", "/search-for-visa-applicant");
+  cy.log("Checking redirection to screening task choice page");
+  cy.url({ timeout: 30000 }).should("include", "/what-do-you-need-to-do");
 });
 
 // Logout Command

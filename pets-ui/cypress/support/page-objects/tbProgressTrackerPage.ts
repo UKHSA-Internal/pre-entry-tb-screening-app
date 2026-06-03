@@ -54,8 +54,8 @@ export class TBProgressTrackerPage extends BasePage {
       .should("be.visible")
       .and("contain", "Complete UK pre-entry health screening");
 
-    // Check summary list is present in the header
-    cy.get(".progress-tracker-header .govuk-summary-list").should("be.visible");
+    // Check applicant info table is present in the header
+    cy.get(".progress-tracker-header .govuk-table").should("be.visible");
     return this;
   }
 
@@ -63,7 +63,10 @@ export class TBProgressTrackerPage extends BasePage {
   verifyApplicantInfo(expectedValues: ApplicantInfo): TBProgressTrackerPage {
     (Object.entries(expectedValues) as [keyof ApplicantInfo, string][]).forEach(([key, value]) => {
       if (value !== undefined) {
-        this.summary.verifySummaryValue(key, value);
+        cy.get(".progress-tracker-header .govuk-table__row")
+          .contains(".govuk-table__header", key)
+          .siblings(".govuk-table__cell")
+          .should("contain", value);
       }
     });
     return this;
@@ -248,6 +251,36 @@ export class TBProgressTrackerPage extends BasePage {
     expectedTaskLinks.forEach((task) => {
       cy.contains(".govuk-task-list__link", task).should("be.visible").and("have.attr", "href");
     });
+    return this;
+  }
+
+  // Verify "View screening history" section
+  verifyViewScreeningHistorySection(): TBProgressTrackerPage {
+    cy.contains("h2.govuk-heading-s", "View screening history").should("be.visible");
+    cy.contains(".govuk-link", "View the screening history for this visa applicant")
+      .should("be.visible")
+      .and("have.attr", "href", "/screening-history");
+    return this;
+  }
+
+  // Click view screening history link
+  clickViewScreeningHistory(): TBProgressTrackerPage {
+    cy.contains(".govuk-link", "View the screening history for this visa applicant").click();
+    return this;
+  }
+
+  // Verify "Cancel screening" section
+  verifyCancelScreeningSection(): TBProgressTrackerPage {
+    cy.contains("h2.govuk-heading-s", "Cancel screening").should("be.visible");
+    cy.get("button.govuk-button--warning")
+      .should("be.visible")
+      .and("contain", "Cancel this screening");
+    return this;
+  }
+
+  // Click cancel screening button
+  clickCancelScreening(): TBProgressTrackerPage {
+    cy.get("button.govuk-button--warning").contains("Cancel this screening").click();
     return this;
   }
 
@@ -452,6 +485,8 @@ export class TBProgressTrackerPage extends BasePage {
     cy.contains("h2.govuk-heading-s", "1. Visa applicant information").should("be.visible");
     cy.contains("h2.govuk-heading-s", "2. Medical screening").should("be.visible");
     cy.contains("h2.govuk-heading-s", "3. Review outcome").should("be.visible");
+    cy.contains("h2.govuk-heading-s", "View screening history").should("be.visible");
+    cy.contains("h2.govuk-heading-s", "Cancel screening").should("be.visible");
     cy.contains("h2.govuk-heading-s", "Start a new search").should("be.visible");
     return this;
   }
@@ -462,7 +497,7 @@ export class TBProgressTrackerPage extends BasePage {
     cy.contains("p.govuk-body", "Search for another visa applicant").should("be.visible");
     cy.contains(".govuk-link", "Search for another visa applicant")
       .should("be.visible")
-      .and("have.attr", "href", "/applicant-search");
+      .and("have.attr", "href", "/search-for-visa-applicant");
     return this;
   }
 
