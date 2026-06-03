@@ -64,7 +64,11 @@ export class SputumDecisionInfoPage extends BasePage {
       .find("a.govuk-link")
       .should("be.visible")
       .should("contain", "Change")
-      .should("have.attr", "href", "/is-sputum-collection-required");
+      .should(
+        "have.attr",
+        "href",
+        "/is-sputum-collection-required?from=/check-sputum-decision-information",
+      );
     return this;
   }
 

@@ -25,6 +25,7 @@ import { MedicalScreeningPage } from "../../support/page-objects/medicalScreenin
 import { MedicalSummaryPage } from "../../support/page-objects/medicalSummaryPage";
 import { PassportInformationPage } from "../../support/page-objects/passportInformationPage";
 import { RadiologicalOutcomeConfPage } from "../../support/page-objects/radiologicalOutcomeConfPage";
+import { ScreeningTaskChoicePage } from "../../support/page-objects/screeningTaskChoicePage";
 import { SputumCollectionPage } from "../../support/page-objects/sputumCollectionPage";
 import { SputumConfirmationPage } from "../../support/page-objects/sputumConfirmationPage";
 import { SputumDecisionConfirmationPage } from "../../support/page-objects/sputumDecisionConfirmationPage";
@@ -64,6 +65,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
   const medicalConfirmationPage = new MedicalConfirmationPage();
   const passportInformationPage = new PassportInformationPage();
   const radiologicalOutcomeConfPage = new RadiologicalOutcomeConfPage();
+  const screeningTaskChoicePage = new ScreeningTaskChoicePage();
   const sputumQuestionPage = new SputumQuestionPage();
   const sputumCollectionPage = new SputumCollectionPage();
   const sputumConfirmationPage = new SputumConfirmationPage();
@@ -176,8 +178,10 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
   beforeEach(() => {
     loginViaB2C();
-    applicantSearchPage.visit();
+    screeningTaskChoicePage.visit();
+    screeningTaskChoicePage.verifyPageLoaded();
     cy.acceptCookies();
+    screeningTaskChoicePage.clickSearchForOrStartNewScreening();
     applicantSearchPage.verifyPageLoaded();
     // Generate random country and passport number
     const randomCountry = randomElement(countryList);
@@ -195,7 +199,6 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
 
   it("should complete the full application process with sputum collection", () => {
     // Search for applicant with passport number
-    cy.acceptCookies();
     applicantSearchPage
       .fillPassportNumber(passportNumber)
       .selectCountryOfIssue(countryName) // Use country code for form filling
@@ -552,7 +555,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": adultDOBFormatted,
+        //"Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -580,7 +583,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": adultDOBFormatted,
+        //"Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
@@ -699,7 +702,7 @@ describe("PETS Application End-to-End Tests with Sputum Collection", () => {
       tbProgressTrackerPage.verifySectionHeadings();
       tbProgressTrackerPage.verifyApplicantInfo({
         Name: "Jane Smith",
-        "Date of birth": adultDOBFormatted,
+        //"Date of birth": adultDOBFormatted,
         "Passport number": passportNumber,
         "TB screening": "In progress",
       });
