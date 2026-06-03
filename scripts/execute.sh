@@ -93,18 +93,56 @@ else
   CURL_DATA=()
 fi
 
-JOBS=$(curl -s \
-  --header "Authorization: Bearer $VIRTUOSO_TOKEN" \
-  --header "X-Virtuoso-Client-Name: CICD" \
-  $CONTENT_HEADER \
-  -X POST \
-  "${CURL_DATA[@]}" \
-  "https://api-uk.virtuoso.qa/api/plans/executions/$PLAN_ID/execute?envelope=false")
+# Retry loop — handles error 3324 (another execution already in progress).
+# Will keep retrying for up to PLAN_BUSY_WAIT_SECONDS (default 10 minutes).
+PLAN_BUSY_WAIT_SECONDS="${PLAN_BUSY_WAIT_SECONDS:-600}"
+PLAN_BUSY_POLL_SECONDS="${PLAN_BUSY_POLL_SECONDS:-30}"
+LAUNCH_DEADLINE=$(( $(date +%s) + PLAN_BUSY_WAIT_SECONDS ))
+LAUNCH_ATTEMPT=0
 
-if [ "$?" != "0" ] || [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
-  echo "Failed to launch plan execution."
-  exit 1
-fi
+while true; do
+  LAUNCH_ATTEMPT=$(( LAUNCH_ATTEMPT + 1 ))
+  echo "Launch attempt $LAUNCH_ATTEMPT..."
+
+  JOBS=$(curl -s \
+    --header "Authorization: Bearer $VIRTUOSO_TOKEN" \
+    --header "X-Virtuoso-Client-Name: CICD" \
+    $CONTENT_HEADER \
+    -X POST \
+    "${CURL_DATA[@]}" \
+    "https://api-uk.virtuoso.qa/api/plans/executions/$PLAN_ID/execute?envelope=false")
+
+  if [ "$?" != "0" ] || [ -z "$JOBS" ] || [ "$JOBS" == "null" ]; then
+    echo "Failed to launch plan execution (empty/null response)."
+    exit 1
+  fi
+
+  # Check for Virtuoso error 3324 — plan already running
+  LAUNCH_ERROR_CODE=$(echo "$JOBS" | jq -r '.error.code // empty' 2>/dev/null || true)
+  if [ "$LAUNCH_ERROR_CODE" = "3324" ]; then
+    NOW=$(date +%s)
+    if [ "$NOW" -ge "$LAUNCH_DEADLINE" ]; then
+      echo "Plan still busy after ${PLAN_BUSY_WAIT_SECONDS}s — giving up."
+      echo "$JOBS" | jq '.' 2>/dev/null || echo "$JOBS"
+      exit 1
+    fi
+    REMAINING=$(( LAUNCH_DEADLINE - NOW ))
+    echo "Plan already running (error 3324). Retrying in ${PLAN_BUSY_POLL_SECONDS}s (${REMAINING}s remaining before timeout)..."
+    sleep "$PLAN_BUSY_POLL_SECONDS"
+    continue
+  fi
+
+  # Any other error field means a real failure
+  LAUNCH_SUCCESS=$(echo "$JOBS" | jq -r '.success // "true"' 2>/dev/null || echo "true")
+  if [ "$LAUNCH_SUCCESS" = "false" ]; then
+    echo "Failed to launch plan execution."
+    echo "$JOBS" | jq '.' 2>/dev/null || echo "$JOBS"
+    exit 1
+  fi
+
+  # Successful launch — exit the retry loop
+  break
+done
 
 # ✅ Log raw API response to help diagnose structure on any future failures
 echo "Launch API response:"
