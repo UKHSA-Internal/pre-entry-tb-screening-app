@@ -86,7 +86,7 @@ class SQService {
     };
 
     if (isFifo) {
-      params.MessageGroupId = `${messageBody?.pk}_${messageBody?.sk ?? Date.now().toString()}`;
+      params.MessageGroupId = `${messageBody?.pk}_${messageBody?.sk ?? Date.now().toString()}_${messageBody?.sk ? Date.now().toString() : "attr-missing"}`;
       params.MessageDeduplicationId = Date.now().toString();
     }
 
