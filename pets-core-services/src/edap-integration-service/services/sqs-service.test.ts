@@ -109,7 +109,7 @@ describe("SQService", () => {
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
 
-    expect(input.MessageGroupId).toBe("unique-pk_test-sk");
+    expect(input.MessageGroupId).toMatch(/^unique-pk_test-sk_\d+$/);
     expect(input.MessageDeduplicationId).toBeDefined();
   });
 
@@ -159,7 +159,7 @@ describe("SQService", () => {
     await service.sendDbStreamMessage(messageWithoutSk);
 
     const cmd = sendSpy.mock.calls[0][0];
-    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+$/);
+    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+_attr-missing$/);
     expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
 
