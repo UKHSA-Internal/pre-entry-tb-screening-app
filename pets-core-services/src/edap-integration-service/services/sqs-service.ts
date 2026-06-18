@@ -86,8 +86,14 @@ class SQService {
     };
 
     if (isFifo) {
-      params.MessageGroupId = `${messageBody?.pk}_${messageBody?.sk ?? Date.now().toString()}_${messageBody?.sk ? Date.now().toString() : "attr-missing"}`;
-      params.MessageDeduplicationId = Date.now().toString();
+      const dateString = Date.now().toString();
+      const baseMessageGroupIdString = `${messageBody?.pk}_${messageBody?.sk ?? "attr-missing"}`;
+      const grIdString = `${baseMessageGroupIdString}_${dateString}`;
+      params.MessageGroupId =
+        grIdString.length > 128
+          ? baseMessageGroupIdString.slice(0, 128 - dateString.length) + dateString
+          : grIdString;
+      params.MessageDeduplicationId = dateString;
     }
 
     if (messageAttributes) {
