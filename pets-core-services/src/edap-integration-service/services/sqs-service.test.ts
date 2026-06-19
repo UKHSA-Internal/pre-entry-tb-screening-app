@@ -109,7 +109,7 @@ describe("SQService", () => {
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
 
-    expect(input.MessageGroupId).toBe("unique-pk_test-sk");
+    expect(input.MessageGroupId).toMatch(/^unique-pk_test-sk_\d+$/);
     expect(input.MessageDeduplicationId).toBeDefined();
   });
 
@@ -159,7 +159,7 @@ describe("SQService", () => {
     await service.sendDbStreamMessage(messageWithoutSk);
 
     const cmd = sendSpy.mock.calls[0][0];
-    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+$/);
+    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_attr-missing_\d+$/);
     expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
 
@@ -173,5 +173,57 @@ describe("SQService", () => {
     sendSpy.mockRejectedValueOnce(new Error("DLQ network error"));
 
     await expect(service.sendToDLQ(dbRecord)).rejects.toThrow("DLQ network error");
+  });
+
+  describe("MessageGroupId length limit (FIFO)", () => {
+    beforeEach(() => {
+      process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+    });
+
+    it("does not exceed 128 characters when pk and sk together would exceed the limit", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+    });
+
+    it("is exactly 128 characters when the full group ID string exceeds 128 characters", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBe(128);
+    });
+
+    it("still ends with the timestamp (MessageDeduplicationId) when truncated", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId, MessageDeduplicationId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.endsWith(MessageDeduplicationId!)).toBe(true);
+    });
+
+    it("does not truncate and stays within 128 characters when pk and sk are short", async () => {
+      const message = { pk: "short-pk", sk: "short-sk" };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+      expect(MessageGroupId).toMatch(/^short-pk_short-sk_\d+$/);
+    });
+
+    it("does not exceed 128 characters when sk is absent and pk is very long", async () => {
+      const message = { pk: "a".repeat(120) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+    });
   });
 });
