@@ -409,6 +409,7 @@ def data_migration(
     dry_run,
     dynamodb=None,
     migration=None,
+    from_date=None,
 ):
     global statistics
 
@@ -452,9 +453,25 @@ def data_migration(
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
 
+    if from_date:
+        assert (
+            is_correct_date_format(from_date),
+            "FROM_DATE should be valid date string in YYYY-MM-DD format, "
+        )
+        if scan_filter:
+            scan_filter["FilterExpression"] = (
+                scan_filter["FilterExpression"] + " AND dateCreated >= :from_date"
+            )
+            scan_filter["ExpressionAttributeValues"][":from_date"] = from_date
+        else:
+            scan_filter = {
+                "FilterExpression": "dateCreated >= :from_date",
+                "ExpressionAttributeValues": {":from_date": from_date},
+            }
+
     # Selecting the migration function based on the migration type
     if migration == "rewrite_application_nonroot_records":
-        # Reusing the ohter function as the logic is the same,
+        # Reusing the other function as the logic is the same,
         # just different filter for scanning
         func = rewrite_application_root_records
     else:
@@ -511,6 +528,15 @@ def data_migration(
     logger.info(f"Duration: {duration // 60} min {duration % 60} sec")
 
 
+def is_correct_date_format(date_string):
+    """Check if the date string is in the correct format (YYYY-MM-DD) and it's a valid date."""
+    try:
+        time.strptime(date_string, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+
 # ----------------------------------------------------------------------------------------
 # The main function is only executed when running the script directly.
 # It sets up the parameters and calls the data_migration function.
@@ -538,6 +564,7 @@ if __name__ == "__main__":
     MIGRATIONS = args["MIGRATIONS"]
     AWS_REGION = args["AWS_REGION"]
     DRY_RUN = args["DRY_RUN"]
+    FROM_DATE = args.get("FROM_DATE")
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
     VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
@@ -606,6 +633,7 @@ if __name__ == "__main__":
             dry_run,
             dynamodb=None,
             migration=migration,
+            from_date=FROM_DATE,
         )
         # Adding the migration to the list of completed migrations (for logging purposes)
         run_migrations.append(migration)
