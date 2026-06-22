@@ -24,6 +24,7 @@ from migrations import (  # noqa: E402
     set_application_statusgroup,
     scan_table,
     data_migration,
+    is_correct_date_format,
 )
 
 
@@ -555,6 +556,47 @@ class TestScanTable:
         lek = {"pk": "X", "sk": "Y"}
         scan_table(t, last_evaluated_key=lek, scan_filter=sf)
         t.scan.assert_called_once_with(FilterExpression="sk = :sk", ExclusiveStartKey=lek)
+
+    def test_date_created_filter_forwarded_when_no_lek(self):
+        """A dateCreated-based filter (from from_date) is forwarded as-is when no lek."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        scan_table(t, scan_filter=sf)
+        t.scan.assert_called_once_with(**sf)
+
+    def test_date_created_filter_merged_with_lek(self):
+        """A dateCreated filter is merged with ExclusiveStartKey when lek is present."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        lek = {"pk": "X", "sk": "Y"}
+        scan_table(t, last_evaluated_key=lek, scan_filter=sf)
+        call_kwargs = t.scan.call_args[1]
+        assert call_kwargs["FilterExpression"] == "dateCreated >= :from_date"
+        assert call_kwargs["ExpressionAttributeValues"] == {":from_date": "2024-06-01"}
+        assert call_kwargs["ExclusiveStartKey"] == lek
+
+    def test_combined_filter_and_date_filter_merged_with_lek(self):
+        """A combined sk+dateCreated filter is merged with ExclusiveStartKey when lek is present."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "sk = :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-06-01"},
+        }
+        lek = {"pk": "X", "sk": "Y"}
+        scan_table(t, last_evaluated_key=lek, scan_filter=sf)
+        call_kwargs = t.scan.call_args[1]
+        assert "dateCreated >= :from_date" in call_kwargs["FilterExpression"]
+        assert call_kwargs["ExpressionAttributeValues"][":from_date"] == "2024-06-01"
+        assert call_kwargs["ExclusiveStartKey"] == lek
 
 
 class TestDataMigration:
@@ -1113,3 +1155,36 @@ class TestDataMigrationExtended:
                 "migrate_applicants",
             )
         assert mock_migrate.call_count == 2
+
+
+class TestIsCorrectDateFormat:
+    """Tests for the is_correct_date_format helper."""
+
+    @pytest.mark.parametrize(
+        "date_string",
+        [
+            "2024-01-01",
+            "2024-12-31",
+            "2024-02-29",  # leap year
+            "2000-01-01",
+            "1999-06-15",
+        ],
+    )
+    def test_returns_true_for_valid_dates(self, date_string):
+        assert is_correct_date_format(date_string) is True
+
+    @pytest.mark.parametrize(
+        "date_string",
+        [
+            "01-01-2024",        # DD-MM-YYYY order
+            "2024/01/01",        # wrong separator
+            "2024-13-01",        # invalid month
+            "2023-02-29",        # non-leap year
+            "2024-01-32",        # invalid day
+            "not-a-date",        # plain text
+            "",                  # empty string
+            "2024-01-01T00:00",  # date with time suffix
+        ],
+    )
+    def test_returns_false_for_invalid_dates(self, date_string):
+        assert is_correct_date_format(date_string) is False
