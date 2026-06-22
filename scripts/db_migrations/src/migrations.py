@@ -583,7 +583,7 @@ if __name__ == "__main__":
     if not is_correct_date_format(FROM_DATE) and FROM_DATE != "ALL":
         raise ValueError(
             "FROM_DATE should be valid date string in YYYY-MM-DD format, "
-            "or 'ALL' to include all records"
+            f"or 'ALL' to include all records (string received: {FROM_DATE})"
         )
     FROM_DATE = FROM_DATE if FROM_DATE != "ALL" else None
 
