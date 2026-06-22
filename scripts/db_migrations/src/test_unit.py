@@ -1176,13 +1176,13 @@ class TestIsCorrectDateFormat:
     @pytest.mark.parametrize(
         "date_string",
         [
-            "01-01-2024",        # DD-MM-YYYY order
-            "2024/01/01",        # wrong separator
-            "2024-13-01",        # invalid month
-            "2023-02-29",        # non-leap year
-            "2024-01-32",        # invalid day
-            "not-a-date",        # plain text
-            "",                  # empty string
+            "01-01-2024",  # DD-MM-YYYY order
+            "2024/01/01",  # wrong separator
+            "2024-13-01",  # invalid month
+            "2023-02-29",  # non-leap year
+            "2024-01-32",  # invalid day
+            "not-a-date",  # plain text
+            "",  # empty string
             "2024-01-01T00:00",  # date with time suffix
         ],
     )
