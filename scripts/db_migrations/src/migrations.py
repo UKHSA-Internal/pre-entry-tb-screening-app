@@ -453,7 +453,8 @@ def data_migration(
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
 
-    if from_date:
+    # Only applicant-details and application-details tables should be filtered by date
+    if from_date and migration != "rewrite_clinic_records":
         assert (
             is_correct_date_format(from_date),
             "FROM_DATE should be valid date string in YYYY-MM-DD format, "
@@ -554,6 +555,7 @@ if __name__ == "__main__":
             "MIGRATIONS",
             "AWS_REGION",
             "DRY_RUN",
+            "FROM_DATE",
         ],
     )
     logger.info(f"Received arguments: {args}")
