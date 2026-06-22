@@ -453,12 +453,8 @@ def data_migration(
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
 
-    # Only applicant-details and application-details tables should be filtered by date
+    # Only applicant-details and application-details tables should be filtered by
     if from_date and migration != "rewrite_clinic_records":
-        assert (
-            is_correct_date_format(from_date),
-            "FROM_DATE should be valid date string in YYYY-MM-DD format, "
-        )
         if scan_filter:
             scan_filter["FilterExpression"] = (
                 scan_filter["FilterExpression"] + " AND dateCreated >= :from_date"
@@ -583,6 +579,13 @@ if __name__ == "__main__":
 
     if CLINICS_TABLE_NAME:
         CLINICS_TABLE_NAME = CLINICS_TABLE_NAME.strip()
+
+    if not is_correct_date_format(FROM_DATE) and FROM_DATE != "ALL":
+        raise ValueError(
+            "FROM_DATE should be valid date string in YYYY-MM-DD format, "
+            "or 'ALL' to include all records"
+        )
+    FROM_DATE = FROM_DATE if FROM_DATE != "ALL" else None
 
     # Converting MIGRATIONS to a list of migration names,
     # in case there are multiple migrations to run

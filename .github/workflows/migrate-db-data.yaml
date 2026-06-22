@@ -26,8 +26,9 @@ on:
         type: choice
         options: ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
       from_date:
-        description: "Date in format: YYYY-MM-DD. All records before the date will be ignored"
-        required: false
+        description: "Date in format: YYYY-MM-DD. All records before the date will be ignored. Type in 'ALL' to include all records"
+        required: true
+        default: "ALL"
         type: string
 
 jobs:
@@ -46,4 +47,4 @@ jobs:
       - name: Trigger Glue job (migration script)
         run: |
           aws glue start-job-run --job-name "${{ vars.GLUE_MIGRATION_JOB_NAME }}" \
-            --arguments '{"--APPLICANT_TABLE":"${{ vars.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ vars.GLUE_APPLICATION_TABLE_NAME }}","--MIGRATIONS":"${{ github.event.inputs.migrations }}","--AWS_REGION":"${{ vars.AWS_REGION }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}","--FROM_DATE":"${{ github.event.inputs.from_date }}"}'
+            --arguments '{"--APPLICANT_TABLE":"${{ vars.GLUE_APPLICANT_TABLE_NAME }}","--APPLICATION_TABLE":"${{ vars.GLUE_APPLICATION_TABLE_NAME }}","--CLINICS_TABLE":"${{ vars.GLUE_CLINICS_TABLE_NAME }}","--MIGRATIONS":"${{ github.event.inputs.migrations }}","--AWS_REGION":"${{ vars.AWS_REGION }}","--DRY_RUN":"${{ github.event.inputs.dry_run }}","--FROM_DATE":"${{ github.event.inputs.from_date }}"}'
