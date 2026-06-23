@@ -821,3 +821,182 @@ class TestRewriteApplicationNonrootRecordsLive:
         # Root row must still exist and retain its original value (never touched by this migration)
         assert root is not None
         assert root["dateCreated"] == "ORIGINAL"
+
+
+class TestScanTableFromDate:
+    """scan_table with dateCreated >= :from_date filter against DynamoDB Local."""
+
+    def test_records_on_or_after_from_date_returned(self, mod, tables, dynamodb_local):
+        """Only records with dateCreated >= from_date are included in the result."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#old", dateCreated="2024-01-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#match", dateCreated="2024-06-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#after", dateCreated="2024-12-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        pks = {item["pk"] for item in items}
+        assert "COUNTRY#GB#PASSPORT#match" in pks
+        assert "COUNTRY#GB#PASSPORT#after" in pks
+        assert "COUNTRY#GB#PASSPORT#old" not in pks
+
+    def test_records_strictly_before_from_date_excluded(self, mod, tables, dynamodb_local):
+        """Records with dateCreated before from_date are excluded; boundary date is included."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#early", dateCreated="2023-12-31"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#boundary", dateCreated="2024-01-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        pks = {item["pk"] for item in items}
+        assert "COUNTRY#GB#PASSPORT#boundary" in pks
+        assert "COUNTRY#GB#PASSPORT#early" not in pks
+
+    def test_no_matching_records_returns_empty(self, mod, tables, dynamodb_local):
+        """from_date set after all seeded records → empty result and no pagination key."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#old", dateCreated="2023-01-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2025-01-01"},
+        }
+        items, lek = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        assert items == []
+        assert lek is None
+
+    def test_all_records_returned_when_from_date_is_earliest(self, mod, tables, dynamodb_local):
+        """from_date before all records → every record returned."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#1", dateCreated="2024-03-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#2", dateCreated="2024-06-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#3", dateCreated="2024-09-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        assert len(items) == 3
+
+    def test_combined_sk_and_date_filter_returns_only_matching_root_rows(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk=APPLICATION#ROOT AND dateCreated >= from_date filters both dimensions."""
+        _, application_table, _ = tables
+        # ROOT rows — one old, one recent
+        _seed_application_with_date(
+            application_table, "APPLICATION#old", sk="APPLICATION#ROOT", date_created="2023-01-01"
+        )
+        _seed_application_with_date(
+            application_table, "APPLICATION#new", sk="APPLICATION#ROOT", date_created="2024-06-01"
+        )
+        # Non-root row with a matching date — must be excluded by the sk filter
+        _seed_application_with_date(
+            application_table,
+            "APPLICATION#new",
+            sk="APPLICATION#TB#CERTIFICATE",
+            date_created="2024-06-01",
+        )
+
+        scan_filter = {
+            "FilterExpression": "sk = :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(application_table, scan_filter=scan_filter)
+
+        pks = [item["pk"] for item in items]
+        sks = [item["sk"] for item in items]
+        assert "APPLICATION#new" in pks
+        assert "APPLICATION#old" not in pks
+        assert all(sk == "APPLICATION#ROOT" for sk in sks)
+
+    def test_combined_sk_nonroot_and_date_filter(self, mod, tables, dynamodb_local):
+        """Combined sk <> APPLICATION#ROOT AND dateCreated >= from_date excludes ROOT & old rows."""
+        _, application_table, _ = tables
+        # Root row — must always be excluded by sk filter
+        _seed_application_with_date(
+            application_table, "APPLICATION#abc", sk="APPLICATION#ROOT", date_created="2024-06-01"
+        )
+        # Non-root old row — excluded by date filter
+        _seed_application_with_date(
+            application_table, "APPLICATION#abc", sk="APPLICATION#SPUTUM", date_created="2023-01-01"
+        )
+        # Non-root recent row — must be included
+        _seed_application_with_date(
+            application_table,
+            "APPLICATION#abc",
+            sk="APPLICATION#TB#CERTIFICATE",
+            date_created="2024-06-01",
+        )
+
+        scan_filter = {
+            "FilterExpression": "sk <> :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(application_table, scan_filter=scan_filter)
+
+        sks = [item["sk"] for item in items]
+        assert "APPLICATION#TB#CERTIFICATE" in sks
+        assert "APPLICATION#ROOT" not in sks
+        assert "APPLICATION#SPUTUM" not in sks
+
+    def test_paginated_scan_with_date_filter_returns_all_matching_records(
+        self, mod, tables, dynamodb_local
+    ):
+        """Date filter is preserved across multiple scan pages; only matching records returned."""
+        applicant_table, _, _ = tables
+        n = 30
+        for i in range(n):
+            # Half the records are before from_date, half on or after
+            date = "2023-01-01" if i % 2 == 0 else "2024-06-01"
+            _seed_applicant_with_country(
+                applicant_table, f"COUNTRY#GB#PASSPORT#{i}", dateCreated=date
+            )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+
+        all_items = []
+        lek = None
+        first = True
+        while first or lek:
+            items, lek = mod.scan_table(
+                applicant_table, last_evaluated_key=lek, scan_filter=scan_filter
+            )
+            all_items.extend(items)
+            first = False
+
+        assert len(all_items) == n // 2
+        for item in all_items:
+            assert item["dateCreated"] >= "2024-01-01"
