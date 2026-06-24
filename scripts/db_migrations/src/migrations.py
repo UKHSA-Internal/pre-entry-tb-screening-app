@@ -2,6 +2,7 @@ import importlib
 
 # It has to be import early for pytest to be able to test
 # the functions separately without running the whole script
+import datetime as dt
 import logging
 import time
 import boto3
@@ -280,12 +281,33 @@ def rewrite_applicant_records(
 
         return
 
-    # Re-writing the same data (countryOfIssue) to trigger DynamoDB Streams
+    # Calculate the new dateTime string
+    try:
+        date_created = dt.datetime.fromisoformat(record["dateCreated"])
+        tdelta = dt.timedelta(milliseconds=1)
+        date_created_inc = date_created + tdelta
+        part1, _, part2 = date_created_inc.partition(".")
+
+        if not part2:
+            logger.error(
+                f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
+                f"{record['dateCreated']}"
+            )
+            raise ValueError(
+                f"Invalid dateCreated format: {record['dateCreated']}"
+            )
+
+        date_created_mod = f"{part1}.{part2[:3]}Z"
+    except KeyError:
+        logger.erroor(f"ERROR: Missing dateCreated for record with pk={record['pk']}")
+        raise
+
+    # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
         applicant_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
-            UpdateExpression=("SET countryOfIssue = :countryOfIssue"),
-            ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
+            UpdateExpression=("SET dateCreated = :date"),
+            ExpressionAttributeValues={":date": date_created_mod},
         )
 
     except Exception as e:
@@ -321,12 +343,33 @@ def rewrite_application_root_records(
 
         return
 
+    # Calculate the new dateTime string
+    try:
+        date_created = dt.datetime.fromisoformat(record["dateCreated"])
+        tdelta = dt.timedelta(milliseconds=1)
+        date_created_inc = date_created + tdelta
+        part1, _, part2 = date_created_inc.partition(".")
+
+        if not part2:
+            logger.error(
+                f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
+                f"{record['dateCreated']}"
+            )
+            raise ValueError(
+                f"Invalid dateCreated format: {record['dateCreated']}"
+            )
+
+        date_created_mod = f"{part1}.{part2[:3]}Z"
+    except KeyError:
+        logger.erroor(f"ERROR: Missing dateCreated for record with pk={record['pk']}")
+        raise
+
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
         application_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
             UpdateExpression=("SET dateCreated = :date"),
-            ExpressionAttributeValues={":date": record["dateCreated"]},
+            ExpressionAttributeValues={":date": date_created_mod},
         )
 
     except Exception as e:
@@ -363,14 +406,17 @@ def rewrite_clinic_records(
 
         return
 
+    city_name = record.get("cityName", "")
+
     # Re-writing the same data (clinicId) to trigger DynamoDB Streams
     try:
         clinics_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
-            UpdateExpression=("SET clinicId = :id"),
-            ExpressionAttributeValues={":id": record["clinicId"]},
+            UpdateExpression=("SET city = :name"),
+            ExpressionAttributeValues={
+                ":name": (city_name.strip() if city_name.endswith(" ") else city_name + " ")
+            },
         )
-
     except Exception as e:
         logger.error(
             f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
