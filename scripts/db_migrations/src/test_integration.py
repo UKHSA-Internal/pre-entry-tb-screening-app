@@ -450,15 +450,15 @@ class TestRewriteClinicRecordsLive:
         assert record["clinicId"] == "abc"
 
     def test_extra_attributes_preserved_after_rewrite(self, mod, tables, dynamodb_local):
-        """Attributes other than clinicId are untouched after the rewrite."""
+        """Attributes other than city are untouched after the rewrite."""
         _, _, clinics_table = tables
-        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic", city="London")
+        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic", address="123 Main St")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
 
         record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
         assert record["clinicName"] == "Test Clinic"
-        assert record["city"] == "London"
+        assert record["address"] == "123 Main St"
 
     def test_statistics_rewritten_clinic_rows_incremented(self, mod, tables, dynamodb_local):
         """rewritten_clinic_rows counter is incremented for each record."""
@@ -536,7 +536,12 @@ class TestRewriteClinicRecordsPagination:
 
 
 def _seed_applicant_with_country(table, pk, country_of_issue="GB", **extra):
-    item = {"pk": pk, "sk": "APPLICANT#DETAILS", "countryOfIssue": country_of_issue}
+    item = {
+        "pk": pk,
+        "sk": "APPLICANT#DETAILS",
+        "countryOfIssue": country_of_issue,
+        "dateCreated": "2024-01-01T00:00:00.999Z",
+    }
     item.update(extra)
     table.put_item(Item=item)
     return item
@@ -675,7 +680,7 @@ class TestRewriteApplicationRootRecordsLive:
         assert record is not None
 
     def test_date_created_value_unchanged_after_rewrite(self, mod, tables, dynamodb_local):
-        """dateCreated attribute value is preserved (same value written back)."""
+        """dateCreated attribute is updated to the incremented value (original + 1ms)."""
         _, application_table, _ = tables
         _seed_application_with_date(application_table, "APPLICATION#abc", date_created="2024-06-15")
 
@@ -687,7 +692,7 @@ class TestRewriteApplicationRootRecordsLive:
         )
 
         record = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
-        assert record["dateCreated"] == "2024-06-15"
+        assert record["dateCreated"] == "2024-06-15T00:00:00.001Z"
 
     def test_statistics_rewritten_root_rows_incremented(self, mod, tables, dynamodb_local):
         """
@@ -724,7 +729,7 @@ class TestRewriteApplicationRootRecordsLive:
         for pk in pks:
             record = _get(application_table, pk, "APPLICATION#ROOT")
             assert record is not None
-            assert record["dateCreated"] == "2024-01-01"
+            assert record["dateCreated"] == "2024-01-01T00:00:00.001Z"
 
 
 class TestRewriteApplicationRootRecordsDryRun:

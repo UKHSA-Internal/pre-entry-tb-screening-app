@@ -475,19 +475,19 @@ class TestRewriteClinicRecords:
         }
 
     def test_live_update_expression_sets_clinic_id(self):
-        """UpdateExpression rewrites clinicId field."""
+        """UpdateExpression rewrites city field."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
-        assert "clinicId" in ct.update_item.call_args[1]["UpdateExpression"]
+        assert "city" in ct.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_expression_attribute_values_contain_clinic_id(self):
-        """ExpressionAttributeValues carries the original clinicId value."""
+        """ExpressionAttributeValues carries the modified city name value."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
         ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert ev[":id"] == "abc"
+        assert ev[":name"] == " "
 
     def test_live_increments_rewritten_clinic_rows(self):
         """dry_run=False → rewritten_clinic_rows incremented."""
@@ -862,6 +862,7 @@ class TestRewriteApplicantRecords:
         "pk": "COUNTRY#GB#PASSPORT#1",
         "sk": "APPLICANT#DETAILS",
         "countryOfIssue": "GB",
+        "dateCreated": "2024-01-01T00:00:00.000000",
     }
 
     def test_dry_run_does_not_call_update_item(self):
@@ -890,19 +891,19 @@ class TestRewriteApplicantRecords:
         }
 
     def test_live_update_expression_sets_country_of_issue(self):
-        """UpdateExpression rewrites countryOfIssue field."""
+        """UpdateExpression rewrites dateCreated field."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
-        assert "countryOfIssue" in at.update_item.call_args[1]["UpdateExpression"]
+        assert "dateCreated" in at.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_expression_attribute_values_carry_country_of_issue(self):
-        """ExpressionAttributeValues carries the original countryOfIssue value."""
+        """ExpressionAttributeValues carries the computed dateCreated value."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
         ev = at.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert ev[":countryOfIssue"] == "GB"
+        assert ev[":date"] == "2024-01-01T00:00:00.001Z"
 
     def test_live_increments_rewritten_applicant_rows(self):
         """dry_run=False → rewritten_applicant_rows incremented on success."""
