@@ -536,7 +536,12 @@ class TestRewriteClinicRecordsPagination:
 
 
 def _seed_applicant_with_country(table, pk, country_of_issue="GB", **extra):
-    item = {"pk": pk, "sk": "APPLICANT#DETAILS", "countryOfIssue": country_of_issue, "dateCreated": "2024-01-01T00:00:00.000000"}
+    item = {
+        "pk": pk,
+        "sk": "APPLICANT#DETAILS",
+        "countryOfIssue": country_of_issue,
+        "dateCreated": "2024-01-01T00:00:00.999Z",
+    }
     item.update(extra)
     table.put_item(Item=item)
     return item

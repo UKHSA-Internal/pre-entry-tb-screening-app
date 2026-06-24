@@ -293,13 +293,11 @@ def rewrite_applicant_records(
                 f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
                 f"{record['dateCreated']}"
             )
-            raise ValueError(
-                f"Invalid dateCreated format: {record['dateCreated']}"
-            )
+            raise ValueError(f"Invalid dateCreated format: {record['dateCreated']}")
 
         date_created_mod = f"{part1}.{part2[:3]}Z"
     except KeyError:
-        logger.erroor(f"ERROR: Missing dateCreated for record with pk={record['pk']}")
+        logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
         raise
 
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
@@ -355,13 +353,11 @@ def rewrite_application_root_records(
                 f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
                 f"{record['dateCreated']}"
             )
-            raise ValueError(
-                f"Invalid dateCreated format: {record['dateCreated']}"
-            )
+            raise ValueError(f"Invalid dateCreated format: {record['dateCreated']}")
 
         date_created_mod = f"{part1}.{part2[:3]}Z"
     except KeyError:
-        logger.erroor(f"ERROR: Missing dateCreated for record with pk={record['pk']}")
+        logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
         raise
 
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
