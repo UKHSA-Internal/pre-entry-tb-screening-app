@@ -298,7 +298,9 @@ def rewrite_applicant_records(
         date_created_mod = f"{part1}.{part2[:3]}Z"
     except KeyError:
         logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
-        raise
+        statistics["skipped_applicant_rows"] += 1
+
+        return
 
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
@@ -358,7 +360,13 @@ def rewrite_application_root_records(
         date_created_mod = f"{part1}.{part2[:3]}Z"
     except KeyError:
         logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
-        raise
+
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["skipped_application_root_rows"] += 1
+        else:
+            statistics["skipped_application_nonroot_rows"] += 1
+
+        return
 
     # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
