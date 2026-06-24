@@ -283,7 +283,7 @@ def rewrite_applicant_records(
 
     # Calculate the new dateTime string
     try:
-        date_created = dt.datetime.fromisoformat(record["dateCreated"])
+        date_created = dt.datetime.fromisoformat(record["dateCreated"].strip("Z"))
         tdelta = dt.timedelta(milliseconds=1)
         date_created_inc = (date_created + tdelta).isoformat()
         part1, _, part2 = date_created_inc.partition(".")
@@ -345,7 +345,7 @@ def rewrite_application_root_records(
 
     # Calculate the new dateTime string
     try:
-        date_created = dt.datetime.fromisoformat(record["dateCreated"])
+        date_created = dt.datetime.fromisoformat(record["dateCreated"].strip("Z"))
         tdelta = dt.timedelta(milliseconds=1)
         date_created_inc = (date_created + tdelta).isoformat()
         part1, _, part2 = date_created_inc.partition(".")
