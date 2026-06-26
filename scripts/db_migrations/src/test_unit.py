@@ -1007,7 +1007,7 @@ class TestRewriteApplicationRootRecords:
         apt.update_item.assert_not_called()
 
     def test_dry_run_root_sk_increments_nonroot_rows(self):
-        """dry_run=True, sk == APPLICATION#NONROOT → rewritten_application_nonroot_rows incremented."""
+        """dry_run=True, non-ROOT record → rewritten_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
