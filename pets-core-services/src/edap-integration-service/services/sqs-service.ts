@@ -106,6 +106,7 @@ class SQService {
   }
 
   private onlyASCIICharacters(s: string): string {
+    // eslint-disable-next-line no-control-regex
     return s.replace(/[^\x00-\x7F]/g, "?");
   }
 }

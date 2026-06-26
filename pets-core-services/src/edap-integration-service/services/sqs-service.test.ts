@@ -272,6 +272,7 @@ describe("SQService", () => {
       await service.sendDbStreamMessage(message);
 
       const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      // eslint-disable-next-line no-control-regex
       expect(MessageGroupId).toMatch(/^[\x00-\x7F]+$/);
       expect(MessageGroupId).toContain("caf?-pk");
     });
