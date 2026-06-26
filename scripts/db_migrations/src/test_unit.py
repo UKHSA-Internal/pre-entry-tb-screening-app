@@ -997,21 +997,21 @@ class TestRewriteApplicationRootRecords:
         return {"pk": "APPLICATION#abc", "sk": sk, "dateCreated": date_created}
 
     def test_dry_run_nonroot_sk_increments_root_rows(self):
-        """dry_run=True, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
+        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_root_rows"] == 1
         apt.update_item.assert_not_called()
 
     def test_dry_run_root_sk_increments_nonroot_rows(self):
-        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        """dry_run=True, sk == APPLICATION#NONROOT → rewritten_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
         apt.update_item.assert_not_called()
@@ -1035,20 +1035,20 @@ class TestRewriteApplicationRootRecords:
         assert "dateCreated" in apt.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_nonroot_sk_increments_root_rows(self):
-        """dry_run=False, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
-        at, apt, ct = mock_tables()
-        stats = make_statistics()
-        rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
-        )
-        assert stats["rewritten_application_root_rows"] == 1
-
-    def test_live_root_sk_increments_nonroot_rows(self):
-        """dry_run=False, ROOT row → rewritten_application_nonroot_rows incremented."""
+        """dry_run=False, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
             self._record(sk="APPLICATION#ROOT"), at, apt, ct, False, stats
+        )
+        assert stats["rewritten_application_root_rows"] == 1
+
+    def test_live_root_sk_increments_nonroot_rows(self):
+        """dry_run=False, NONROOT row → rewritten_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
 
