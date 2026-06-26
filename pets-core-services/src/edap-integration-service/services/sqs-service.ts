@@ -89,10 +89,11 @@ class SQService {
       const dateString = Date.now().toString();
       const baseMessageGroupIdString = `${messageBody?.pk}_${messageBody?.sk ?? "attr-missing"}`;
       const grIdString = `${baseMessageGroupIdString}_${dateString}`;
-      params.MessageGroupId =
+      const trimmedMessageGroupId =
         grIdString.length > 128
           ? baseMessageGroupIdString.slice(0, 128 - dateString.length) + dateString
           : grIdString;
+      params.MessageGroupId = this.onlyASCIICharacters(trimmedMessageGroupId);
       params.MessageDeduplicationId = dateString;
     }
 
@@ -102,6 +103,10 @@ class SQService {
 
     // Send a message to the queue
     await this.sqsClient.send(new SendMessageCommand(params));
+  }
+
+  private onlyASCIICharacters(s: string): string {
+    return s.replace(/[^\x00-\x7F]/g, "?");
   }
 }
 
