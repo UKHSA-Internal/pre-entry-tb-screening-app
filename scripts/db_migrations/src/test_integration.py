@@ -486,6 +486,17 @@ class TestRewriteClinicRecordsLive:
             assert record is not None
             assert record["clinicId"] == cid
 
+    def test_skipped_clinic_rows_zero_on_success(self, mod, tables, dynamodb_local):
+        """No exceptions → skipped_clinic_rows remains 0."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        stats = _run(
+            mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["skipped_clinic_rows"] == 0
+
 
 class TestRewriteClinicRecordsDryRun:
     """rewrite_clinic_records with dry_run=True: records unchanged, counter still incremented."""
@@ -510,6 +521,16 @@ class TestRewriteClinicRecordsDryRun:
         )
 
         assert stats["rewritten_clinic_rows"] == 1
+
+    def test_dry_run_city_not_modified(self, mod, tables, dynamodb_local):
+        """dry_run=True → city field is not written to DynamoDB."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        _run(mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record["city"] == "London"
 
 
 class TestRewriteClinicRecordsPagination:
