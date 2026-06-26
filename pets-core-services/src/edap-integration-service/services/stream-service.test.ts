@@ -63,7 +63,7 @@ describe("init", () => {
         // @ts-expect-error ignore
         event.Records[0].eventName = "OTHER?";
         processedEvent = StreamService.getClinicDataStream(event.Records[0]);
-        expect(loggerMock).toHaveBeenNthCalledWith(1, "event name was not of correct type");
+        expect(loggerMock).toHaveBeenNthCalledWith(1, "Unsupported eventName type: OTHER?");
       });
     });
     describe("when fetching data stream and there is no NewImage", () => {
@@ -102,7 +102,7 @@ describe("init", () => {
           eventName: "REMOVE",
         };
         StreamService.getClinicDataStream(recordWithRemove);
-        expect(loggerMock).toHaveBeenCalledWith("event name was not of correct type");
+        expect(loggerMock).toHaveBeenCalledWith("Unsupported eventName type: OTHER?");
         loggerMock.mockRestore();
       });
     });
