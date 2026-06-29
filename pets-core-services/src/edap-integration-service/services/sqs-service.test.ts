@@ -227,9 +227,9 @@ describe("SQService", () => {
     });
   });
 
-  describe("onlyASCIICharacters", () => {
+  describe("swapNotAllowedCharacters", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const sanitize = (s: string): string => (service as any).onlyASCIICharacters(s) as string;
+    const sanitize = (s: string): string => (service as any).swapNotAllowedCharacters(s) as string;
 
     it("returns an ASCII-only string unchanged", () => {
       expect(sanitize("hello_world-123")).toBe("hello_world-123");

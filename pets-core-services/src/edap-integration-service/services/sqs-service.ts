@@ -93,7 +93,7 @@ class SQService {
         grIdString.length > 128
           ? baseMessageGroupIdString.slice(0, 128 - dateString.length) + dateString
           : grIdString;
-      params.MessageGroupId = this.onlyASCIICharacters(trimmedMessageGroupId);
+      params.MessageGroupId = this.swapNotAllowedCharacters(trimmedMessageGroupId);
       params.MessageDeduplicationId = dateString;
     }
 
@@ -105,7 +105,7 @@ class SQService {
     await this.sqsClient.send(new SendMessageCommand(params));
   }
 
-  private onlyASCIICharacters(s: string): string {
+  private swapNotAllowedCharacters(s: string): string {
     // Message group ID must be 1 to 128 characters. Valid characters are:
     // a-z, A-Z, 0-9, and punctuation (!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~).
     // That makes ASCII characters from (hex) 21 to 7e (20 is SPACE)
