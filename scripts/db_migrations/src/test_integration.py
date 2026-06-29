@@ -486,6 +486,17 @@ class TestRewriteClinicRecordsLive:
             assert record is not None
             assert record["clinicId"] == cid
 
+    def test_skipped_clinic_rows_zero_on_success(self, mod, tables, dynamodb_local):
+        """No exceptions → skipped_clinic_rows remains 0."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        stats = _run(
+            mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["skipped_clinic_rows"] == 0
+
 
 class TestRewriteClinicRecordsDryRun:
     """rewrite_clinic_records with dry_run=True: records unchanged, counter still incremented."""
@@ -510,6 +521,16 @@ class TestRewriteClinicRecordsDryRun:
         )
 
         assert stats["rewritten_clinic_rows"] == 1
+
+    def test_dry_run_city_not_modified(self, mod, tables, dynamodb_local):
+        """dry_run=True → city field is not written to DynamoDB."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        _run(mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record["city"] == "London"
 
 
 class TestRewriteClinicRecordsPagination:
@@ -696,12 +717,11 @@ class TestRewriteApplicationRootRecordsLive:
 
     def test_statistics_rewritten_root_rows_incremented(self, mod, tables, dynamodb_local):
         """
-        rewritten_application_nonroot_rows counter is incremented for each APPLICATION#ROOT record
-        (source code increments nonroot counter when sk == APPLICATION#ROOT).
+        rewritten_application_root_rows counter is incremented for each APPLICATION#ROOT record
+        (source code increments root counter when sk == APPLICATION#ROOT).
         """
         _, application_table, _ = tables
-        _seed_application_with_date(application_table, "APPLICATION#abc")
-        _seed_application_with_date(application_table, "APPLICATION#def")
+        _seed_application_with_date(application_table, "APPLICATION#ROOT")
 
         stats = _run(
             mod,
@@ -710,7 +730,7 @@ class TestRewriteApplicationRootRecordsLive:
             migration="rewrite_application_root_records",
         )
 
-        assert stats["rewritten_application_nonroot_rows"] == 2
+        assert stats["rewritten_application_root_rows"] == 1
 
     def test_multiple_root_records_all_rewritten(self, mod, tables, dynamodb_local):
         """All seeded APPLICATION#ROOT records survive the rewrite."""
@@ -753,7 +773,7 @@ class TestRewriteApplicationRootRecordsDryRun:
     def test_dry_run_counter_incremented(self, mod, tables, dynamodb_local):
         """dry_run=True → rewritten_application_root_rows is still counted."""
         _, application_table, _ = tables
-        _seed_application_with_date(application_table, "APPLICATION#abc")
+        _seed_application_with_date(application_table, "APPLICATION#ROOT")
 
         stats = _run(
             mod,
@@ -763,7 +783,7 @@ class TestRewriteApplicationRootRecordsDryRun:
         )
 
         # Note: source code increments rewritten_application_nonroot_rows for ROOT sk in dry_run
-        assert stats["rewritten_application_nonroot_rows"] == 1
+        assert stats["rewritten_application_root_rows"] == 1
 
 
 class TestRewriteApplicationNonrootRecordsLive:
@@ -797,10 +817,10 @@ class TestRewriteApplicationNonrootRecordsLive:
         )
 
         # source code: sk != APPLICATION#ROOT → rewritten_application_root_rows incremented
-        assert stats["rewritten_application_root_rows"] == 2
+        assert stats["rewritten_application_root_rows"] == 0
         # rewritten_application_nonroot_rows should be zero (that branch needs sk = APPLICATION#ROOT
         # but those rows are excluded by the scan filter)
-        assert stats["rewritten_application_nonroot_rows"] == 0
+        assert stats["rewritten_application_nonroot_rows"] == 2
 
     def test_root_row_not_updated_by_nonroot_migration(self, mod, tables, dynamodb_local):
         """APPLICATION#ROOT row dateCreated is preserved (filtered out by scan)."""

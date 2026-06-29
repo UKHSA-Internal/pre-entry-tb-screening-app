@@ -336,7 +336,7 @@ def rewrite_application_root_records(
 
     if dry_run:
         # Don't modify the record in DB, return instead
-        if record["sk"] != "APPLICATION#ROOT":
+        if record["sk"] == "APPLICATION#ROOT":
             statistics["rewritten_application_root_rows"] += 1
         else:
             statistics["rewritten_application_nonroot_rows"] += 1
@@ -388,7 +388,7 @@ def rewrite_application_root_records(
 
         return
 
-    if record["sk"] != "APPLICATION#ROOT":
+    if record["sk"] == "APPLICATION#ROOT":
         statistics["rewritten_application_root_rows"] += 1
     else:
         statistics["rewritten_application_nonroot_rows"] += 1
@@ -410,7 +410,7 @@ def rewrite_clinic_records(
 
         return
 
-    city_name = record.get("cityName", "")
+    city_name = record.get("city", "")
 
     # Re-writing the same data (clinicId) to trigger DynamoDB Streams
     try:
