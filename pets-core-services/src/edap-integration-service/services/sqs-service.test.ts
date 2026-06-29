@@ -252,7 +252,7 @@ describe("SQService", () => {
     });
 
     it("keeps control characters (0x00–0x1F) as they are within ASCII range", () => {
-      expect(sanitize("a\tb")).toBe("a\tb"); // tab is 0x09, valid ASCII
+      expect(sanitize("a\tb")).toBe("a?b"); // tab is 0x09, out of allowed range
     });
 
     it("replaces every non-ASCII character in a string of all non-ASCII", () => {
@@ -262,7 +262,12 @@ describe("SQService", () => {
 
     it('replaces every non-ASCII character in string: "PAN/Ciudad,de,Panamá/NA/01/00X "', () => {
       const input = '"PAN/Ciudad,de,Panamá/NA/01/00X "';
-      expect(sanitize(input)).toBe('"PAN/Ciudad,de,Panam?/NA/01/00X "');
+      expect(sanitize(input)).toBe('"PAN/Ciudad,de,Panam?/NA/01/00X_"');
+    });
+
+    it('replaces every non-ASCII character in string: "Apollo Clinic"', () => {
+      const input = "Apollo Clinic";
+      expect(sanitize(input)).toBe("Apollo_Clinic");
     });
 
     it("FIFO MessageGroupId contains only ASCII characters when pk includes non-ASCII", async () => {

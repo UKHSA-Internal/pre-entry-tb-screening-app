@@ -106,8 +106,10 @@ class SQService {
   }
 
   private onlyASCIICharacters(s: string): string {
-    // eslint-disable-next-line no-control-regex
-    return s.replace(/[^\x00-\x7F]/g, "?");
+    // Message group ID must be 1 to 128 characters. Valid characters are:
+    // a-z, A-Z, 0-9, and punctuation (!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~).
+    // That makes ASCII characters from (hex) 21 to 7e (20 is SPACE)
+    return s.replace(/[^\x20-\x7E]/g, "?").replace(" ", "_");
   }
 }
 
