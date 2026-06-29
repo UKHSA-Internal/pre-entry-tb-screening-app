@@ -226,4 +226,60 @@ describe("SQService", () => {
       expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
     });
   });
+
+  describe("swapNotAllowedCharacters", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const sanitize = (s: string): string => (service as any).swapNotAllowedCharacters(s) as string;
+
+    it("returns an ASCII-only string unchanged", () => {
+      expect(sanitize("hello_world-123")).toBe("hello_world-123");
+    });
+
+    it("returns an empty string unchanged", () => {
+      expect(sanitize("")).toBe("");
+    });
+
+    it("replaces a single non-ASCII character with '?'", () => {
+      expect(sanitize("caf\u00e9")).toBe("caf?"); // é → ?
+    });
+
+    it("replaces multiple different non-ASCII characters", () => {
+      expect(sanitize("\u00fcber-na\u00efve")).toBe("?ber-na?ve"); // ü, ï → ?
+    });
+
+    it("replaces emoji with '?'", () => {
+      expect(sanitize("hello\uD83D\uDE00world")).toBe("hello??world"); // 😀 is two surrogates
+    });
+
+    it("keeps control characters (0x00–0x1F) as they are within ASCII range", () => {
+      expect(sanitize("a\tb")).toBe("a?b"); // tab is 0x09, out of allowed range
+    });
+
+    it("replaces every non-ASCII character in a string of all non-ASCII", () => {
+      const input = "\u00e9\u00f1\u00fc";
+      expect(sanitize(input)).toBe("???");
+    });
+
+    it('replaces every non-ASCII character in string: "PAN/Ciudad,de,Panamá/NA/01/00X "', () => {
+      const input = '"PAN/Ciudad,de,Panamá/NA/01/00X "';
+      expect(sanitize(input)).toBe('"PAN/Ciudad,de,Panam?/NA/01/00X_"');
+    });
+
+    it('replaces every non-ASCII character in string: "Apollo Clinic"', () => {
+      const input = "Apollo Clinic";
+      expect(sanitize(input)).toBe("Apollo_Clinic");
+    });
+
+    it("FIFO MessageGroupId contains only ASCII characters when pk includes non-ASCII", async () => {
+      process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+      const message = { pk: "caf\u00e9-pk", sk: "test-sk" };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      // eslint-disable-next-line no-control-regex
+      expect(MessageGroupId).toMatch(/^[\x00-\x7F]+$/);
+      expect(MessageGroupId).toContain("caf?-pk");
+    });
+  });
 });
