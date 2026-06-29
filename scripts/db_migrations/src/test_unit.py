@@ -496,6 +496,74 @@ class TestRewriteClinicRecords:
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
         assert stats["rewritten_clinic_rows"] == 1
 
+    def test_city_without_trailing_space_gets_space_appended(self):
+        """city='London' (no trailing space) → :name becomes 'London '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London"}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London "
+
+    def test_city_with_trailing_space_gets_stripped(self):
+        """city='London ' (trailing space) → :name becomes 'London'."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London "}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London"
+
+    def test_city_with_multiple_trailing_spaces_gets_stripped(self):
+        """city='London  ' (multiple trailing spaces) → :name becomes 'London'."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London  "}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London"
+
+    def test_city_empty_string_gets_single_space(self):
+        """city='' (empty) → :name becomes ' '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": ""}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == " "
+
+    def test_city_missing_defaults_to_empty_then_space_added(self):
+        """No city key in record → defaults to '' → :name becomes ' '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc"}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == " "
+
+    def test_exception_on_update_increments_skipped_clinic_rows(self):
+        """update_item raises Exception → skipped_clinic_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["skipped_clinic_rows"] == 1
+
+    def test_exception_on_update_does_not_increment_rewritten_clinic_rows(self):
+        """update_item raises Exception → rewritten_clinic_rows NOT incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["rewritten_clinic_rows"] == 0
+
+    def test_exception_on_update_does_not_propagate(self):
+        """update_item raises Exception → exception is swallowed, no re-raise."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)  # must not raise
+
 
 class TestScanTable:
     """Paginated scan_table helper."""
@@ -929,21 +997,21 @@ class TestRewriteApplicationRootRecords:
         return {"pk": "APPLICATION#abc", "sk": sk, "dateCreated": date_created}
 
     def test_dry_run_nonroot_sk_increments_root_rows(self):
-        """dry_run=True, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
+        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_root_rows"] == 1
         apt.update_item.assert_not_called()
 
     def test_dry_run_root_sk_increments_nonroot_rows(self):
-        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        """dry_run=True, non-ROOT record → rewritten_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
         apt.update_item.assert_not_called()
@@ -967,20 +1035,20 @@ class TestRewriteApplicationRootRecords:
         assert "dateCreated" in apt.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_nonroot_sk_increments_root_rows(self):
-        """dry_run=False, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
-        at, apt, ct = mock_tables()
-        stats = make_statistics()
-        rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
-        )
-        assert stats["rewritten_application_root_rows"] == 1
-
-    def test_live_root_sk_increments_nonroot_rows(self):
-        """dry_run=False, ROOT row → rewritten_application_nonroot_rows incremented."""
+        """dry_run=False, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
             self._record(sk="APPLICATION#ROOT"), at, apt, ct, False, stats
+        )
+        assert stats["rewritten_application_root_rows"] == 1
+
+    def test_live_root_sk_increments_nonroot_rows(self):
+        """dry_run=False, NONROOT row → rewritten_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
 
