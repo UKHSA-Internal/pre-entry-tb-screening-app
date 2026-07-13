@@ -506,13 +506,13 @@ def data_migration(
     # Only applicant-details and application-details tables should be filtered by
     if from_date and migration != "rewrite_clinic_records":
         if scan_filter:
-            scan_filter["FilterExpression"] = (
-                scan_filter["FilterExpression"] + " AND dateCreated >= :from_date"
+            scan_filter["FilterExpression"] = scan_filter["FilterExpression"] + (
+                " AND (dateCreated >= :from_date OR dateUpdated >= :from_date)"
             )
             scan_filter["ExpressionAttributeValues"][":from_date"] = from_date
         else:
             scan_filter = {
-                "FilterExpression": "dateCreated >= :from_date",
+                "FilterExpression": "dateCreated >= :from_date OR dateUpdated >= :from_date",
                 "ExpressionAttributeValues": {":from_date": from_date},
             }
 
