@@ -1097,7 +1097,8 @@ class TestDataMigrationFromDateLive:
     def test_record_with_date_updated_newer_than_from_date_is_rewritten(
         self, mod, tables, dynamodb_local
     ):
-        """dateCreated older than from_date but dateUpdated >= from_date → included via OR and rewritten."""
+        """dateCreated older than from_date but dateUpdated >= from_date
+        results in the records being included via OR and rewritten."""
         applicant_table, _, _ = tables
         record = {
             "pk": "COUNTRY#GB#PASSPORT#1",
@@ -1118,3 +1119,69 @@ class TestDataMigrationFromDateLive:
         assert stats["rewritten_applicant_rows"] == 1
         stored = _get(applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS")
         assert stored["dateCreated"] == "2024-01-01T00:00:00.001Z"
+
+    def test_combined_filter_record_with_date_updated_newer_than_from_date_is_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk+date filter: dateCreated older but dateUpdated >= from_date
+        results in records being included via OR and rewritten."""
+        _, application_table, _ = tables
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#ROOT",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#OTHER",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_application_root_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_application_root_rows"] == 1
+        assert stats["rewritten_application_nonroot_rows"] == 0
+        stored = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.001Z"
+
+    def test_combined_filter_record_with_missing_date_updated_is_not_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk+date filter: dateUpdated older than from_date
+        and dateUpdated missing → excluded."""
+        _, application_table, _ = tables
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#ROOT",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#OTHER",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_application_root_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_application_root_rows"] == 0
+        assert stats["rewritten_application_nonroot_rows"] == 0
+        stored = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.000Z"
