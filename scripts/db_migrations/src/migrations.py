@@ -617,8 +617,8 @@ if __name__ == "__main__":
     # to validate the input MIGRATIONS parameter
     VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
     REWRITE_DB_ITEMS_SUBMIGRATIONS = [
-        "rewrite_applicant_records",
         "rewrite_application_root_records",
+        "rewrite_applicant_records",
         "rewrite_application_nonroot_records",
         "rewrite_clinic_records",
     ]
