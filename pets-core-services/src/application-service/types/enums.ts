@@ -109,4 +109,9 @@ export enum TBCertNotIssuedReason {
   CONFIRMED_SUSPECTED_TB = "Confirmed or suspected TB",
   TESTING_POSTPONED = "Testing postponed",
   APPLICATION_WITHDRAWN = "Visa applicant has withdrawn their TB screening",
+  IDENTITY_CANNOT_BE_VERIFIED = "The applicant's identity could not be conclusively established despite reasonable verification efforts, including review of passport, supporting identification documents, photographs, and other available records",
+  SUSPETED_FRAUD_OR_TEMPERED_DOCUMENTS = "The applicant submitted false identity documents or provided materially misleading information during the screening process",
+  APPLICANT_DECEASED_BEFORE_ISSUANCE = "The applicant passed away before completing the screening process",
+  QUALITY_ASSURANC_REVIEW_INVALIDATED_SCREENING = "New verified information shows the certificate should not have been issued",
+  SCREENING_WAS_NOT_COMPLETED_DUE_TO_EXCEPTIONAL_EXTERNAL_CIRCUMSTANCES = "Exceptional external circumstances, such as pandemic-related travel restrictions, airport closures, or government-imposed lockdowns, prevented the applicant from attending or completing the required screening appointments",
 }
