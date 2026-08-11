@@ -84,6 +84,11 @@ const TbCertificateNotIssuedForm = () => {
               TBCertNotIssuedReason.CONFIRMED_SUSPECTED_TB,
               TBCertNotIssuedReason.TESTING_POSTPONED,
               TBCertNotIssuedReason.APPLICATION_WITHDRAWN,
+              TBCertNotIssuedReason.IDENTITY_CANNOT_BE_VERIFIED,
+              TBCertNotIssuedReason.SUSPETED_FRAUD_OR_TEMPERED_DOCUMENTS,
+              TBCertNotIssuedReason.APPLICANT_DECEASED_BEFORE_ISSUANCE,
+              TBCertNotIssuedReason.QUALITY_ASSURANC_REVIEW_INVALIDATED_SCREENING,
+              TBCertNotIssuedReason.SCREENING_WAS_NOT_COMPLETED_DUE_TO_EXCEPTIONAL_EXTERNAL_CIRCUMSTANCES,
             ]}
             sortAnswersAlphabetically={false}
             errorMessage={errors?.reasonNotIssued?.message ?? ""}
