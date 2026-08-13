@@ -41,10 +41,10 @@ def extract_python_enums(filepath: str) -> Dict[str, Dict[str, str]]:
     with open(filepath, 'r') as f:
         content = f.read()
 
-    # Match enum class definitions: class EnumName(str, Enum): ...
-    class_pattern = r'class (\w+)\(Enum\)\s*:\s*(.*?)(?=class |\Z)'
+    # Match enum class definitions and capture only their indented body lines
+    class_pattern = r'class (\w+)\(Enum\)\s*:((?:\n[ \t]+[^\n]*)+)'
 
-    for class_match in re.finditer(class_pattern, content, re.DOTALL):
+    for class_match in re.finditer(class_pattern, content):
         enum_name = class_match.group(1)
         class_body = class_match.group(2)
 

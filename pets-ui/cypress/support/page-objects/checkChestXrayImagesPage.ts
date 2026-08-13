@@ -116,7 +116,11 @@ export class CheckChestXrayImagesPage extends BasePage {
       .siblings(".govuk-summary-list__actions")
       .find("a")
       .should("contain", "Change")
-      .and("have.attr", "href", "/upload-chest-x-ray-images#postero-anterior-xray");
+      .and(
+        "have.attr",
+        "href",
+        "/upload-chest-x-ray-images?from=/check-chest-x-ray-images#postero-anterior-xray",
+      );
     return this;
   }
 

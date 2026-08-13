@@ -450,15 +450,15 @@ class TestRewriteClinicRecordsLive:
         assert record["clinicId"] == "abc"
 
     def test_extra_attributes_preserved_after_rewrite(self, mod, tables, dynamodb_local):
-        """Attributes other than clinicId are untouched after the rewrite."""
+        """Attributes other than city are untouched after the rewrite."""
         _, _, clinics_table = tables
-        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic", city="London")
+        _seed_clinics(clinics_table, "CLINIC#abc", clinicName="Test Clinic", address="123 Main St")
 
         _run(mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
 
         record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
         assert record["clinicName"] == "Test Clinic"
-        assert record["city"] == "London"
+        assert record["address"] == "123 Main St"
 
     def test_statistics_rewritten_clinic_rows_incremented(self, mod, tables, dynamodb_local):
         """rewritten_clinic_rows counter is incremented for each record."""
@@ -486,6 +486,17 @@ class TestRewriteClinicRecordsLive:
             assert record is not None
             assert record["clinicId"] == cid
 
+    def test_skipped_clinic_rows_zero_on_success(self, mod, tables, dynamodb_local):
+        """No exceptions → skipped_clinic_rows remains 0."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        stats = _run(
+            mod, dry_run=False, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records"
+        )
+
+        assert stats["skipped_clinic_rows"] == 0
+
 
 class TestRewriteClinicRecordsDryRun:
     """rewrite_clinic_records with dry_run=True: records unchanged, counter still incremented."""
@@ -510,6 +521,16 @@ class TestRewriteClinicRecordsDryRun:
         )
 
         assert stats["rewritten_clinic_rows"] == 1
+
+    def test_dry_run_city_not_modified(self, mod, tables, dynamodb_local):
+        """dry_run=True → city field is not written to DynamoDB."""
+        _, _, clinics_table = tables
+        _seed_clinics(clinics_table, "CLINIC#abc", city="London")
+
+        _run(mod, dry_run=True, dynamodb_local=dynamodb_local, migration="rewrite_clinic_records")
+
+        record = _get(clinics_table, "CLINIC#abc", "CLINIC#ROOT")
+        assert record["city"] == "London"
 
 
 class TestRewriteClinicRecordsPagination:
@@ -536,7 +557,12 @@ class TestRewriteClinicRecordsPagination:
 
 
 def _seed_applicant_with_country(table, pk, country_of_issue="GB", **extra):
-    item = {"pk": pk, "sk": "APPLICANT#DETAILS", "countryOfIssue": country_of_issue}
+    item = {
+        "pk": pk,
+        "sk": "APPLICANT#DETAILS",
+        "countryOfIssue": country_of_issue,
+        "dateCreated": "2024-01-01T00:00:00.999Z",
+    }
     item.update(extra)
     table.put_item(Item=item)
     return item
@@ -675,7 +701,7 @@ class TestRewriteApplicationRootRecordsLive:
         assert record is not None
 
     def test_date_created_value_unchanged_after_rewrite(self, mod, tables, dynamodb_local):
-        """dateCreated attribute value is preserved (same value written back)."""
+        """dateCreated attribute is updated to the incremented value (original + 1ms)."""
         _, application_table, _ = tables
         _seed_application_with_date(application_table, "APPLICATION#abc", date_created="2024-06-15")
 
@@ -687,16 +713,15 @@ class TestRewriteApplicationRootRecordsLive:
         )
 
         record = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
-        assert record["dateCreated"] == "2024-06-15"
+        assert record["dateCreated"] == "2024-06-15T00:00:00.001Z"
 
     def test_statistics_rewritten_root_rows_incremented(self, mod, tables, dynamodb_local):
         """
-        rewritten_application_nonroot_rows counter is incremented for each APPLICATION#ROOT record
-        (source code increments nonroot counter when sk == APPLICATION#ROOT).
+        rewritten_application_root_rows counter is incremented for each APPLICATION#ROOT record
+        (source code increments root counter when sk == APPLICATION#ROOT).
         """
         _, application_table, _ = tables
-        _seed_application_with_date(application_table, "APPLICATION#abc")
-        _seed_application_with_date(application_table, "APPLICATION#def")
+        _seed_application_with_date(application_table, "APPLICATION#ROOT")
 
         stats = _run(
             mod,
@@ -705,7 +730,7 @@ class TestRewriteApplicationRootRecordsLive:
             migration="rewrite_application_root_records",
         )
 
-        assert stats["rewritten_application_nonroot_rows"] == 2
+        assert stats["rewritten_application_root_rows"] == 1
 
     def test_multiple_root_records_all_rewritten(self, mod, tables, dynamodb_local):
         """All seeded APPLICATION#ROOT records survive the rewrite."""
@@ -724,7 +749,7 @@ class TestRewriteApplicationRootRecordsLive:
         for pk in pks:
             record = _get(application_table, pk, "APPLICATION#ROOT")
             assert record is not None
-            assert record["dateCreated"] == "2024-01-01"
+            assert record["dateCreated"] == "2024-01-01T00:00:00.001Z"
 
 
 class TestRewriteApplicationRootRecordsDryRun:
@@ -748,7 +773,7 @@ class TestRewriteApplicationRootRecordsDryRun:
     def test_dry_run_counter_incremented(self, mod, tables, dynamodb_local):
         """dry_run=True → rewritten_application_root_rows is still counted."""
         _, application_table, _ = tables
-        _seed_application_with_date(application_table, "APPLICATION#abc")
+        _seed_application_with_date(application_table, "APPLICATION#ROOT")
 
         stats = _run(
             mod,
@@ -758,7 +783,7 @@ class TestRewriteApplicationRootRecordsDryRun:
         )
 
         # Note: source code increments rewritten_application_nonroot_rows for ROOT sk in dry_run
-        assert stats["rewritten_application_nonroot_rows"] == 1
+        assert stats["rewritten_application_root_rows"] == 1
 
 
 class TestRewriteApplicationNonrootRecordsLive:
@@ -792,10 +817,10 @@ class TestRewriteApplicationNonrootRecordsLive:
         )
 
         # source code: sk != APPLICATION#ROOT → rewritten_application_root_rows incremented
-        assert stats["rewritten_application_root_rows"] == 2
+        assert stats["rewritten_application_root_rows"] == 0
         # rewritten_application_nonroot_rows should be zero (that branch needs sk = APPLICATION#ROOT
         # but those rows are excluded by the scan filter)
-        assert stats["rewritten_application_nonroot_rows"] == 0
+        assert stats["rewritten_application_nonroot_rows"] == 2
 
     def test_root_row_not_updated_by_nonroot_migration(self, mod, tables, dynamodb_local):
         """APPLICATION#ROOT row dateCreated is preserved (filtered out by scan)."""
@@ -821,3 +846,342 @@ class TestRewriteApplicationNonrootRecordsLive:
         # Root row must still exist and retain its original value (never touched by this migration)
         assert root is not None
         assert root["dateCreated"] == "ORIGINAL"
+
+
+class TestScanTableFromDate:
+    """scan_table with dateCreated >= :from_date filter against DynamoDB Local."""
+
+    def test_records_on_or_after_from_date_returned(self, mod, tables, dynamodb_local):
+        """Only records with dateCreated >= from_date are included in the result."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#old", dateCreated="2024-01-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#match", dateCreated="2024-06-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#after", dateCreated="2024-12-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        pks = {item["pk"] for item in items}
+        assert "COUNTRY#GB#PASSPORT#match" in pks
+        assert "COUNTRY#GB#PASSPORT#after" in pks
+        assert "COUNTRY#GB#PASSPORT#old" not in pks
+
+    def test_records_strictly_before_from_date_excluded(self, mod, tables, dynamodb_local):
+        """Records with dateCreated before from_date are excluded; boundary date is included."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#early", dateCreated="2023-12-31"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#boundary", dateCreated="2024-01-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        pks = {item["pk"] for item in items}
+        assert "COUNTRY#GB#PASSPORT#boundary" in pks
+        assert "COUNTRY#GB#PASSPORT#early" not in pks
+
+    def test_no_matching_records_returns_empty(self, mod, tables, dynamodb_local):
+        """from_date set after all seeded records → empty result and no pagination key."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#old", dateCreated="2023-01-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2025-01-01"},
+        }
+        items, lek = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        assert items == []
+        assert lek is None
+
+    def test_all_records_returned_when_from_date_is_earliest(self, mod, tables, dynamodb_local):
+        """from_date before all records → every record returned."""
+        applicant_table, _, _ = tables
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#1", dateCreated="2024-03-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#2", dateCreated="2024-06-01"
+        )
+        _seed_applicant_with_country(
+            applicant_table, "COUNTRY#GB#PASSPORT#3", dateCreated="2024-09-01"
+        )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(applicant_table, scan_filter=scan_filter)
+
+        assert len(items) == 3
+
+    def test_combined_sk_and_date_filter_returns_only_matching_root_rows(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk=APPLICATION#ROOT AND dateCreated >= from_date filters both dimensions."""
+        _, application_table, _ = tables
+        # ROOT rows — one old, one recent
+        _seed_application_with_date(
+            application_table, "APPLICATION#old", sk="APPLICATION#ROOT", date_created="2023-01-01"
+        )
+        _seed_application_with_date(
+            application_table, "APPLICATION#new", sk="APPLICATION#ROOT", date_created="2024-06-01"
+        )
+        # Non-root row with a matching date — must be excluded by the sk filter
+        _seed_application_with_date(
+            application_table,
+            "APPLICATION#new",
+            sk="APPLICATION#TB#CERTIFICATE",
+            date_created="2024-06-01",
+        )
+
+        scan_filter = {
+            "FilterExpression": "sk = :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(application_table, scan_filter=scan_filter)
+
+        pks = [item["pk"] for item in items]
+        sks = [item["sk"] for item in items]
+        assert "APPLICATION#new" in pks
+        assert "APPLICATION#old" not in pks
+        assert all(sk == "APPLICATION#ROOT" for sk in sks)
+
+    def test_combined_sk_nonroot_and_date_filter(self, mod, tables, dynamodb_local):
+        """Combined sk <> APPLICATION#ROOT AND dateCreated >= from_date excludes ROOT & old rows."""
+        _, application_table, _ = tables
+        # Root row — must always be excluded by sk filter
+        _seed_application_with_date(
+            application_table, "APPLICATION#abc", sk="APPLICATION#ROOT", date_created="2024-06-01"
+        )
+        # Non-root old row — excluded by date filter
+        _seed_application_with_date(
+            application_table, "APPLICATION#abc", sk="APPLICATION#SPUTUM", date_created="2023-01-01"
+        )
+        # Non-root recent row — must be included
+        _seed_application_with_date(
+            application_table,
+            "APPLICATION#abc",
+            sk="APPLICATION#TB#CERTIFICATE",
+            date_created="2024-06-01",
+        )
+
+        scan_filter = {
+            "FilterExpression": "sk <> :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-01-01"},
+        }
+        items, _ = mod.scan_table(application_table, scan_filter=scan_filter)
+
+        sks = [item["sk"] for item in items]
+        assert "APPLICATION#TB#CERTIFICATE" in sks
+        assert "APPLICATION#ROOT" not in sks
+        assert "APPLICATION#SPUTUM" not in sks
+
+    def test_paginated_scan_with_date_filter_returns_all_matching_records(
+        self, mod, tables, dynamodb_local
+    ):
+        """Date filter is preserved across multiple scan pages; only matching records returned."""
+        applicant_table, _, _ = tables
+        n = 30
+        for i in range(n):
+            # Half the records are before from_date, half on or after
+            date = "2023-01-01" if i % 2 == 0 else "2024-06-01"
+            _seed_applicant_with_country(
+                applicant_table, f"COUNTRY#GB#PASSPORT#{i}", dateCreated=date
+            )
+
+        scan_filter = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-01-01"},
+        }
+
+        all_items = []
+        lek = None
+        first = True
+        while first or lek:
+            items, lek = mod.scan_table(
+                applicant_table, last_evaluated_key=lek, scan_filter=scan_filter
+            )
+            all_items.extend(items)
+            first = False
+
+        assert len(all_items) == n // 2
+        for item in all_items:
+            assert item["dateCreated"] >= "2024-01-01"
+
+
+def _run_with_from_date(mod, dry_run, dynamodb_local, migration, from_date):
+    """Call data_migration with from_date and return the statistics dict."""
+    mod.statistics = make_statistics()
+    mod.data_migration(
+        APPLICANT_TABLE,
+        APPLICATION_TABLE,
+        CLINICS_TABLE,
+        "eu-west-2",
+        dry_run,
+        dynamodb=dynamodb_local,
+        migration=migration,
+        from_date=from_date,
+    )
+    return mod.statistics
+
+
+class TestDataMigrationFromDateLive:
+    """data_migration with from_date filters records by dateCreated or dateUpdated."""
+
+    def test_record_with_date_created_older_than_from_date_is_not_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """dateCreated older than from_date and no dateUpdated → record excluded by scan filter."""
+        applicant_table, _, _ = tables
+        record = {
+            "pk": "COUNTRY#GB#PASSPORT#1",
+            "sk": "APPLICANT#DETAILS",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+        }
+        applicant_table.put_item(Item=record)
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_applicant_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_applicant_rows"] == 0
+        stored = _get(applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.000Z"
+
+    def test_record_with_date_created_newer_than_from_date_is_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """dateCreated >= from_date → record included in scan and rewritten (+1ms)."""
+        applicant_table, _, _ = tables
+        record = {
+            "pk": "COUNTRY#GB#PASSPORT#1",
+            "sk": "APPLICANT#DETAILS",
+            "dateCreated": "2024-07-01T00:00:00.000Z",
+        }
+        applicant_table.put_item(Item=record)
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_applicant_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_applicant_rows"] == 1
+        stored = _get(applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS")
+        assert stored["dateCreated"] == "2024-07-01T00:00:00.001Z"
+
+    def test_record_with_date_updated_newer_than_from_date_is_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """dateCreated older than from_date but dateUpdated >= from_date
+        results in the records being included via OR and rewritten."""
+        applicant_table, _, _ = tables
+        record = {
+            "pk": "COUNTRY#GB#PASSPORT#1",
+            "sk": "APPLICANT#DETAILS",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+        applicant_table.put_item(Item=record)
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_applicant_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_applicant_rows"] == 1
+        stored = _get(applicant_table, "COUNTRY#GB#PASSPORT#1", "APPLICANT#DETAILS")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.001Z"
+
+    def test_combined_filter_record_with_date_updated_newer_than_from_date_is_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk+date filter: dateCreated older but dateUpdated >= from_date
+        results in records being included via OR and rewritten."""
+        _, application_table, _ = tables
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#ROOT",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#OTHER",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_application_root_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_application_root_rows"] == 1
+        assert stats["rewritten_application_nonroot_rows"] == 0
+        stored = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.001Z"
+
+    def test_combined_filter_record_with_missing_date_updated_is_not_rewritten(
+        self, mod, tables, dynamodb_local
+    ):
+        """Combined sk+date filter: dateUpdated older than from_date
+        and dateUpdated missing → excluded."""
+        _, application_table, _ = tables
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#ROOT",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+        }
+        application_table.put_item(Item=record)
+        record = {
+            "pk": "APPLICATION#abc",
+            "sk": "APPLICATION#OTHER",
+            "dateCreated": "2024-01-01T00:00:00.000Z",
+            "dateUpdated": "2024-07-01T00:00:00.000Z",
+        }
+
+        stats = _run_with_from_date(
+            mod,
+            dry_run=False,
+            dynamodb_local=dynamodb_local,
+            migration="rewrite_application_root_records",
+            from_date="2024-06-01",
+        )
+
+        assert stats["rewritten_application_root_rows"] == 0
+        assert stats["rewritten_application_nonroot_rows"] == 0
+        stored = _get(application_table, "APPLICATION#abc", "APPLICATION#ROOT")
+        assert stored["dateCreated"] == "2024-01-01T00:00:00.000Z"

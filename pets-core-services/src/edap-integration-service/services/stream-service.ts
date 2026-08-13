@@ -28,7 +28,7 @@ class StreamService {
         logger.error("No 'NewImage'");
       }
     } else {
-      logger.error("event name was not of correct type");
+      logger.error(`Unsupported eventName type: ${record?.eventName}`);
     }
 
     return undefined;

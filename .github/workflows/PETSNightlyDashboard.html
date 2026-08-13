@@ -67,9 +67,18 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+
+        /* Tooltip for the combination pass rate card */
+        .metric-card .metric-note {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            font-style: italic;
+        }
         
         .status-pass { color: #10b981; }
         .status-fail { color: #ef4444; }
+        .status-pending { color: #f59e0b; }
         
         .environment-section {
             background: white;
@@ -118,6 +127,12 @@
             background: #fef2f2; 
         }
         
+        .browser-card.skip { 
+            border-color: #d1d5db; 
+            background: #f9fafb;
+            opacity: 0.65;
+        }
+        
         .browser-header {
             display: flex;
             align-items: center;
@@ -155,11 +170,21 @@
             color: white;
         }
         
+        .status-badge.skip {
+            background: #9ca3af;
+            color: white;
+        }
+        
         .test-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-top: 16px;
+        }
+
+        /* 4-column layout when the card is wide enough */
+        @media (min-width: 600px) {
+            .test-stats { grid-template-columns: repeat(4, 1fr); }
         }
         
         .stat-item {
@@ -233,6 +258,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .error-detail {
+            background: rgba(0,0,0,0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
         
         @media (max-width: 768px) {
             .header h1 {
@@ -274,6 +315,28 @@
             };
             return icons[browser.toLowerCase()] || '🌐';
         }
+
+        // Escape all user-controlled values before inserting into innerHTML
+        // to prevent DOM-based XSS (Snyk SNYK-JS-DOM-XSS).
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Allow only https:// URLs in href attributes to block javascript: URIs.
+        function safeUrl(url) {
+            try {
+                const parsed = new URL(url);
+                return parsed.protocol === 'https:' ? url : '#';
+            } catch (_) {
+                return '#';
+            }
+        }
         
         function formatDate(timestamp) {
             return new Date(timestamp).toLocaleString('en-GB', {
@@ -288,7 +351,12 @@
         
         function loadDashboard() {
             fetch('./test-results.json')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP ${res.status} ${res.statusText} — could not load test-results.json`);
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     const dashboard = document.getElementById('dashboard');
                     const loading = document.getElementById('loading');
@@ -298,38 +366,46 @@
                     // Overall Status
                     html += `<div class="metric-card">
                         <div class="metric-value ${data.overallStatus === 'PASS' ? 'status-pass' : 'status-fail'}">
-                            ${data.overallStatus}
+                            ${escapeHtml(data.overallStatus)}
                         </div>
                         <div class="metric-label">Overall Status</div>
                     </div>`;
                     
-                    // Success Rate
+                    // Combination Pass Rate (previously "Success Rate" — this is
+                    // env×browser combinations, not individual test pass rate)
                     html += `<div class="metric-card">
-                        <div class="metric-value">${data.successRate}%</div>
-                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-value">${escapeHtml(data.successRate)}%</div>
+                        <div class="metric-label">Test Pass Rate</div>
+                        <div class="metric-note">passed / total tests</div>
                     </div>`;
                     
                     // Total Tests
                     html += `<div class="metric-card">
-                        <div class="metric-value">${data.totalTests}</div>
+                        <div class="metric-value">${escapeHtml(data.totalTests)}</div>
                         <div class="metric-label">Total Tests</div>
                     </div>`;
                     
                     // Passed
                     html += `<div class="metric-card">
-                        <div class="metric-value status-pass">${data.totalPassed}</div>
+                        <div class="metric-value status-pass">${escapeHtml(data.totalPassed)}</div>
                         <div class="metric-label">Passed</div>
                     </div>`;
                     
                     // Failed
                     html += `<div class="metric-card">
-                        <div class="metric-value status-fail">${data.totalFailed}</div>
+                        <div class="metric-value status-fail">${escapeHtml(data.totalFailed)}</div>
                         <div class="metric-label">Failed</div>
+                    </div>`;
+
+                    // Pending — surfaces skipped/pending tests that could mask failures
+                    html += `<div class="metric-card">
+                        <div class="metric-value status-pending">${escapeHtml(data.totalPending ?? 0)}</div>
+                        <div class="metric-label">Pending</div>
                     </div>`;
                     
                     // Combinations
                     html += `<div class="metric-card">
-                        <div class="metric-value">${data.totalCombinations}</div>
+                        <div class="metric-value">${escapeHtml(data.totalCombinations)}</div>
                         <div class="metric-label">Test Combinations</div>
                     </div>`;
                     
@@ -338,39 +414,47 @@
                     // Environment sections
                     Object.entries(data.results).forEach(([env, browsers]) => {
                         html += `<div class="environment-section">
-                            <div class="env-title">${env.toUpperCase()} Environment</div>
+                            <div class="env-title">${escapeHtml((browsers.displayName || env).toUpperCase())} Environment</div>
                             <div class="browser-grid">`;
                         
-                        Object.entries(browsers).forEach(([browser, result]) => {
+                        // Filter to known browser keys only — extra fields like
+                        // displayName must not be iterated as browser entries.
+                        const BROWSER_KEYS = ['chrome', 'firefox', 'edge', 'safari'];
+                        Object.entries(browsers)
+                            .filter(([key]) => BROWSER_KEYS.includes(key))
+                            .forEach(([browser, result]) => {
                             const status = result.status.toLowerCase();
                             const counts = result.testCounts;
+                            const isSkip = status === 'skip';
                             
-                            html += `<div class="browser-card ${status}">
+                            html += `<div class="browser-card ${escapeHtml(status)}">
                                 <div class="browser-header">
                                     <div class="browser-name">
                                         <span class="browser-icon">${getBrowserIcon(browser)}</span>
-                                        ${browser.charAt(0).toUpperCase() + browser.slice(1)}
+                                        ${escapeHtml(browser.charAt(0).toUpperCase() + browser.slice(1))}
                                     </div>
-                                    <span class="status-badge ${status}">${result.status}</span>
+                                    <span class="status-badge ${escapeHtml(status)}">${escapeHtml(result.status)}</span>
                                 </div>
-                                <div class="test-stats">
+                                ${isSkip
+                                    ? '<p style="color:#9ca3af;font-size:0.9rem;margin-top:8px;">No data for this browser</p>'
+                                    : `<div class="test-stats">
                                     <div class="stat-item">
-                                        <div class="stat-value">${counts.total}</div>
+                                        <div class="stat-value">${escapeHtml(counts.total)}</div>
                                         <div class="stat-label">Total</div>
                                     </div>
                                     <div class="stat-item">
-                                        <div class="stat-value" style="color: #10b981">${counts.passed}</div>
+                                        <div class="stat-value" style="color: #10b981">${escapeHtml(counts.passed)}</div>
                                         <div class="stat-label">Passed</div>
                                     </div>
                                     <div class="stat-item">
-                                        <div class="stat-value" style="color: #ef4444">${counts.failed}</div>
+                                        <div class="stat-value" style="color: #ef4444">${escapeHtml(counts.failed)}</div>
                                         <div class="stat-label">Failed</div>
                                     </div>
                                     <div class="stat-item">
-                                        <div class="stat-value" style="color: #f59e0b">${counts.pending}</div>
+                                        <div class="stat-value" style="color: #f59e0b">${escapeHtml(counts.pending ?? 0)}</div>
                                         <div class="stat-label">Pending</div>
                                     </div>
-                                </div>
+                                </div>`}
                             </div>`;
                         });
                         
@@ -379,12 +463,12 @@
                     
                     // Footer
                     html += `<div class="footer">
-                        <a href="${data.runUrl}" target="_blank" class="btn-link">
-                            📊 View Full Test Reports
+                        <a href="${safeUrl(data.runUrl)}" target="_blank" rel="noopener noreferrer" class="btn-link">
+                            📊 View GitHub Actions Run
                         </a>
                         <p class="timestamp">
-                            Last updated: ${formatDate(data.timestamp)}<br>
-                            Branch: ${data.branch || 'main'}
+                            Last updated: ${escapeHtml(formatDate(data.timestamp))}<br>
+                            Branch: ${escapeHtml(data.branch || 'main')}
                         </p>
                     </div>`;
                     
@@ -393,11 +477,15 @@
                     dashboard.style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Error loading dashboard:', error);
-                    document.getElementById('loading').innerHTML = 
-                        '<div class="spinner"></div>' +
-                        '<h2>Error loading results</h2>' +
-                        '<p>Please try refreshing the page</p>';
+                    console.error('Dashboard load error:', error);
+                    // Set static structure via innerHTML, then assign the error
+                    // message via textContent to prevent DOM-based XSS (Snyk).
+                    const loadingEl = document.getElementById('loading');
+                    loadingEl.innerHTML =
+                        '<h2>⚠️ Error loading results</h2>' +
+                        '<p>Please try refreshing the page</p>' +
+                        '<pre class="error-detail"></pre>';
+                    loadingEl.querySelector('pre').textContent = error.message;
                 });
         }
         

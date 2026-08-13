@@ -2,6 +2,7 @@ import importlib
 
 # It has to be import early for pytest to be able to test
 # the functions separately without running the whole script
+import datetime as dt
 import logging
 import time
 import boto3
@@ -280,12 +281,33 @@ def rewrite_applicant_records(
 
         return
 
-    # Re-writing the same data (countryOfIssue) to trigger DynamoDB Streams
+    # Calculate the new dateTime string
+    try:
+        date_created = dt.datetime.fromisoformat(record["dateCreated"].strip("Z"))
+        tdelta = dt.timedelta(milliseconds=1)
+        date_created_inc = (date_created + tdelta).isoformat(timespec="milliseconds")
+        part1, _, part2 = date_created_inc.partition(".")
+
+        if not part2:
+            logger.error(
+                f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
+                f"{record['dateCreated']}"
+            )
+            raise ValueError(f"Invalid dateCreated format: {record['dateCreated']}")
+
+        date_created_mod = f"{part1}.{part2[:3]}Z"
+    except KeyError:
+        logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
+        statistics["skipped_applicant_rows"] += 1
+
+        return
+
+    # Re-writing the same data (dateCreated) to trigger DynamoDB Streams
     try:
         applicant_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
-            UpdateExpression=("SET countryOfIssue = :countryOfIssue"),
-            ExpressionAttributeValues={":countryOfIssue": record["countryOfIssue"]},
+            UpdateExpression=("SET dateCreated = :date"),
+            ExpressionAttributeValues={":date": date_created_mod},
         )
 
     except Exception as e:
@@ -314,10 +336,35 @@ def rewrite_application_root_records(
 
     if dry_run:
         # Don't modify the record in DB, return instead
-        if record["sk"] != "APPLICATION#ROOT":
+        if record["sk"] == "APPLICATION#ROOT":
             statistics["rewritten_application_root_rows"] += 1
         else:
             statistics["rewritten_application_nonroot_rows"] += 1
+
+        return
+
+    # Calculate the new dateTime string
+    try:
+        date_created = dt.datetime.fromisoformat(record["dateCreated"].strip("Z"))
+        tdelta = dt.timedelta(milliseconds=1)
+        date_created_inc = (date_created + tdelta).isoformat(timespec="milliseconds")
+        part1, _, part2 = date_created_inc.partition(".")
+
+        if not part2:
+            logger.error(
+                f"ERROR: Invalid dateCreated format for record with pk={record['pk']}: "
+                f"{record['dateCreated']}"
+            )
+            raise ValueError(f"Invalid dateCreated format: {record['dateCreated']}")
+
+        date_created_mod = f"{part1}.{part2[:3]}Z"
+    except KeyError:
+        logger.error(f"ERROR: Missing dateCreated for record with pk={record['pk']} ({record})")
+
+        if record["sk"] != "APPLICATION#ROOT":
+            statistics["skipped_application_root_rows"] += 1
+        else:
+            statistics["skipped_application_nonroot_rows"] += 1
 
         return
 
@@ -326,7 +373,7 @@ def rewrite_application_root_records(
         application_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
             UpdateExpression=("SET dateCreated = :date"),
-            ExpressionAttributeValues={":date": record["dateCreated"]},
+            ExpressionAttributeValues={":date": date_created_mod},
         )
 
     except Exception as e:
@@ -341,7 +388,7 @@ def rewrite_application_root_records(
 
         return
 
-    if record["sk"] != "APPLICATION#ROOT":
+    if record["sk"] == "APPLICATION#ROOT":
         statistics["rewritten_application_root_rows"] += 1
     else:
         statistics["rewritten_application_nonroot_rows"] += 1
@@ -363,14 +410,17 @@ def rewrite_clinic_records(
 
         return
 
+    city_name = record.get("city", "")
+
     # Re-writing the same data (clinicId) to trigger DynamoDB Streams
     try:
         clinics_table.update_item(
             Key={"pk": record["pk"], "sk": record["sk"]},
-            UpdateExpression=("SET clinicId = :id"),
-            ExpressionAttributeValues={":id": record["clinicId"]},
+            UpdateExpression=("SET city = :name"),
+            ExpressionAttributeValues={
+                ":name": (city_name.strip() if city_name.endswith(" ") else city_name + " ")
+            },
         )
-
     except Exception as e:
         logger.error(
             f"Updating the record with pk={record['pk']} failed: {getattr(e, 'message', repr(e))}"
@@ -409,6 +459,7 @@ def data_migration(
     dry_run,
     dynamodb=None,
     migration=None,
+    from_date=None,
 ):
     global statistics
 
@@ -452,9 +503,22 @@ def data_migration(
             "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT"},
         }
 
+    # Only applicant-details and application-details tables should be filtered by
+    if from_date and migration != "rewrite_clinic_records":
+        if scan_filter:
+            scan_filter["FilterExpression"] = scan_filter["FilterExpression"] + (
+                " AND (dateCreated >= :from_date OR dateUpdated >= :from_date)"
+            )
+            scan_filter["ExpressionAttributeValues"][":from_date"] = from_date
+        else:
+            scan_filter = {
+                "FilterExpression": "dateCreated >= :from_date OR dateUpdated >= :from_date",
+                "ExpressionAttributeValues": {":from_date": from_date},
+            }
+
     # Selecting the migration function based on the migration type
     if migration == "rewrite_application_nonroot_records":
-        # Reusing the ohter function as the logic is the same,
+        # Reusing the other function as the logic is the same,
         # just different filter for scanning
         func = rewrite_application_root_records
     else:
@@ -511,6 +575,15 @@ def data_migration(
     logger.info(f"Duration: {duration // 60} min {duration % 60} sec")
 
 
+def is_correct_date_format(date_string):
+    """Check if the date string is in the correct format (YYYY-MM-DD) and it's a valid date."""
+    try:
+        time.strptime(date_string, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+
 # ----------------------------------------------------------------------------------------
 # The main function is only executed when running the script directly.
 # It sets up the parameters and calls the data_migration function.
@@ -528,6 +601,7 @@ if __name__ == "__main__":
             "MIGRATIONS",
             "AWS_REGION",
             "DRY_RUN",
+            "FROM_DATE",
         ],
     )
     logger.info(f"Received arguments: {args}")
@@ -538,12 +612,13 @@ if __name__ == "__main__":
     MIGRATIONS = args["MIGRATIONS"]
     AWS_REGION = args["AWS_REGION"]
     DRY_RUN = args["DRY_RUN"]
+    FROM_DATE = args.get("FROM_DATE")
     # List of correct migration names used in the code,
     # to validate the input MIGRATIONS parameter
     VALID_MIGRATIONS = ["migrate_applicants", "set_application_statusgroup", "rewrite_db_items"]
     REWRITE_DB_ITEMS_SUBMIGRATIONS = [
-        "rewrite_applicant_records",
         "rewrite_application_root_records",
+        "rewrite_applicant_records",
         "rewrite_application_nonroot_records",
         "rewrite_clinic_records",
     ]
@@ -554,6 +629,13 @@ if __name__ == "__main__":
 
     if CLINICS_TABLE_NAME:
         CLINICS_TABLE_NAME = CLINICS_TABLE_NAME.strip()
+
+    if not is_correct_date_format(FROM_DATE) and FROM_DATE != "ALL":
+        raise ValueError(
+            "FROM_DATE should be valid date string in YYYY-MM-DD format, "
+            f"or 'ALL' to include all records (string received: {FROM_DATE})"
+        )
+    FROM_DATE = FROM_DATE if FROM_DATE != "ALL" else None
 
     # Converting MIGRATIONS to a list of migration names,
     # in case there are multiple migrations to run
@@ -606,6 +688,7 @@ if __name__ == "__main__":
             dry_run,
             dynamodb=None,
             migration=migration,
+            from_date=FROM_DATE,
         )
         # Adding the migration to the list of completed migrations (for logging purposes)
         run_migrations.append(migration)

@@ -109,7 +109,7 @@ describe("SQService", () => {
     const cmd = sendSpy.mock.calls[0][0];
     const input = cmd.input;
 
-    expect(input.MessageGroupId).toBe("unique-pk_test-sk");
+    expect(input.MessageGroupId).toMatch(/^unique-pk_test-sk_\d+$/);
     expect(input.MessageDeduplicationId).toBeDefined();
   });
 
@@ -159,7 +159,7 @@ describe("SQService", () => {
     await service.sendDbStreamMessage(messageWithoutSk);
 
     const cmd = sendSpy.mock.calls[0][0];
-    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_\d+$/);
+    expect(cmd.input.MessageGroupId).toMatch(/^unique-pk_attr-missing_\d+$/);
     expect(cmd.input.MessageDeduplicationId).toBeDefined();
   });
 
@@ -173,5 +173,113 @@ describe("SQService", () => {
     sendSpy.mockRejectedValueOnce(new Error("DLQ network error"));
 
     await expect(service.sendToDLQ(dbRecord)).rejects.toThrow("DLQ network error");
+  });
+
+  describe("MessageGroupId length limit (FIFO)", () => {
+    beforeEach(() => {
+      process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+    });
+
+    it("does not exceed 128 characters when pk and sk together would exceed the limit", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+    });
+
+    it("is exactly 128 characters when the full group ID string exceeds 128 characters", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBe(128);
+    });
+
+    it("still ends with the timestamp (MessageDeduplicationId) when truncated", async () => {
+      const message = { pk: "a".repeat(70), sk: "b".repeat(70) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId, MessageDeduplicationId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.endsWith(MessageDeduplicationId!)).toBe(true);
+    });
+
+    it("does not truncate and stays within 128 characters when pk and sk are short", async () => {
+      const message = { pk: "short-pk", sk: "short-sk" };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+      expect(MessageGroupId).toMatch(/^short-pk_short-sk_\d+$/);
+    });
+
+    it("does not exceed 128 characters when sk is absent and pk is very long", async () => {
+      const message = { pk: "a".repeat(120) };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      expect(MessageGroupId!.length).toBeLessThanOrEqual(128);
+    });
+  });
+
+  describe("swapNotAllowedCharacters", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const sanitize = (s: string): string => (service as any).swapNotAllowedCharacters(s) as string;
+
+    it("returns an ASCII-only string unchanged", () => {
+      expect(sanitize("hello_world-123")).toBe("hello_world-123");
+    });
+
+    it("returns an empty string unchanged", () => {
+      expect(sanitize("")).toBe("");
+    });
+
+    it("replaces a single non-ASCII character with '?'", () => {
+      expect(sanitize("caf\u00e9")).toBe("caf?"); // é → ?
+    });
+
+    it("replaces multiple different non-ASCII characters", () => {
+      expect(sanitize("\u00fcber-na\u00efve")).toBe("?ber-na?ve"); // ü, ï → ?
+    });
+
+    it("replaces emoji with '?'", () => {
+      expect(sanitize("hello\uD83D\uDE00world")).toBe("hello??world"); // 😀 is two surrogates
+    });
+
+    it("keeps control characters (0x00–0x1F) as they are within ASCII range", () => {
+      expect(sanitize("a\tb")).toBe("a?b"); // tab is 0x09, out of allowed range
+    });
+
+    it("replaces every non-ASCII character in a string of all non-ASCII", () => {
+      const input = "\u00e9\u00f1\u00fc";
+      expect(sanitize(input)).toBe("???");
+    });
+
+    it('replaces every non-ASCII character in string: "PAN/Ciudad,de,Panamá/NA/01/00X "', () => {
+      const input = '"PAN/Ciudad,de,Panamá/NA/01/00X "';
+      expect(sanitize(input)).toBe('"PAN/Ciudad,de,Panam?/NA/01/00X_"');
+    });
+
+    it('replaces every non-ASCII character in string: "Apollo Clinic"', () => {
+      const input = "Apollo Clinic";
+      expect(sanitize(input)).toBe("Apollo_Clinic");
+    });
+
+    it("FIFO MessageGroupId contains only ASCII characters when pk includes non-ASCII", async () => {
+      process.env.EDAP_INTEGRATION_QUEUE_NAME = "integration-queue.fifo";
+      const message = { pk: "caf\u00e9-pk", sk: "test-sk" };
+
+      await service.sendDbStreamMessage(message);
+
+      const { MessageGroupId } = sendSpy.mock.calls[0][0].input;
+      // eslint-disable-next-line no-control-regex
+      expect(MessageGroupId).toMatch(/^[\x00-\x7F]+$/);
+      expect(MessageGroupId).toContain("caf?-pk");
+    });
   });
 });

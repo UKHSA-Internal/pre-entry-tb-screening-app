@@ -24,6 +24,7 @@ from migrations import (  # noqa: E402
     set_application_statusgroup,
     scan_table,
     data_migration,
+    is_correct_date_format,
 )
 
 
@@ -474,19 +475,19 @@ class TestRewriteClinicRecords:
         }
 
     def test_live_update_expression_sets_clinic_id(self):
-        """UpdateExpression rewrites clinicId field."""
+        """UpdateExpression rewrites city field."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
-        assert "clinicId" in ct.update_item.call_args[1]["UpdateExpression"]
+        assert "city" in ct.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_expression_attribute_values_contain_clinic_id(self):
-        """ExpressionAttributeValues carries the original clinicId value."""
+        """ExpressionAttributeValues carries the modified city name value."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
         ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert ev[":id"] == "abc"
+        assert ev[":name"] == " "
 
     def test_live_increments_rewritten_clinic_rows(self):
         """dry_run=False → rewritten_clinic_rows incremented."""
@@ -494,6 +495,74 @@ class TestRewriteClinicRecords:
         stats = make_statistics()
         rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
         assert stats["rewritten_clinic_rows"] == 1
+
+    def test_city_without_trailing_space_gets_space_appended(self):
+        """city='London' (no trailing space) → :name becomes 'London '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London"}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London "
+
+    def test_city_with_trailing_space_gets_stripped(self):
+        """city='London ' (trailing space) → :name becomes 'London'."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London "}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London"
+
+    def test_city_with_multiple_trailing_spaces_gets_stripped(self):
+        """city='London  ' (multiple trailing spaces) → :name becomes 'London'."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": "London  "}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == "London"
+
+    def test_city_empty_string_gets_single_space(self):
+        """city='' (empty) → :name becomes ' '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc", "city": ""}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == " "
+
+    def test_city_missing_defaults_to_empty_then_space_added(self):
+        """No city key in record → defaults to '' → :name becomes ' '."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        record = {"pk": "CLINIC#abc", "sk": "CLINIC#ROOT", "clinicId": "abc"}
+        rewrite_clinic_records(record, at, apt, ct, False, stats)
+        ev = ct.update_item.call_args[1]["ExpressionAttributeValues"]
+        assert ev[":name"] == " "
+
+    def test_exception_on_update_increments_skipped_clinic_rows(self):
+        """update_item raises Exception → skipped_clinic_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["skipped_clinic_rows"] == 1
+
+    def test_exception_on_update_does_not_increment_rewritten_clinic_rows(self):
+        """update_item raises Exception → rewritten_clinic_rows NOT incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)
+        assert stats["rewritten_clinic_rows"] == 0
+
+    def test_exception_on_update_does_not_propagate(self):
+        """update_item raises Exception → exception is swallowed, no re-raise."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        ct.update_item.side_effect = Exception("boom")
+        rewrite_clinic_records(self.BASE_RECORD, at, apt, ct, False, stats)  # must not raise
 
 
 class TestScanTable:
@@ -555,6 +624,47 @@ class TestScanTable:
         lek = {"pk": "X", "sk": "Y"}
         scan_table(t, last_evaluated_key=lek, scan_filter=sf)
         t.scan.assert_called_once_with(FilterExpression="sk = :sk", ExclusiveStartKey=lek)
+
+    def test_date_created_filter_forwarded_when_no_lek(self):
+        """A dateCreated-based filter (from from_date) is forwarded as-is when no lek."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        scan_table(t, scan_filter=sf)
+        t.scan.assert_called_once_with(**sf)
+
+    def test_date_created_filter_merged_with_lek(self):
+        """A dateCreated filter is merged with ExclusiveStartKey when lek is present."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":from_date": "2024-06-01"},
+        }
+        lek = {"pk": "X", "sk": "Y"}
+        scan_table(t, last_evaluated_key=lek, scan_filter=sf)
+        call_kwargs = t.scan.call_args[1]
+        assert call_kwargs["FilterExpression"] == "dateCreated >= :from_date"
+        assert call_kwargs["ExpressionAttributeValues"] == {":from_date": "2024-06-01"}
+        assert call_kwargs["ExclusiveStartKey"] == lek
+
+    def test_combined_filter_and_date_filter_merged_with_lek(self):
+        """A combined sk+dateCreated filter is merged with ExclusiveStartKey when lek is present."""
+        t = self._table()
+        t.scan.return_value = {"Items": []}
+        sf = {
+            "FilterExpression": "sk = :sk AND dateCreated >= :from_date",
+            "ExpressionAttributeValues": {":sk": "APPLICATION#ROOT", ":from_date": "2024-06-01"},
+        }
+        lek = {"pk": "X", "sk": "Y"}
+        scan_table(t, last_evaluated_key=lek, scan_filter=sf)
+        call_kwargs = t.scan.call_args[1]
+        assert "dateCreated >= :from_date" in call_kwargs["FilterExpression"]
+        assert call_kwargs["ExpressionAttributeValues"][":from_date"] == "2024-06-01"
+        assert call_kwargs["ExclusiveStartKey"] == lek
 
 
 class TestDataMigration:
@@ -820,6 +930,7 @@ class TestRewriteApplicantRecords:
         "pk": "COUNTRY#GB#PASSPORT#1",
         "sk": "APPLICANT#DETAILS",
         "countryOfIssue": "GB",
+        "dateCreated": "2024-01-01T00:00:00.000000",
     }
 
     def test_dry_run_does_not_call_update_item(self):
@@ -848,19 +959,19 @@ class TestRewriteApplicantRecords:
         }
 
     def test_live_update_expression_sets_country_of_issue(self):
-        """UpdateExpression rewrites countryOfIssue field."""
+        """UpdateExpression rewrites dateCreated field."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
-        assert "countryOfIssue" in at.update_item.call_args[1]["UpdateExpression"]
+        assert "dateCreated" in at.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_expression_attribute_values_carry_country_of_issue(self):
-        """ExpressionAttributeValues carries the original countryOfIssue value."""
+        """ExpressionAttributeValues carries the computed dateCreated value."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_applicant_records(self.BASE_RECORD, at, apt, ct, False, stats)
         ev = at.update_item.call_args[1]["ExpressionAttributeValues"]
-        assert ev[":countryOfIssue"] == "GB"
+        assert ev[":date"] == "2024-01-01T00:00:00.001Z"
 
     def test_live_increments_rewritten_applicant_rows(self):
         """dry_run=False → rewritten_applicant_rows incremented on success."""
@@ -886,21 +997,21 @@ class TestRewriteApplicationRootRecords:
         return {"pk": "APPLICATION#abc", "sk": sk, "dateCreated": date_created}
 
     def test_dry_run_nonroot_sk_increments_root_rows(self):
-        """dry_run=True, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
+        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_root_rows"] == 1
         apt.update_item.assert_not_called()
 
     def test_dry_run_root_sk_increments_nonroot_rows(self):
-        """dry_run=True, sk == APPLICATION#ROOT → rewritten_application_nonroot_rows incremented."""
+        """dry_run=True, non-ROOT record → rewritten_application_nonroot_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
-            self._record(sk="APPLICATION#ROOT"), at, apt, ct, True, stats
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, True, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
         apt.update_item.assert_not_called()
@@ -924,20 +1035,20 @@ class TestRewriteApplicationRootRecords:
         assert "dateCreated" in apt.update_item.call_args[1]["UpdateExpression"]
 
     def test_live_nonroot_sk_increments_root_rows(self):
-        """dry_run=False, sk != APPLICATION#ROOT → rewritten_application_root_rows incremented."""
-        at, apt, ct = mock_tables()
-        stats = make_statistics()
-        rewrite_application_root_records(
-            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
-        )
-        assert stats["rewritten_application_root_rows"] == 1
-
-    def test_live_root_sk_increments_nonroot_rows(self):
-        """dry_run=False, ROOT row → rewritten_application_nonroot_rows incremented."""
+        """dry_run=False, sk == APPLICATION#ROOT → rewritten_application_root_rows incremented."""
         at, apt, ct = mock_tables()
         stats = make_statistics()
         rewrite_application_root_records(
             self._record(sk="APPLICATION#ROOT"), at, apt, ct, False, stats
+        )
+        assert stats["rewritten_application_root_rows"] == 1
+
+    def test_live_root_sk_increments_nonroot_rows(self):
+        """dry_run=False, NONROOT row → rewritten_application_nonroot_rows incremented."""
+        at, apt, ct = mock_tables()
+        stats = make_statistics()
+        rewrite_application_root_records(
+            self._record(sk="APPLICATION#NONROOT"), at, apt, ct, False, stats
         )
         assert stats["rewritten_application_nonroot_rows"] == 1
 
@@ -1113,3 +1224,36 @@ class TestDataMigrationExtended:
                 "migrate_applicants",
             )
         assert mock_migrate.call_count == 2
+
+
+class TestIsCorrectDateFormat:
+    """Tests for the is_correct_date_format helper."""
+
+    @pytest.mark.parametrize(
+        "date_string",
+        [
+            "2024-01-01",
+            "2024-12-31",
+            "2024-02-29",  # leap year
+            "2000-01-01",
+            "1999-06-15",
+        ],
+    )
+    def test_returns_true_for_valid_dates(self, date_string):
+        assert is_correct_date_format(date_string) is True
+
+    @pytest.mark.parametrize(
+        "date_string",
+        [
+            "01-01-2024",  # DD-MM-YYYY order
+            "2024/01/01",  # wrong separator
+            "2024-13-01",  # invalid month
+            "2023-02-29",  # non-leap year
+            "2024-01-32",  # invalid day
+            "not-a-date",  # plain text
+            "",  # empty string
+            "2024-01-01T00:00",  # date with time suffix
+        ],
+    )
+    def test_returns_false_for_invalid_dates(self, date_string):
+        assert is_correct_date_format(date_string) is False

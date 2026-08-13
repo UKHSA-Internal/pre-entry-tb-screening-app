@@ -173,12 +173,12 @@ export class TbCertificateSummaryPage extends BasePage {
   // Verify applicant name
   verifyApplicantName(expectedName?: string): TbCertificateSummaryPage {
     if (expectedName) {
-      cy.contains("dt.govuk-summary-list__key", "Name")
+      cy.contains("dt.govuk-summary-list__key", "Full name")
         .parent()
         .find("dd.govuk-summary-list__value")
         .should("contain", expectedName);
     } else {
-      cy.contains("dt.govuk-summary-list__key", "Name")
+      cy.contains("dt.govuk-summary-list__key", "Full name")
         .parent()
         .find("dd.govuk-summary-list__value")
         .should("be.visible");
@@ -668,7 +668,7 @@ export class TbCertificateSummaryPage extends BasePage {
 
   // Verify all current residential address fields
   verifyAllCurrentResidentialAddressFields(): TbCertificateSummaryPage {
-    cy.contains("h2.govuk-heading-m", "Current residential address").should("be.visible");
+    cy.contains("h2.govuk-heading-m", "Current home address").should("be.visible");
     // Just verify the section exists - individual fields can be verified with verifySummaryValue if needed
     return this;
   }
