@@ -68,6 +68,39 @@ describe("testFile with axios-mock-adapter", () => {
     expect(result).toBe("bucket/test.jpg");
   });
 
+  test("uploads a DICOM file with application/octet-stream regardless of browser-reported file.type", async () => {
+    // Simulates a machine where the OS/browser has a MIME association for
+    // .dcm (e.g. DICOM viewer software installed), which previously leaked
+    // into the Content-Type header and broke the presigned URL signature.
+    const file = new File(["dicom-bytes"], "scan.dcm", { type: "application/dicom" });
+
+    (generateImageUploadUrl as Mock).mockResolvedValueOnce({
+      data: {
+        uploadUrl: "https://example.com/upload",
+        bucketPath: "bucket/scan.dcm",
+      },
+    });
+
+    mockAxios.onPut("https://example.com/upload").reply(200);
+
+    const result = await uploadFile(file, "scan.dcm", "app-123", ImageType.Dicom);
+
+    const expectedChecksum = btoa(String.fromCharCode(1, 2, 3, 4));
+
+    expect(generateImageUploadUrl).toHaveBeenCalledWith("app-123", {
+      fileName: "scan.dcm",
+      checksum: expectedChecksum,
+      imageType: ImageType.Dicom,
+    });
+
+    expect(mockAxios.history.put.length).toBe(1);
+    const request = mockAxios.history.put[0];
+    expect(request.headers?.["Content-Type"]).toBe("application/octet-stream");
+    expect(request.headers?.["x-amz-checksum-sha256"]).toBe(expectedChecksum);
+
+    expect(result).toBe("bucket/scan.dcm");
+  });
+
   test("throws if upload fails", async () => {
     const file = new File(["oops"], "fail.txt", { type: "text/plain" });
 

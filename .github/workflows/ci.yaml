@@ -99,8 +99,8 @@ jobs:
         run: |
           until curl -fsS http://localhost:4566/_localstack/health | grep '"running"'; do
             COUNT=$((COUNT + 1))
-            if [ "$COUNT" -ge 24 ]; then
-              echo "Localstack healthcheck failed after 2 minutes"
+            if [ "$COUNT" -ge 36 ]; then
+              echo "Localstack healthcheck failed after 3 minutes"
               exit 1
             fi
             echo "Waiting for healthcheck to pass"
@@ -134,7 +134,7 @@ jobs:
           path: pets-core-services/coverage/
 
   migration-script-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned due to python3.9 dependency in .python-version, revert to ubuntu-latest when we've upgraded to a supported python version
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -185,7 +185,7 @@ jobs:
         run: uv run pytest -c ./pyproject.toml --cov=migrations --cov-report=html ./src/test_integration.py
 
   migration-script-linter-checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned due to python3.9 dependency in .python-version, revert to ubuntu-latest when we've upgraded to a supported python version
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
