@@ -12,6 +12,25 @@ async function computeBase64SHA256(file: File) {
   return hash;
 }
 
+// Mirrors the Content-Type the server bakes into the presigned URL
+// (generate-image-upload-url.ts). The actual PUT must send this exact
+// value or S3 rejects it with 403 SignatureDoesNotMatch - the browser's
+// own file.type (OS MIME sniffing, e.g. "application/dicom" if a DICOM
+// viewer is installed) cannot be trusted to match it.
+const mimeTypes: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+};
+
+function getContentTypeForUpload(fileName: string, imageType: ImageType): string {
+  if (imageType !== ImageType.Photo) {
+    return "application/octet-stream";
+  }
+  const ext = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
+  return mimeTypes[ext] ?? "application/octet-stream";
+}
+
 const uploadFile = async (
   file: File,
   bucketFileName: string,
@@ -30,7 +49,7 @@ const uploadFile = async (
   const SSE_KEY_ID = import.meta.env.VITE_SSE_KEY_ID as string;
 
   const SSE_ALGORITHM = "aws:kms";
-  const normalizedContentType = file.type === "image/jpg" ? "image/jpeg" : file.type;
+  const normalizedContentType = getContentTypeForUpload(bucketFileName, imageType);
   await axios.put(uploadUrl, file, {
     headers: {
       "Content-Type": normalizedContentType,
