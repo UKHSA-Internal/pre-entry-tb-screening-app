@@ -195,6 +195,93 @@ describe("Tests for Clinic Model", () => {
     expect(loggerMock).toHaveBeenLastCalledWith("No clinics found");
   });
 
+  describe("isActive in getAllClinics", () => {
+    const now = "2026-11-26T12:00:00.000Z";
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date(now));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test.each([
+      ["null endDate", null, true],
+      ["missing endDate", undefined, false],
+      ["empty-string endDate", "", false],
+      ["future endDate", "2030-01-25T00:00:00.000Z", true],
+      ["expired endDate", "2020-01-01T00:00:00.000Z", false],
+      ["1ms in the future", "2026-11-26T12:00:00.001Z", true],
+      ["exactly now", now, false],
+      ["1ms in the past", "2026-11-26T11:59:59.999Z", false],
+      ["date-only today", "2026-11-26", false],
+      ["date-only tomorrow", "2026-11-27", true],
+    ])("computeIsActive: %s", (_label, endDate, expected) => {
+      expect(Clinic.computeIsActive(endDate)).toBe(expected);
+    });
+
+    test("returns every clinic with a boolean isActive and keeps existing fields", async () => {
+      const item = (id: string, startDate: string, endDate: string | null) => ({
+        ...clinicsDetails[0],
+        clinicId: id,
+        startDate,
+        endDate,
+        pk: `CLINIC#${id}`,
+        sk: "CLINIC#ROOT",
+      });
+      ddbMock.on(ScanCommand).resolves({
+        Items: [
+          item("no-end", "2025-01-01T00:00:00.000Z", null),
+          item("expired", "2020-01-01T00:00:00.000Z", "2021-01-01T00:00:00.000Z"),
+          item("future-start", "2030-01-01T00:00:00.000Z", null),
+        ],
+      });
+
+      const results = await Clinic.getAllClinics(undefined);
+
+      expect(results.map((c) => [c.clinicId, c.isActive])).toEqual([
+        ["no-end", true],
+        ["expired", false],
+        // startDate is not part of the existing active rule (see isActiveClinic)
+        ["future-start", true],
+      ]);
+      expect(Object.keys(results[0].toJson())).toEqual([
+        "clinicId",
+        "name",
+        "city",
+        "country",
+        "startDate",
+        "endDate",
+        "createdBy",
+      ]);
+    });
+
+    test("reads every DynamoDB scan page", async () => {
+      const page = (id: string) => ({
+        ...clinicsDetails[0],
+        clinicId: id,
+        pk: `CLINIC#${id}`,
+        sk: "CLINIC#ROOT",
+      });
+      const lastKey = { pk: "CLINIC#page-1-clinic", sk: "CLINIC#ROOT" };
+      ddbMock
+        .on(ScanCommand)
+        .resolvesOnce({ Items: [page("page-1-clinic")], LastEvaluatedKey: lastKey })
+        .resolvesOnce({ Items: [page("page-2-clinic")] });
+
+      const results = await Clinic.getAllClinics("KOR");
+
+      expect(results.map((c) => c.clinicId)).toEqual(["page-1-clinic", "page-2-clinic"]);
+      const calls = ddbMock.commandCalls(ScanCommand);
+      expect(calls).toHaveLength(2);
+      expect(calls[0].args[0].input.ExclusiveStartKey).toBeUndefined();
+      expect(calls[1].args[0].input.ExclusiveStartKey).toEqual(lastKey);
+      expect(calls[0].args[0].input.FilterExpression).toBe("#cv = :countryVal");
+    });
+  });
+
   test("Getting clinic by clinicID", async () => {
     ddbMock.on(GetCommand).resolves({
       Item: {

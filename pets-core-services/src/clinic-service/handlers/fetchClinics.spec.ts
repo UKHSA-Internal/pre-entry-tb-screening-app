@@ -1,12 +1,14 @@
 import { ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { describe, expect, test, vi } from "vitest";
+import { z } from "zod";
 
 import awsClients from "../../shared/clients/aws";
 import { CountryCode } from "../../shared/country";
 import { logger } from "../../shared/logger";
 import { mockAPIGwEvent } from "../../test/mocks/events";
 import { NewClinic } from "../models/clinics";
+import { ClinicSchema, ClinicWithStatusSchema } from "../types/zod-schema";
 import { fetchClinicsHandler } from "./fetchClinics";
 
 const clinicsDetails: NewClinic[] = [
@@ -51,6 +53,48 @@ describe("Fetching Clinics", () => {
 
     const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
     expect(res.statusCode).toBe(200);
+  });
+
+  test("returns all clinics, active or not, with isActive and the existing fields", async () => {
+    ddbMock.on(ScanCommand).resolves({
+      Items: [
+        { ...clinicsDetails[0], pk: "CLINIC#clinic-id-01", sk: "CLINIC#ROOT" },
+        {
+          ...clinicsDetails[1],
+          endDate: "2020-01-01T00:00:00.000Z",
+          pk: "CLINIC#clinic-id-02",
+          sk: "CLINIC#ROOT",
+        },
+      ],
+    });
+
+    const res = await fetchClinicsHandler({ ...mockAPIGwEvent });
+    const body = JSON.parse(res.body) as (z.infer<typeof ClinicWithStatusSchema> & {
+      isActive: boolean;
+    })[];
+
+    expect(body.map((c) => [c.clinicId, c.isActive])).toEqual([
+      ["clinic-id-01", true],
+      ["clinic-id-02", false],
+    ]);
+    expect(() => z.array(ClinicWithStatusSchema).parse(body)).not.toThrow();
+    // Existing consumers see the same fields plus isActive
+    expect(Object.keys(body[0]).sort()).toEqual(
+      [
+        "city",
+        "clinicId",
+        "country",
+        "createdBy",
+        "endDate",
+        "isActive",
+        "name",
+        "startDate",
+      ].sort(),
+    );
+  });
+
+  test("clinic creation schema does not require isActive", () => {
+    expect(() => ClinicSchema.parse(clinicsDetails[0])).not.toThrow();
   });
 
   test("error response 500", async () => {

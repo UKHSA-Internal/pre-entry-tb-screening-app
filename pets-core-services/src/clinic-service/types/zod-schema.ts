@@ -30,3 +30,12 @@ export const ClinicSchema = z
     }),
   })
   .openapi("Clinic", { description: "Details about a Clinic" });
+
+// Separate from ClinicSchema because that schema also validates the
+// POST /clinics/{clinicId} request body — adding a required isActive there
+// would break clinic creation.
+export const ClinicWithStatusSchema = ClinicSchema.extend({
+  isActive: z.boolean().openapi({
+    description: "True when the clinic is currently active",
+  }),
+}).openapi("ClinicWithStatus", { description: "Clinic details including active status" });
