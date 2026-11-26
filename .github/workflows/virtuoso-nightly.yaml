@@ -1,0 +1,430 @@
+name: Run Virtuoso Plan
+
+on:
+  schedule:
+    - cron: "0 1 * * 1-5"   # 1 AM UTC, Monday–Friday
+  workflow_dispatch:
+    inputs:
+      plan_id:
+        description: "Plan ID"
+        default: "5"
+        required: true
+      plan_name:
+        description: "Plan name"
+        required: false
+      environment:
+        description: "Environment to test"
+        required: true
+        default: "all"
+        type: choice
+        options: [all, qat, dev, preprod]
+      branch:
+        description: "Branch label (informational)"
+        required: false
+        default: "develop"
+        type: string
+  workflow_call:
+    inputs:
+      plan_id:
+        required: true
+        type: string
+      plan_name:
+        required: false
+        type: string
+      environment_id:
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 1. Build the environment list
+  #    Skipped when called via workflow_call — the caller controls the env.
+  # ─────────────────────────────────────────────────────────────────────────
+  setup-matrix:
+    name: Setup Environment Matrix
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_call'
+    outputs:
+      environments: ${{ steps.matrix.outputs.environments }}
+      branch: ${{ steps.matrix.outputs.branch }}
+    steps:
+      - name: Build matrix
+        id: matrix
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENV_SELECTION="${{ github.event.inputs.environment }}"
+            BRANCH="${{ github.event.inputs.branch }}"
+          else
+            ENV_SELECTION="all"
+            BRANCH="${{ github.ref_name }}"
+          fi
+
+          if [[ "$ENV_SELECTION" == "all" ]]; then
+            ENV_ARRAY='["qat","dev","preprod"]'
+          else
+            ENV_ARRAY='["'"$ENV_SELECTION"'"]'
+          fi
+
+          echo "environments=$ENV_ARRAY" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH"          >> "$GITHUB_OUTPUT"
+          echo "Selected environments: $ENV_ARRAY"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 2. Execute the Virtuoso plan
+  #
+  #    • Triggered by schedule/workflow_dispatch: runs as a matrix across
+  #      environments. ENVIRONMENT_ID is set per matrix entry.
+  #    • Triggered by workflow_call: runs as a single job. ENVIRONMENT_ID
+  #      comes from the workflow_call input.
+  #
+  # ⚠️  Replace the dev and preprod virtuoso_env_id values with your actual
+  #     Virtuoso environment IDs (Virtuoso → Settings → Environments).
+  #     The qat ID (98) is taken from the original execute.sh.
+  # ─────────────────────────────────────────────────────────────────────────
+  run-virtuoso-plan:
+    name: Run Virtuoso Plan – ${{ matrix.environment || 'default' }}
+    runs-on: ubuntu-latest
+    needs: [setup-matrix]
+    if: always() && (needs.setup-matrix.result == 'success' || needs.setup-matrix.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ github.event_name != 'workflow_call' && fromJson(needs.setup-matrix.outputs.environments) || fromJson('["default"]') }}
+        include:
+          - environment: qat
+            virtuoso_env_id: "98"
+          - environment: dev
+            virtuoso_env_id: "99"    # replace with actual DEV env ID once set up
+          - environment: preprod
+            virtuoso_env_id: "100"   # replace with actual PREPROD env ID once set up
+          - environment: default
+            virtuoso_env_id: ""      # workflow_call path — env ID comes from input
+
+    env:
+      VIRTUOSO_TOKEN: ${{ secrets.VIRTUOSOUKPRD_API_TOKEN }}
+      PLAN_ID: ${{ inputs.plan_id || '5' }}
+      PLAN_NAME: ${{ inputs.plan_name || 'CI/CD_PETS' }}
+      # workflow_call supplies environment_id via input; matrix jobs use virtuoso_env_id
+      ENVIRONMENT_ID: ${{ inputs.environment_id || matrix.virtuoso_env_id }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make script executable
+        run: chmod +x scripts/execute.sh
+
+      # continue-on-error so transform + upload steps always run and the
+      # dashboard reflects the real result rather than a missing artifact
+      - name: Run Virtuoso plan
+        id: virtuoso_run
+        continue-on-error: true
+        run: scripts/execute.sh
+
+      - name: Move report to reports folder
+        if: always()
+        run: |
+          mkdir -p reports
+          if [ -f plan_execution_report.json ]; then
+            mv plan_execution_report.json reports/plan_execution_report.json
+          else
+            # Script failed before producing a report — write a stub so the
+            # transform step still emits a clean FAIL result for the dashboard
+            echo '{"outcome":"ERROR","jobs":[]}' > reports/plan_execution_report.json
+          fi
+
+      # ── Transform plan_execution_report.json → per-browser result files ──
+      #
+      # Virtuoso returns one job per browser configured in the plan.
+      # Expected fields on each job object:
+      #   .outcome       "PASS" | "FAIL" | "ERROR"
+      #   .browser       "CHROME" | "FIREFOX" | "EDGE"  (case-insensitive)
+      #   .totalTests    integer
+      #   .passedTests   integer
+      #   .failedTests   integer
+      #   .pendingTests  integer  (optional)
+      #
+      # After the first run download the virtuoso-report-{env} artifact and
+      # inspect the JSON. Update the jq paths below if your field names differ.
+      - name: Transform results to dashboard format
+        if: always() && github.event_name != 'workflow_call'
+        run: |
+          ENVIRONMENT="${{ matrix.environment }}"
+          REPORT="reports/plan_execution_report.json"
+          BROWSERS=("chrome" "firefox" "edge")
+
+          for BROWSER in "${BROWSERS[@]}"; do
+            BROWSER_UPPER=$(echo "$BROWSER" | tr '[:lower:]' '[:upper:]')
+
+            JOB=$(jq -c \
+              --arg b "$BROWSER_UPPER" \
+              '.jobs[]? | select((.browser // "" | ascii_upcase) == $b)' \
+              "$REPORT" 2>/dev/null | head -1 || true)
+
+            # Fallback: if no job carries a .browser field, write all counts
+            # to chrome and leave firefox/edge at zero
+            if [[ -z "$JOB" && "$BROWSER" == "chrome" ]]; then
+              HAS_BROWSER=$(jq '[.jobs[]?.browser] | map(select(. != null)) | length' \
+                "$REPORT" 2>/dev/null || echo "0")
+              if [[ "$HAS_BROWSER" == "0" ]]; then
+                JOB=$(jq -c '.jobs[0]? // empty' "$REPORT" 2>/dev/null || true)
+              fi
+            fi
+
+            if [[ -n "$JOB" ]]; then
+              OUTCOME=$(echo "$JOB" | jq -r '.outcome // "UNKNOWN"')
+              TOTAL=$(echo   "$JOB" | jq -r '.totalTests   // .stats.tests    // 0')
+              PASSED=$(echo  "$JOB" | jq -r '.passedTests  // .stats.passes   // 0')
+              FAILED=$(echo  "$JOB" | jq -r '.failedTests  // .stats.failures // 0')
+              PENDING=$(echo "$JOB" | jq -r '.pendingTests // .stats.pending  // 0')
+              STATUS=$([[ "$OUTCOME" == "PASS" ]] && echo "PASS" || echo "FAIL")
+            else
+              STATUS="FAIL"; TOTAL=0; PASSED=0; FAILED=0; PENDING=0
+            fi
+
+            mkdir -p "result-${ENVIRONMENT}-${BROWSER}"
+            echo "$STATUS" > "result-${ENVIRONMENT}-${BROWSER}/result.txt"
+
+            cat > "result-${ENVIRONMENT}-${BROWSER}/result.json" <<EOF
+          {
+            "status": "$STATUS",
+            "environment": "$ENVIRONMENT",
+            "browser": "$BROWSER",
+            "testCounts": {
+              "total":   $TOTAL,
+              "passed":  $PASSED,
+              "failed":  $FAILED,
+              "pending": $PENDING
+            },
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "runId": "${{ github.run_id }}"
+          }
+          EOF
+            echo "result-${ENVIRONMENT}-${BROWSER}: status=$STATUS  total=$TOTAL  passed=$PASSED  failed=$FAILED"
+          done
+
+      - name: Upload Chrome result
+        if: always() && github.event_name != 'workflow_call'
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ matrix.environment }}-chrome
+          path: result-${{ matrix.environment }}-chrome/
+          retention-days: 7
+
+      - name: Upload Firefox result
+        if: always() && github.event_name != 'workflow_call'
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ matrix.environment }}-firefox
+          path: result-${{ matrix.environment }}-firefox/
+          retention-days: 7
+
+      - name: Upload Edge result
+        if: always() && github.event_name != 'workflow_call'
+        uses: actions/upload-artifact@v4
+        with:
+          name: result-${{ matrix.environment }}-edge
+          path: result-${{ matrix.environment }}-edge/
+          retention-days: 7
+
+      # The raw report is uploaded for all trigger types — useful for debugging
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-report-${{ inputs.plan_id || env.PLAN_ID }}-${{ github.run_attempt }}
+          path: reports/plan_execution_report.json
+          retention-days: 7
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # 3. Aggregate results and deploy the GitHub Pages dashboard
+  #    Only runs on schedule / workflow_dispatch — not on workflow_call,
+  #    where the caller is responsible for any downstream steps.
+  # ─────────────────────────────────────────────────────────────────────────
+  generate-summary-and-deploy:
+    name: Generate Summary and Deploy Dashboard
+    needs: [setup-matrix, run-virtuoso-plan]
+    if: always() && github.event_name != 'workflow_call'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install required tools
+        run: sudo apt-get update && sudo apt-get install -y jq bc
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+
+      - name: List downloaded artifacts
+        run: |
+          echo "=== Downloaded Artifacts ==="
+          find all-artifacts -type f | sort
+
+      - name: Create dashboard directory
+        run: mkdir -p dashboard
+
+      - name: Generate test summary report
+        id: summary
+        run: |
+          #!/bin/bash
+          set -e
+
+          echo "# 🌙 PETS Nightly Test Results" > nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "**Run Date**: $(date -u)" >> nightly-summary.md
+          echo "**Run ID**: ${{ github.run_id }}" >> nightly-summary.md
+          echo "**Branch**: ${{ needs.setup-matrix.outputs.branch }}" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+
+          ENV_MATRIX='${{ needs.setup-matrix.outputs.environments }}'
+          BROWSER_LIST=("chrome" "firefox" "edge")
+          ENV_LIST=($(echo "$ENV_MATRIX" | jq -r '.[]'))
+
+          TOTAL=0; FAILS=0
+          TOTAL_TESTS=0; TOTAL_PASSED=0; TOTAL_FAILED=0; TOTAL_PENDING=0
+
+          echo "{"               > dashboard/test-results.json
+          echo '  "results": {' >> dashboard/test-results.json
+
+          FIRST_ENV=true
+          for env in "${ENV_LIST[@]}"; do
+            echo "## Environment: ${env^^}" >> nightly-summary.md
+            echo "" >> nightly-summary.md
+            echo "| Browser | Status | Total | Passed | Failed | Pending |" >> nightly-summary.md
+            echo "|---------|--------|-------|--------|--------|---------|" >> nightly-summary.md
+
+            [[ "$FIRST_ENV" == "false" ]] && echo "," >> dashboard/test-results.json
+            echo "    \"$env\": {" >> dashboard/test-results.json
+            FIRST_ENV=false
+
+            FIRST_BROWSER=true
+            for browser in "${BROWSER_LIST[@]}"; do
+              RESULT_DIR="all-artifacts/result-${env}-${browser}"
+              STATUS="UNKNOWN"; TEST_COUNT=0; PASSED_COUNT=0; FAILED_COUNT=0; PENDING_COUNT=0
+
+              [[ -f "$RESULT_DIR/result.txt" ]] && STATUS=$(cat "$RESULT_DIR/result.txt")
+              if [[ -f "$RESULT_DIR/result.json" ]]; then
+                TEST_COUNT=$(jq -r    '.testCounts.total   // 0' "$RESULT_DIR/result.json")
+                PASSED_COUNT=$(jq -r  '.testCounts.passed  // 0' "$RESULT_DIR/result.json")
+                FAILED_COUNT=$(jq -r  '.testCounts.failed  // 0' "$RESULT_DIR/result.json")
+                PENDING_COUNT=$(jq -r '.testCounts.pending // 0' "$RESULT_DIR/result.json")
+              fi
+
+              STATUS_ICON=$([ "$STATUS" = "PASS" ] && echo "✅" || echo "❌")
+              echo "| $browser | $STATUS_ICON $STATUS | $TEST_COUNT | $PASSED_COUNT | $FAILED_COUNT | $PENDING_COUNT |" >> nightly-summary.md
+
+              [[ "$FIRST_BROWSER" == "false" ]] && echo "," >> dashboard/test-results.json
+              cat >> dashboard/test-results.json <<EOF
+              "$browser": {
+                "status": "$STATUS",
+                "testCounts": {
+                  "total":   $TEST_COUNT,
+                  "passed":  $PASSED_COUNT,
+                  "failed":  $FAILED_COUNT,
+                  "pending": $PENDING_COUNT
+                }
+              }
+          EOF
+              FIRST_BROWSER=false
+
+              TOTAL=$((TOTAL + 1))
+              [[ "$STATUS" != "PASS" ]] && FAILS=$((FAILS + 1))
+              TOTAL_TESTS=$((TOTAL_TESTS     + TEST_COUNT))
+              TOTAL_PASSED=$((TOTAL_PASSED   + PASSED_COUNT))
+              TOTAL_FAILED=$((TOTAL_FAILED   + FAILED_COUNT))
+              TOTAL_PENDING=$((TOTAL_PENDING + PENDING_COUNT))
+            done
+
+            echo "    }" >> dashboard/test-results.json
+            echo "" >> nightly-summary.md
+          done
+
+          echo "  }," >> dashboard/test-results.json
+
+          SUCCESS_RATE=0
+          [[ $TOTAL -gt 0 ]] && SUCCESS_RATE=$(echo "scale=1; ($TOTAL - $FAILS) * 100 / $TOTAL" | bc)
+
+          echo "## 📊 Overall Summary" >> nightly-summary.md
+          echo "" >> nightly-summary.md
+          echo "- **Test Combinations**: $TOTAL"      >> nightly-summary.md
+          echo "- **Failed Combinations**: $FAILS"    >> nightly-summary.md
+          echo "- **Success Rate**: ${SUCCESS_RATE}%" >> nightly-summary.md
+          echo "- **Total Tests Run**: $TOTAL_TESTS"  >> nightly-summary.md
+          echo "- **Tests Passed**: $TOTAL_PASSED"    >> nightly-summary.md
+          echo "- **Tests Failed**: $TOTAL_FAILED"    >> nightly-summary.md
+          echo "- **Tests Pending**: $TOTAL_PENDING"  >> nightly-summary.md
+
+          if [[ $FAILS -eq 0 ]]; then
+            OVERALL_STATUS="PASS"
+            echo "## ✅ Status: ALL TESTS PASSED" >> nightly-summary.md
+          else
+            OVERALL_STATUS="FAIL"
+            echo "## ❌ Status: SOME TESTS FAILED" >> nightly-summary.md
+          fi
+
+          cat >> dashboard/test-results.json <<EOF
+            "overallStatus":      "$OVERALL_STATUS",
+            "totalCombinations":  $TOTAL,
+            "failedCombinations": $FAILS,
+            "totalTests":         $TOTAL_TESTS,
+            "totalPassed":        $TOTAL_PASSED,
+            "totalFailed":        $TOTAL_FAILED,
+            "totalPending":       $TOTAL_PENDING,
+            "successRate":        $SUCCESS_RATE,
+            "runUrl":             "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "branch":             "${{ needs.setup-matrix.outputs.branch }}",
+            "timestamp":          "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          echo "overall_status=$OVERALL_STATUS" >> "$GITHUB_OUTPUT"
+          echo "success_rate=$SUCCESS_RATE"     >> "$GITHUB_OUTPUT"
+
+      - name: Copy dashboard HTML
+        run: cp .github/workflows/PETSNightlyDashboard.html dashboard/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dashboard"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-summary-report
+          path: nightly-summary.md
+          retention-days: 7
+
+      - name: Set workflow conclusion
+        if: always()
+        run: |
+          echo "🔗 Dashboard URL: ${{ steps.deployment.outputs.page_url }}"
+          if [[ "${{ steps.summary.outputs.overall_status }}" == "PASS" ]]; then
+            echo "::notice::✅ All PETS nightly tests passed! Dashboard: ${{ steps.deployment.outputs.page_url }}"
+          else
+            echo "::warning::⚠️ Some tests failed. Dashboard: ${{ steps.deployment.outputs.page_url }}"
+          fi
