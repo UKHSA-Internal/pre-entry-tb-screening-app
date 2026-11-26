@@ -7,7 +7,7 @@ import { createClinicHandler } from "../handlers/createClinic";
 import { fetchClinicsHandler } from "../handlers/fetchClinics";
 import { getClinicHandler } from "../handlers/getClinic";
 import { isActiveClinicHandler } from "../handlers/isActiveClinic";
-import { ClinicSchema } from "../types/zod-schema";
+import { ClinicSchema, ClinicWithStatusSchema } from "../types/zod-schema";
 extendZodWithOpenApi(z);
 
 export const routes: PetsRoute[] = [
@@ -29,7 +29,7 @@ export const routes: PetsRoute[] = [
     path: "/clinics",
     handler: fetchClinicsHandler,
     responseSchema: z
-      .array(ClinicSchema)
+      .array(ClinicWithStatusSchema)
       .openapi("AllClinic", { description: "List of all registered clinics" }),
     queryParams: {
       country: z

@@ -139,44 +139,69 @@ export class Clinic extends IClinic {
   }
 
   /**
-   * It gets all Clinics
-   * @returns array of Clinic objects
+   * Returns true using the same rule as isActiveClinic(): a null endDate, or an
+   * endDate that lexically sorts after now. startDate is deliberately not
+   * considered, as in isActiveClinic(). Must be evaluated on the raw DynamoDB
+   * attribute before any Date coercion, since that mapping turns an
+   * empty-string endDate into null and would silently change the result.
    */
-  static async getAllClinics(country: string | undefined): Promise<Clinic[]> {
+  static computeIsActive(rawEndDate: unknown): boolean {
+    if (rawEndDate === null) return true;
+    if (typeof rawEndDate !== "string") return false;
+    return rawEndDate > new Date().toISOString();
+  }
+
+  /**
+   * It gets all Clinics, paginating across every DynamoDB page so the result
+   * is never silently truncated.
+   * @returns array of Clinic objects with an isActive flag
+   */
+  static async getAllClinics(
+    country: string | undefined,
+  ): Promise<(Clinic & { isActive: boolean })[]> {
     try {
       logger.info(`Finding all clinics in '${process.env.CLINIC_SERVICE_DATABASE_NAME}'`);
 
-      const params: ScanCommandInput = {
-        TableName: Clinic.getTableName(),
-      };
-      if (country) {
-        params.FilterExpression = "#cv = :countryVal";
-        params.ExpressionAttributeNames = {
-          "#cv": "country",
-        };
-        params.ExpressionAttributeValues = {
-          ":countryVal": country,
-        };
-      }
-      const command = new ScanCommand(params);
-      const data: ScanCommandOutput = await docClient.send(command);
+      const items: Record<string, unknown>[] = [];
+      let receivedItems = false;
+      let exclusiveStartKey: Record<string, unknown> | undefined;
 
-      if (!data?.Items) {
+      do {
+        const params: ScanCommandInput = {
+          TableName: Clinic.getTableName(),
+          ExclusiveStartKey: exclusiveStartKey,
+        };
+        if (country) {
+          params.FilterExpression = "#cv = :countryVal";
+          params.ExpressionAttributeNames = { "#cv": "country" };
+          params.ExpressionAttributeValues = { ":countryVal": country };
+        }
+        const command = new ScanCommand(params);
+        // eslint-disable-next-line no-await-in-loop
+        const data: ScanCommandOutput = await docClient.send(command);
+
+        receivedItems ||= !!data?.Items;
+        items.push(...(data?.Items ?? []));
+        exclusiveStartKey = data?.LastEvaluatedKey;
+      } while (exclusiveStartKey);
+
+      if (!receivedItems) {
         logger.info("No clinics found");
         return [];
       }
 
-      logger.info({ resultCount: data.Items.length }, "Clinics data fetched successfully");
-      const results = data.Items as ReturnType<Clinic["todbItem"]>[];
+      logger.info({ resultCount: items.length }, "Clinics data fetched successfully");
+      const results = items as unknown as ReturnType<Clinic["todbItem"]>[];
 
-      return results.map(
-        (dbItem) =>
-          new Clinic({
-            ...dbItem,
-            startDate: new Date(dbItem.startDate),
-            endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
-          }),
-      );
+      return results.map((dbItem) => {
+        const isActive = Clinic.computeIsActive(dbItem.endDate);
+        const clinic = new Clinic({
+          ...dbItem,
+          startDate: new Date(dbItem.startDate),
+          endDate: dbItem.endDate ? new Date(dbItem.endDate) : null,
+        });
+        return Object.assign(clinic, { isActive });
+      });
     } catch (error) {
       logger.error(error, "Error retrieving clinics");
       throw error;

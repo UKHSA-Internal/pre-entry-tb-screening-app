@@ -10,11 +10,13 @@ export const fetchClinicsHandler = async (event: PetsAPIGatewayProxyEvent) => {
     logger.info("All Clinics details handler triggered");
     const country = event?.queryStringParameters?.country;
 
-    const clinics: Clinic[] = await Clinic.getAllClinics(country);
+    const clinics = await Clinic.getAllClinics(country);
 
     if (!clinics || clinics?.length < 1) return HttpErrors.notFound("No clinics exist");
 
-    return HttpResponses.ok(clinics.map((clinic: Clinic) => clinic.toJson()));
+    return HttpResponses.ok(
+      clinics.map((clinic) => ({ ...clinic.toJson(), isActive: clinic.isActive })),
+    );
   } catch (error) {
     logger.error(error, "Fetching Clinics Failed");
 
